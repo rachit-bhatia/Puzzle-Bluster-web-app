@@ -91,7 +91,7 @@ function SignInPage() {
               <FaUser className="icon"/>
            </div>
            <div className="input-box">
-              <input type="text" placeholder="Password" value={password} onChange={handlePasswordChange}/>
+              <input type="password" placeholder="Password" value={password} onChange={handlePasswordChange}/>
               <FaLock className="icon"/>
            </div>
 
