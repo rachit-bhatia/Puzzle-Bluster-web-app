@@ -64,6 +64,27 @@
    font-weight: 700;
    margin-top:  50px;
  }
+
+ .wrapper button:disabled {
+  background: #ccc; /* Set disabled background color to greyish */
+  cursor: not-allowed; /* Change cursor to not-allowed when disabled */
+}
+
+ .wrapper .error-message{
+  width : 100%;
+  
+  background-color: rgb(201, 131, 148);
+  color: rgb(143, 22, 22);
+  border-radius : 5px;
+  font-size: 15px;
+  padding-left:5px
+
+}
+ .wrapper .password-not-matched{
+  width: 100%;
+  color: rgb(189, 25, 25);
+  padding-left:2px
+ }
  
  .wrapper .back-to-login{
    font-size :14px;
