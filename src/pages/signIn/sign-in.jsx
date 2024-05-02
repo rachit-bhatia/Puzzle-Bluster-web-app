@@ -7,7 +7,7 @@ import {FaUser,FaLock} from "react-icons/fa"
 
 function SignInPage() {
   // states
-  const [email, setEmail] = useState("");
+  var [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -28,6 +28,7 @@ function SignInPage() {
       setIsSigningIn(true);
 
       try {
+        email = email + "@email.com"
         await signInWithEmailAndPassword(auth, email, password);
         console.log("sign in successful");
         setIsSigningInSuccessful(true);
@@ -58,7 +59,7 @@ function SignInPage() {
             </div>
 
            <div className="input-box">
-              <input type="text" placeholder="Email" value={email} onChange={handleEmailChange} />
+              <input type="text" placeholder="Username" value={email} onChange={handleEmailChange} />
               <FaUser className="icon"/>
            </div>
            <div className="input-box">

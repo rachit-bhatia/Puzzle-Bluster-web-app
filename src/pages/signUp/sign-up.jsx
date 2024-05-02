@@ -5,7 +5,7 @@ import { useState } from "react";
 import { auth } from "../../firebase/firebase";
 import { FaUser, FaLock } from "react-icons/fa";
 function SignUpPage() {
-  const [email, setEmail] = useState("");
+  var [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isSigningUp, setIsSigningUp] = useState(false);
@@ -35,6 +35,7 @@ function SignUpPage() {
         setIsSigningUp(true);
   
         try {
+          email = email + "@email.com"
           await createUserWithEmailAndPassword(auth, email, password);
           console.log("sign up successful");
           setIsSignUpSuccessful(true);
@@ -62,7 +63,7 @@ function SignUpPage() {
         <div className="input-box">
           <input
             type="text"
-            placeholder="Email"
+            placeholder="Username"
             value={email}
             onChange={handleEmailChange}
           />
