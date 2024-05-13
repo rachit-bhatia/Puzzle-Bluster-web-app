@@ -4,6 +4,7 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
 import { auth } from "../../firebase/firebase";
 import { FaUser, FaLock } from "react-icons/fa";
+import React from "react";
 function SignUpPage() {
   var [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
