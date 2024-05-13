@@ -8,8 +8,8 @@ function FillBoardGrid(): String[][] {
     const wordsToFind: String[] = ["HELLO", "WORLD"];  
     const boardSize = 15;  //15x15 board
 
-    //set of all 8 directions in which letters of solution words can be placed on the board
-    const possibleDirections = [[-1, 0], [1, 0], [0, -1], [0, 1], [-1, -1], [-1, 1], [1, -1], [1, 1]]
+    //set of 4 directions in which letters of solution words can be placed on the board
+    const possibleDirections = [[-1, 0], [1, 0], [0, -1], [0, 1]]
 
     //create 2D array to store the board
     var boardGrid: String[][] = new Array(boardSize);  
@@ -47,6 +47,7 @@ function FillBoardGrid(): String[][] {
             //add random letters if the cell is empty
             if(boardGrid[i][j] == ""){
                 boardGrid[i][j] = String.fromCharCode(65 + Math.random()*26);
+                // boardGrid[i][j] = "-";  //uncomment this line when testing to see exactly where the words are placed
             }
         }
     }
