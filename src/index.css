@@ -30,6 +30,26 @@ h1 {
   line-height: 1.1;
 }
 
+.gameHeading {
+  color: rgb(92, 76, 56);
+}
+
+.boardCell {
+  display: inline-flex;
+  background-color: #3f4055;
+  justify-content: center; 
+  align-items: center; 
+  margin: 1px;
+  width: 50px;
+  height: 40px;
+  transition: background-color 0.1s;
+}
+
+.boardCell:hover {
+  background-color: #646cff;
+}
+
+
 button {
   border-radius: 8px;
   border: 1px solid transparent;
@@ -41,23 +61,15 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
 }
+
 button:hover {
   border-color: #646cff;
 }
-button:focus,
-button:focus-visible {
+
+button:focus, button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-/* @media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
-} */
+
+
+
