@@ -4,6 +4,7 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { Navigate } from "react-router-dom";
 import { auth } from "../../firebase/firebase";
 import {FaUser,FaLock} from "react-icons/fa"
+import React from "react";
 
 function SignInPage() {
   // states
