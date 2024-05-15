@@ -2,10 +2,11 @@ import React from 'react';
 import { ReactElement } from "react";
 import DisplayBoard from "./displayBoard";
 
+//solution words that exist in the puzzle
+const wordsToFind: String[] = ["HELLO", "WORLD"];  
+
 function FillBoardGrid(): String[][] {
 
-    //solution words that exist in the puzzle
-    const wordsToFind: String[] = ["HELLO", "WORLD"];  
     const boardSize = 15;  //15x15 board
 
     //set of 4 directions in which letters of solution words can be placed on the board
@@ -109,4 +110,5 @@ const WordSearchBoard = (): ReactElement => {
 } 
 
 export default WordSearchBoard;
+export { wordsToFind };
 
