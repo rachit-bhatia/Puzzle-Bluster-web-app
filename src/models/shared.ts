@@ -1,12 +1,12 @@
 import { db } from "../firebase/firebase";
 import {addDoc,collection,getDocs,updateDoc,deleteDoc,doc} from 'firebase/firestore'
 
-class User {
+class UserAccount {
 
     static collection = collection(db,"users")
 
-    // list of a users 
-    static users : User[] = []
+    // list of a users retrieved from database
+    static users : UserAccount[] = []
 
 
     // attributes 
@@ -57,41 +57,42 @@ class User {
     // CRUD operations 
 
     // GET
-    static async getCollection(): Promise<User[]> {
+    static async getCollection(): Promise<UserAccount[]> {
         // Retrieve collection from database
-        const querySnapshot = await getDocs(User.collection);
+        const querySnapshot = await getDocs(UserAccount.collection);
 
         // create new empty array 
-        User.users = [];
+        UserAccount.users = [];
+
         querySnapshot.forEach(doc => {
 
             // data
             const data = doc.data();
             
             // Recreate instance of User using json retrieved from database
-            const user = new User();
+            const user = new UserAccount();
             user.fromData(doc.id,data)
 
             // push to the array 
-            User.users.push(user);
+            UserAccount.users.push(user);
         });
-
-        return User.users;
+       
+        return UserAccount.users;
     }
 
     // POST
-    static async addUser(user: User): Promise<void> {
-        const docRef = await addDoc(User.collection, {
+    static async addUser(user: UserAccount): Promise<void> {
+        const docRef = await addDoc(UserAccount.collection, {
             userUuid: user.userUuid,
             wordsFound: user.wordsFound,
         });
     }
 
     // UPDATE
-    static async updateUser(user: User): Promise<void> {
+    static async updateUser(user: UserAccount): Promise<void> {
         // if doc id exists
         if (user.docId) {
-            const userRef = doc(User.collection, user.docId);
+            const userRef = doc(UserAccount.collection, user.docId);
             await updateDoc(userRef, {
                 wordsFound: user.wordsFound,
             });
@@ -102,7 +103,7 @@ class User {
 
     // DELETE
     static async deleteUser(docId: string): Promise<void> {
-        const userRef = doc(User.collection, docId);
+        const userRef = doc(UserAccount.collection, docId);
         await deleteDoc(userRef);
     }
 
@@ -113,4 +114,4 @@ class User {
 }
 
 
-export {User}
+export {UserAccount}
