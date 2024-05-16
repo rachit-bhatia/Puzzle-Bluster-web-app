@@ -17,7 +17,6 @@ class UserAccount {
 
     // constructor 
     constructor(userUuid: string | null = null) {
-        this._docId = "test"
         this._userUuid = userUuid;
         this._wordsFound = []; // can remove this if not needed
 
