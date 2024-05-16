@@ -5,6 +5,7 @@ import { useState } from "react";
 import { auth } from "../../firebase/firebase";
 import { FaUser, FaLock } from "react-icons/fa";
 import React from "react";
+import { UserAccount } from "../../models/shared";
 function SignUpPage() {
   var [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -31,16 +32,23 @@ function SignUpPage() {
     event.preventDefault();
     // If not in the process of signing up ( firebase sign up API is not running)
     if (!isSigningUp) {
+
+
       // If all details are filled up
       if (email !== "" && password !== "" && confirmPassword !== "") {
         setIsSigningUp(true);
   
         try {
           email = email + "@email.com"
-          await createUserWithEmailAndPassword(auth, email, password);
+          let userCredential = await createUserWithEmailAndPassword(auth, email, password);
           console.log("sign up successful");
           setIsSignUpSuccessful(true);
           setErrorMessage("");
+
+          // if sign up successful , add new user to db
+          let newUser = new UserAccount(userCredential.user.uid)
+          UserAccount.addUser(newUser)
+          
         } catch (error) {
           setErrorMessage(error.message);
           console.log(error.message);
