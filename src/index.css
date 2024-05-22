@@ -43,6 +43,7 @@ h1 {
   width: 50px;
   height: 40px;
   transition: background-color 0.1s;
+  color: white;
 }
 
 .boardCell:hover {

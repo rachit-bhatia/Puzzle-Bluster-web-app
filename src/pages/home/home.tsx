@@ -1,7 +1,7 @@
 import React from "react";
 import { auth } from "../../firebase/firebase";
 import{ useState } from 'react';
-import { Navigate } from "react-router-dom";
+import { Navigate, Link } from "react-router-dom";
 import { UserAccount } from "../../models/shared";
 function HomePage() {
 
@@ -40,7 +40,9 @@ function HomePage() {
       <h2>Home</h2>
       <p>Welcome to the Home page!</p>
       <button onClick={onSignOut}>Sign Out</button>
-
+      <Link to="/account-details">
+        <button>Account Details</button>
+      </Link>
       {/* REMOVE THIS ( JUST FOR TESTING*/}
       <button onClick={getUsers}>Get users</button>
     </div>
