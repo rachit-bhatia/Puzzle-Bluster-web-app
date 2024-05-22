@@ -32,7 +32,7 @@ const DifficultySelectionPage: React.FC = () => {
   return (
     <div className="container">
       <div className="header">
-        <button className="backButton" onClick={() => navigate('home')}>←</button>
+        <button className="backButton" onClick={() => navigate('/home')}>←</button>
         <h4 className="title">Select Difficulty</h4>
         <h6 className="subtitle">Word Game</h6>
       </div>

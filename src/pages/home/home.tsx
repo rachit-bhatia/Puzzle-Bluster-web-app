@@ -43,8 +43,10 @@ function HomePage() {
       <Link to="/account-details">
         <button>Account Details</button>
       </Link>
-      {/* REMOVE THIS ( JUST FOR TESTING*/}
-      <button onClick={getUsers}>Get users</button>
+      <Link to="/difficultyselection">
+        <button>Choose Difficulty</button>
+      </Link>
+
     </div>
   );
 }

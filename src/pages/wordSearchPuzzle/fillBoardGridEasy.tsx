@@ -106,18 +106,17 @@ export function FillBoardGridEasy(): String[][] {
 }
 
 //display board UI
-const WordSearchBoard = (): ReactElement => {
-    const board = FillBoardGridEasy();
+const WordSearchBoardEasy = ({newBoard}): ReactElement => {
 
     return (
         <div>
             <h1 className="gameHeading">Word Search</h1>
             <LevelIndicator level="EASY" />
-            <DisplayBoard boardGrid={board} wordsToFind={wordsToFindEasy}/>
+            <DisplayBoard boardGrid={newBoard} wordsToFind={wordsToFindEasy}/>
         </div>
     )
 } 
 
-export default WordSearchBoard;
+export default WordSearchBoardEasy;
 export { wordsToFindEasy };
 

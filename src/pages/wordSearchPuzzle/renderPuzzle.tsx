@@ -2,7 +2,8 @@
 import React from "react";
 import PuzzleContainer from "./puzzleContainer";
 import { useParams } from 'react-router-dom';
-import WordSearchBoard from './fillBoardGridHard';
+import WordSearchBoardHard from './fillBoardGridHard';
+import WordSearchBoardEasy from './fillBoardGridEasy';
 import WordSearchBoardMedium from './fillBoardGridMedium';
 import { ReactElement, useEffect } from "react";
 import { wordsToFindEasy, FillBoardGridEasy } from "./fillBoardGridEasy";
@@ -31,7 +32,7 @@ function RenderPuzzle() {
         storedGrid = sessionStorage.getItem('grid');
         // board = storedGrid!=undefined ? JSON.parse(storedGrid) : FillBoardGridHard(); 
         board = FillBoardGridEasy(); 
-        boardtype = <WordSearchBoard newBoard={board}/>
+        boardtype = <WordSearchBoardEasy newBoard={board}/>
         wordsToFind1 = wordsToFindEasy;
         wordsFound = []; // replace with the wordsFound from the corresponding difficulty level
         timeElapsed = 30; 
@@ -49,7 +50,7 @@ function RenderPuzzle() {
         storedGrid = sessionStorage.getItem('grid');
         // board = storedGrid!=undefined ? JSON.parse(storedGrid) : FillBoardGridHard(); 
         board = FillBoardGridHard(); 
-        boardtype = <WordSearchBoard newBoard={board}/>
+        boardtype = <WordSearchBoardHard newBoard={board}/>
         wordsToFind1 = wordsToFindHard;
         wordsFound = []; // replace with the wordsFound from the corresponding difficulty level
         timeElapsed = 30; 
