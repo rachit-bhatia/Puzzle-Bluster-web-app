@@ -18,18 +18,18 @@ const wordFoundColor = "rgb(18, 119, 113)";
 const [timeElapsed, setTimeElapsed] = useState(0);
 const [timerActive, setTimerActive] = useState(false);
 
-  useEffect(() => {
-    let interval = null;
+    useEffect(() => {
+      let interval = null;
 
-    if (timerActive) {
-        interval = setInterval(() => {
-            setTimeElapsed((prevTime) => prevTime + 1);  // Increment the time by 1 second
-        }, 1000);
-    } else if (!timerActive && timeElapsed !== 0) {
-        clearInterval(interval);  // Clear the interval if the timer is not active
-    }
+      if (timerActive) {
+          interval = setInterval(() => {
+              setTimeElapsed((prevTime) => prevTime + 1);  // Increment the time by 1 second
+          }, 1000);
+      } else if (!timerActive && timeElapsed !== 0) {
+          clearInterval(interval);  // Clear the interval if the timer is not active
+      }
 
-    return () => clearInterval(interval);  
+      return () => clearInterval(interval);  
     }, [timerActive, timeElapsed]);
 
     useEffect(() => {

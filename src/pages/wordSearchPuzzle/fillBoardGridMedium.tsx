@@ -68,7 +68,7 @@ export function FillBoardGridMedium(): { boardGrid: string[][], wordsToFind: str
             //add random letters if the cell is empty
             if(boardGrid[i][j] === ""){
                 boardGrid[i][j] = String.fromCharCode(65 + Math.random()*26);
-                // boardGrid[i][j] = "-";  //uncomment this line when testing to see exactly where the words are placed
+                boardGrid[i][j] = "-";  //uncomment this line when testing to see exactly where the words are placed
             }
         }
     }
@@ -163,7 +163,7 @@ export function FillBoardGridMedium(): { boardGrid: string[][], wordsToFind: str
         return false;
     }
 
-    return { boardGrid, wordsToFind: wordsToFindMedium };
+    return { boardGrid, wordsToFind: wordsToFind };
 }
 
 //display board UI
@@ -174,7 +174,7 @@ const WordSearchBoardMedium = (): ReactElement => {
         <div>
             <h1 className="gameHeading">Word Search</h1>
             <LevelIndicator level="MEDIUM" />
-            <DisplayBoardMedium boardGrid={boardGrid} wordsToFind={wordsToFindMedium}/>
+            <DisplayBoardMedium boardGrid={boardGrid} wordsToFind={wordsToFind}/>
         </div>
     )
 } 
