@@ -1,16 +1,21 @@
 import React from 'react';
 import { ReactElement } from "react";
 import DisplayBoard from "./displayBoard";
+import LevelIndicator from './levelIndicator';
 
 //solution words that exist in the puzzle
-const wordsToFind: String[] = ["HELLO", "WORLD"];  
+const wordsToFindEasy: String[] = ["HELLO", "WORLD"];  
 
-function FillBoardGrid(): String[][] {
+export function FillBoardGridEasy(): String[][] {
 
-    const boardSize = 15;  //15x15 board
+    // Easy puzzle
+    const boardSize = 8;  //8x8 board
 
-    //set of 4 directions in which letters of solution words can be placed on the board
-    const possibleDirections = [[-1, 0], [1, 0], [0, -1], [0, 1]]
+
+    // Easy puzzle where there can only be 2 directions, horizontal and vertical
+    const possibleDirections = [[1, 0], [0, 1]]
+
+
 
     //create 2D array to store the board
     var boardGrid: String[][] = new Array(boardSize);  
@@ -25,8 +30,8 @@ function FillBoardGrid(): String[][] {
     }
 
     //loop through each solution word and place it on the board
-    for(let i = 0; i < wordsToFind.length; i++){
-        let word = wordsToFind[i];
+    for(let i = 0; i < wordsToFindEasy.length; i++){
+        let word = wordsToFindEasy[i];
 
         let isWordEntered = false;
 
@@ -60,6 +65,11 @@ function FillBoardGrid(): String[][] {
 
         let letterPositions = new Array(solutionWord.length);  //store the positions of the letters
 
+        // Choose a random direction at the beginning and stick with it for the entire word (horizontal/vertical)
+        // Easy puzzle
+        let randomDirectionId = Math.floor(Math.random() * possibleDirections.length);
+        let chosenDirection = possibleDirections[randomDirectionId];
+
         for (let i = 0; i < solutionWord.length; i++) {
             let letter = solutionWord.charAt(i);  //get each letter
             
@@ -76,11 +86,9 @@ function FillBoardGrid(): String[][] {
                 return false;
             }
 
-            //get random direction to place the next letter
-            let randomDirectionId = Math.floor(Math.random() * possibleDirections.length);
-            let randomDirection = possibleDirections[randomDirectionId];
-            curRow += randomDirection[0];
-            curCol += randomDirection[1];
+            // Easy puzzle
+            curRow += chosenDirection[0];
+            curCol += chosenDirection[1];
         }
         return true;
     }
@@ -99,16 +107,17 @@ function FillBoardGrid(): String[][] {
 
 //display board UI
 const WordSearchBoard = (): ReactElement => {
-    const board = FillBoardGrid();
+    const board = FillBoardGridEasy();
 
     return (
         <div>
             <h1 className="gameHeading">Word Search</h1>
-            <DisplayBoard boardGrid={board}/>
+            <LevelIndicator level="EASY" />
+            <DisplayBoard boardGrid={board} wordsToFind={wordsToFindEasy}/>
         </div>
     )
 } 
 
 export default WordSearchBoard;
-export { wordsToFind };
+export { wordsToFindEasy };
 

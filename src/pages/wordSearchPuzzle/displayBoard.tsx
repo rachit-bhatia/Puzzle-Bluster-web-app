@@ -1,11 +1,11 @@
 import React from 'react';
 import { ReactElement, useState } from 'react';
-import { wordsToFind } from './fillBoardGrid';
 
-const DisplayBoard = ({ boardGrid }): ReactElement => {
+const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
 
     const [isLetterSelected, setIsLetterSelected] = useState(false);
     let [selectedWord, setSelectedWord] = useState("");  //record the letters selected by the player
+    const [foundWords, setFoundWords] = useState<string[]>([]);
     let selection = ""
 
     const wordFoundColor = "rgb(18, 119, 113)";
@@ -45,6 +45,8 @@ const DisplayBoard = ({ boardGrid }): ReactElement => {
 
         //check if the selected word is one of the words to find
         if (wordsToFind.includes(selectedWord)) {
+
+            setFoundWords((prevFoundWords) => [...prevFoundWords, selectedWord])
 
             //highlight the found solution word
             boardLetters.forEach((letter) => {
@@ -89,7 +91,24 @@ const DisplayBoard = ({ boardGrid }): ReactElement => {
                     ))}
                 </div>
         ))}
+        <div className="wordList">
+          <h3>Words to find:</h3>
+          <ul>
+            {wordsToFind.map((word, index) => (
+              <li
+                key={index}
+                style={{
+                  textDecoration: foundWords.includes(word) ? 'line-through' : 'none',
+                  color: foundWords.includes(word) ? 'gray' : 'black',
+                }}
+              >
+                {word}
+              </li>
+            ))}
+          </ul>
         </div>
+        </div>
+        
     )
 }
 

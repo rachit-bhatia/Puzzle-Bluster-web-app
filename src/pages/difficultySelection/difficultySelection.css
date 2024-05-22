@@ -1,0 +1,102 @@
+/* Global styling */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body, html {
+    height: 100%;
+    width: 100%;
+  }
+  
+  /* Container for the entire page */
+  .container {
+    background-color: #595959;
+    color: #ffffff;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* justify-content: center; */
+    padding: 20px;
+  }
+  
+  /* Header styling */
+  .header {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  
+  .backButton {
+    margin-right: 10px;
+    color: #ffffff;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+  }
+  
+  .title {
+    text-align: left;
+  }
+  
+  .subtitle {
+    font-weight: lighter;
+    text-align: left;
+    text-indent: 1em;
+  }
+  
+  /* Content styling */
+  .content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+  
+  .left-section, .right-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Image styling */
+  .image {
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    margin-bottom: 20px;
+    object-fit: cover;
+  }
+  
+  /* Button container styling */
+  .buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  /* Button styling */
+  .button {
+    width: 200px;
+    margin: 10px 0;
+    background-color: #b58969;
+    border: none;
+    color: #ffffff;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+  }
+  
+  .button:hover {
+    background-color: #a47459;
+  }
+  

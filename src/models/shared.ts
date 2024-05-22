@@ -1,5 +1,5 @@
 import { db } from "../firebase/firebase";
-import {addDoc,collection,getDocs,updateDoc,deleteDoc,doc} from 'firebase/firestore'
+import {addDoc,collection,getDocs,updateDoc,deleteDoc,doc, query, where} from 'firebase/firestore'
 
 class UserAccount {
 
@@ -12,22 +12,32 @@ class UserAccount {
     // attributes 
     private _docId : string | null ;
     private _userUuid: string | null;
-    private _wordsFound: string[]; // can remove this if not needed
+    private _difficulty: string | null = null;
+    private _board: string | null; // board configuration as json string
+    private _wordsFound: string | null; 
+    private _wordsToFind: string | null;
+    private _timeElapsed: number | null;
+    // private _wordsFound: string[]; // can remove this if not needed
     
 
     // constructor 
     constructor(userUuid: string | null = null) {
         this._userUuid = userUuid;
-        this._wordsFound = []; // can remove this if not needed
+        this._board = "";
+        this._wordsFound = ""; // can remove this if not needed
+        this._wordsToFind = "";
+        this._timeElapsed = 0;
 
     }
 
     // getters
     get docId() {return this._docId}
     get userUuid() {return this._userUuid}
+    get board() {return this._board}
     get wordsFound() {return this._wordsFound}
-    
-
+    get difficulty() { return this._difficulty; }
+    get wordsToFind() {return this._wordsToFind}
+    get timeElapsed() {return this._timeElapsed}
 
     // Setters
 
@@ -38,24 +48,37 @@ class UserAccount {
         this._userUuid = value;
     }
 
-    set wordsFound(words) {
-        if (Array.isArray(words)) {
-            this._wordsFound = words;
-        } else {
-            throw new Error("wordsFound must be an array");
-        }
+    set board(board) {
+        this._board = board;
     }
+
+    set wordsFound(words) {
+        this._wordsFound = words;
+    }
+
+    set wordsToFind(words) {
+        this._wordsToFind = words
+    }
+
+    set timeElapsed(time) {
+        this._timeElapsed = time;
+    }
+    set difficulty(value) { this._difficulty = value; }
+
 
     // To recreate an instance of User ( since data retrieved from database is in json -> convert the json back into a User instance )
     fromData(docId,data){
         this._docId = docId
         this._userUuid = data["userUuid"]
-        this._wordsFound = data["wordsFound"]  || []
+        this._board = data["board"] || ""
+        this._wordsFound = data["wordsFound"]  || ""
+        this._wordsToFind = data["wordsToFind"] || ""
+        this._timeElapsed = data["timeElapsed"] || 0
     }
     
     // CRUD operations 
 
-    // GET
+    // GET COLLECTION OF ACCOUNTS
     static async getCollection(): Promise<UserAccount[]> {
         // Retrieve collection from database
         const querySnapshot = await getDocs(UserAccount.collection);
@@ -79,11 +102,35 @@ class UserAccount {
         return UserAccount.users;
     }
 
+    // GET USER ACCOUNT FROM UID
+    static async getUserByUuid(userUuid: string): Promise<UserAccount> {
+        // Query Firestore to find the document with the matching userUuid
+        const querySnapshot = await getDocs(query(UserAccount.collection, where("userUuid", "==", userUuid)));
+    
+        if (querySnapshot.empty) {
+            throw new Error("Cannot find userUuid")
+        }
+    
+        // Assuming userUuid is unique, there should be only one document
+        const doc = querySnapshot.docs[0];
+    
+        // Create a new UserAccount instance
+        const user = new UserAccount();
+    
+        // Populate the UserAccount instance with data from the document
+        user.fromData(doc.id, doc.data());
+        return user;
+    }
+
     // POST
     static async addUser(user: UserAccount): Promise<void> {
         const docRef = await addDoc(UserAccount.collection, {
+
             userUuid: user.userUuid,
+            board: user.board,
             wordsFound: user.wordsFound,
+            wordsToFind: user.wordsToFind,
+            timeElapsed: user.timeElapsed,
         });
     }
 
@@ -92,8 +139,14 @@ class UserAccount {
         // if doc id exists
         if (user.docId) {
             const userRef = doc(UserAccount.collection, user.docId);
+            console.log(user.board)
+            console.log(user.wordsToFind)
+            console.log(user.wordsFound)
             await updateDoc(userRef, {
+                board: user.board,
                 wordsFound: user.wordsFound,
+                wordsToFind: user.wordsToFind,
+                timeElapsed: user.timeElapsed
             });
         } else {
             throw new Error("Cannot update user without a userUuid");
@@ -106,7 +159,24 @@ class UserAccount {
         await deleteDoc(userRef);
     }
 
-    
+    // Store difficulty selection
+    static async storeDifficulty(userUuid: string, difficulty: string): Promise<void> {
+        const user = UserAccount.users.find(u => u.userUuid === userUuid);
+        if (user) {
+            user.difficulty = difficulty;
+            await UserAccount.updateUser(user);
+        } else {
+            const newUser = new UserAccount(userUuid);
+            newUser.difficulty = difficulty;
+            await UserAccount.addUser(newUser);
+        }
+    }
+
+    // Static method to get user UUID
+    static getUserUuid(): string {
+        // Your logic to get the user UUID
+        return "unique-user-identifier"; // Replace with the actual logic to retrieve user UUID
+    }
 
 
 
