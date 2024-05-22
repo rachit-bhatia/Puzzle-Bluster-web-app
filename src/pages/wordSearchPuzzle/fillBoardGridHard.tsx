@@ -99,7 +99,7 @@ export function FillBoardGridHard(): String[][] {
 }
 
 //display board UI
-const WordSearchBoard = ({newBoard}): ReactElement => {
+const WordSearchBoardHard = ({newBoard}): ReactElement => {
     //const board = FillBoardGrid();
 
     return (
@@ -112,6 +112,6 @@ const WordSearchBoard = ({newBoard}): ReactElement => {
 } 
 
 
-export default WordSearchBoard;
+export default WordSearchBoardHard;
 export { wordsToFindHard };
 

@@ -1,17 +1,83 @@
-import React from 'react';
+
+import { db } from '../../firebase/firebase';
+import { doc, setDoc } from 'firebase/firestore';
+import { updateDoc, getDoc } from 'firebase/firestore';
+import { auth } from "../../firebase/firebase";
+import React, { useEffect } from 'react';
 import { ReactElement, useState } from 'react';
 
-const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
+const DisplayBoard = ({ boardGrid, wordsToFind  }): ReactElement => {
 
     const [isLetterSelected, setIsLetterSelected] = useState(false);
     let [selectedWord, setSelectedWord] = useState("");  //record the letters selected by the player
-    const [foundWords, setFoundWords] = useState<string[]>([]);
     let selection = ""
+    const [timeElapsed, setTimeElapsed] = useState(0);
+    const [timerActive, setTimerActive] = useState(false);
+    const [foundWords, setFoundWords] = useState<string[]>([]);
 
     const wordFoundColor = "rgb(18, 119, 113)";
 
+    useEffect(() => {
+        let interval = null;
+
+        if (timerActive) {
+            interval = setInterval(() => {
+                setTimeElapsed((prevTime) => prevTime + 1);  // Increment the time by 1 second
+            }, 1000);
+        } else if (!timerActive && timeElapsed !== 0) {
+            clearInterval(interval);  // Clear the interval if the timer is not active
+        }
+
+        return () => clearInterval(interval);  
+    }, [timerActive, timeElapsed]);
+
+    useEffect(() => {
+        if (foundWords.length === wordsToFind.length) {
+            setTimerActive(false);
+            console.log("timer stop");
+            // saveGameTimeToUserAccount(timeElapsed);
+            storeInDB(timeElapsed);
+        }
+    }, [foundWords, timeElapsed]);  // This effect listens to changes in foundWords
+
+
+    async function storeInDB(gameTime) {
+        const user = auth.currentUser;
+        if (user) {
+            const userRef = doc(db, "users", user.uid);
+            try {
+                const docSnapshot = await getDoc(userRef);
+                if (docSnapshot.exists()) {
+                    // If the document exists, update it
+                    await updateDoc(userRef, {
+                        gameTime: gameTime
+                    });
+                    console.log("Game time updated successfully");
+                } else {
+                    // If the document does not exist, create it
+                    await setDoc(userRef, {
+                        gameTime: gameTime
+                    });
+                    console.log("Game time set successfully");
+                }
+            } catch (error) {
+                console.error("Error saving game time: ", error);
+            }
+        } else {
+            console.error("No authenticated user found");
+        }
+    }
+    // const saveGameTimeToUserAccount = async (time) => {
+    //     console.log("Saving game time to user account");
+    //     console.log(time);
+    // };
+
+
     //event handler for when the mouse is held down on a letter
     function letterHeld(event): void {
+        if (!timerActive) {
+            setTimerActive(true);  // Start the timer when the first letter is held
+        }
         if (event.target.style.backgroundColor != wordFoundColor) {
             setIsLetterSelected(true);  
             event.target.style.backgroundColor = "green";
@@ -45,7 +111,6 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
 
         //check if the selected word is one of the words to find
         if (wordsToFind.includes(selectedWord)) {
-
             setFoundWords((prevFoundWords) => [...prevFoundWords, selectedWord])
 
             //highlight the found solution word
@@ -54,6 +119,7 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
                     letter.style.backgroundColor = wordFoundColor;
                 }
             });
+            // checkCompletion();
         } 
         
         //reset the color of all selected letters if not the correct solution word
@@ -75,7 +141,7 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
 
     return (
         <div className="boardGrid" onMouseLeave={letterReleased}>
-
+            <div className="timerDisplay">Time: {timeElapsed} seconds</div>
             {boardGrid.map((boardRow) => (
                 <div className="boardRow">
 
@@ -91,7 +157,7 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
                     ))}
                 </div>
         ))}
-        <div className="wordList">
+         <div className="wordList">
           <h3>Words to find:</h3>
           <ul>
             {wordsToFind.map((word, index) => (
@@ -108,7 +174,6 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
           </ul>
         </div>
         </div>
-        
     )
 }
 
