@@ -1,7 +1,7 @@
 
 import { db } from '../../firebase/firebase';
 import { doc, setDoc } from 'firebase/firestore';
-import { updateDoc } from 'firebase/firestore';
+import { updateDoc, getDoc } from 'firebase/firestore';
 import { auth } from "../../firebase/firebase";
 import React, { useEffect } from 'react';
 import { ReactElement, useState } from 'react';
@@ -46,12 +46,22 @@ const DisplayBoard = ({ boardGrid, wordsToFind  }): ReactElement => {
         if (user) {
             const userRef = doc(db, "users", user.uid);
             try {
-                await updateDoc(userRef, {
-                    gameTime: gameTime
-                });
-                console.log("Game time updated successfully");
+                const docSnapshot = await getDoc(userRef);
+                if (docSnapshot.exists()) {
+                    // If the document exists, update it
+                    await updateDoc(userRef, {
+                        gameTime: gameTime
+                    });
+                    console.log("Game time updated successfully");
+                } else {
+                    // If the document does not exist, create it
+                    await setDoc(userRef, {
+                        gameTime: gameTime
+                    });
+                    console.log("Game time set successfully");
+                }
             } catch (error) {
-                console.error("Error updating game time: ", error);
+                console.error("Error saving game time: ", error);
             }
         } else {
             console.error("No authenticated user found");
