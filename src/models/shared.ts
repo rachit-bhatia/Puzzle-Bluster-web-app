@@ -12,6 +12,7 @@ class UserAccount {
     // attributes 
     private _docId : string | null ;
     private _userUuid: string | null;
+    private _username: string | null;
     private _difficulty: string | null = null;
     private _board: string | null; // board configuration as json string
     private _wordsFound: string | null; 
@@ -23,6 +24,7 @@ class UserAccount {
     // constructor 
     constructor(userUuid: string | null = null) {
         this._userUuid = userUuid;
+        this._username = "unknown"
         this._board = "";
         this._wordsFound = ""; // can remove this if not needed
         this._wordsToFind = "";
@@ -38,6 +40,7 @@ class UserAccount {
     get difficulty() { return this._difficulty; }
     get wordsToFind() {return this._wordsToFind}
     get timeElapsed() {return this._timeElapsed}
+    get username(){return this._username}
 
     // Setters
 
@@ -65,6 +68,10 @@ class UserAccount {
     }
     set difficulty(value) { this._difficulty = value; }
 
+    set username(username){
+        this._username  = username
+    }
+
 
     // To recreate an instance of User ( since data retrieved from database is in json -> convert the json back into a User instance )
     fromData(docId,data){
@@ -74,6 +81,7 @@ class UserAccount {
         this._wordsFound = data["wordsFound"]  || ""
         this._wordsToFind = data["wordsToFind"] || ""
         this._timeElapsed = data["timeElapsed"] || 0
+        this._username = data["username"]
     }
     
     // CRUD operations 
@@ -92,7 +100,7 @@ class UserAccount {
             const data = doc.data();
             
             // Recreate instance of User using json retrieved from database
-            const user = new UserAccount();
+            const user = new UserAccount(null);
             user.fromData(doc.id,data)
 
             // push to the array 
@@ -131,6 +139,7 @@ class UserAccount {
             wordsFound: user.wordsFound,
             wordsToFind: user.wordsToFind,
             timeElapsed: user.timeElapsed,
+            username : user.username
         });
     }
 
