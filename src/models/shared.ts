@@ -169,23 +169,24 @@ class UserAccount {
     }
 
     // Store difficulty selection
-    static async storeDifficulty(userUuid: string, difficulty: string): Promise<void> {
+    static async storeDifficulty(userUuid: string | undefined  , difficulty: string): Promise<void> {
         const user = UserAccount.users.find(u => u.userUuid === userUuid);
         if (user) {
             user.difficulty = difficulty;
             await UserAccount.updateUser(user);
         } else {
-            const newUser = new UserAccount(userUuid);
-            newUser.difficulty = difficulty;
-            await UserAccount.addUser(newUser);
+            // const newUser = new UserAccount(userUuid);
+            // newUser.difficulty = difficulty;
+            // await UserAccount.addUser(newUser);
+            console.log("Error.")
         }
     }
 
-    // Static method to get user UUID
-    static getUserUuid(): string {
-        // Your logic to get the user UUID
-        return "unique-user-identifier"; // Replace with the actual logic to retrieve user UUID
-    }
+    // // Static method to get user UUID
+    // static getUserUuid(): string {
+    //     // Your logic to get the user UUID
+    //     return "unique-user-identifier"; // Replace with the actual logic to retrieve user UUID
+    // }
 
 
 

@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './difficultySelection.css'; // Import the CSS file
 import { UserAccount } from '../../models/shared'; // Adjust the import path as needed
-
+import { auth } from '../../firebase/firebase'; 
 
 const DifficultySelectionPage: React.FC = () => {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const userUuid = UserAccount.getUserUuid(); // Replace this with the actual user UUID
+  const userUuid = auth.currentUser?.uid; // Replace this with the actual user UUID
 
   const handleDifficultySelection = async (selectedDifficulty: string) => {
     setIsSubmitting(true);
