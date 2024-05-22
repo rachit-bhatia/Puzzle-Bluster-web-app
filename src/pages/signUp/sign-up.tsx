@@ -46,7 +46,9 @@ function SignUpPage() {
           setErrorMessage("");
 
           // if sign up successful , add new user to db
+          console.log(userCredential.user.uid)
           let newUser = new UserAccount(userCredential.user.uid)
+          newUser.username = email
           UserAccount.addUser(newUser)
           
         } catch (error) {
