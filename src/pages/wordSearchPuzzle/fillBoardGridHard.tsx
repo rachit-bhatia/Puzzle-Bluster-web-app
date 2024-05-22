@@ -4,7 +4,14 @@ import DisplayBoard from "./displayBoard";
 import LevelIndicator from './levelIndicator';
 
 //solution words that exist in the puzzle
-const wordsToFindHard: String[] = ["HELLO", "WORLD"];  
+const wordsToFind: String[] = ["BREEZE", "MYSTERY", "CRYSTAL", "VOLCANO", "JOURNEY", "HORIZON", "ENIGMA", "FESTIVAL", "HARMONY", "SUNSHINE", "WHISPER", "SYMPHONY", "DESTINY", "ETERNITY", "PARADISE"];
+
+const wordsToFindHard = chooseRandomWords(wordsToFind);
+//select 5 words randomly
+function chooseRandomWords(wordList: String[]): String[] {
+    const randomWords = wordList.sort(() => 0.5 - Math.random());
+    return randomWords.slice(0, 5)
+}
 
 export function FillBoardGridHard(): String[][] {
 
@@ -49,7 +56,7 @@ export function FillBoardGridHard(): String[][] {
             //add random letters if the cell is empty
             if(boardGrid[i][j] == ""){
                 boardGrid[i][j] = String.fromCharCode(65 + Math.random()*26);
-                // boardGrid[i][j] = "-";  //uncomment this line when testing to see exactly where the words are placed
+                boardGrid[i][j] = "-";  //uncomment this line when testing to see exactly where the words are placed
             }
         }
     }

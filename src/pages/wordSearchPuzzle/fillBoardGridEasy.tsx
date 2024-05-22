@@ -4,7 +4,14 @@ import DisplayBoard from "./displayBoard";
 import LevelIndicator from './levelIndicator';
 
 //solution words that exist in the puzzle
-const wordsToFindEasy: String[] = ["HELLO", "WORLD"];  
+const wordsToFind: String[] = ["APPLE", "BANANA", "CARROT", "BREAD", "CRANE", "DREAM", "EARTH", "FLUTE", "GHOST", "HOUSE", "LIGHT", "OCEAN"];
+
+const wordsToFindEasy = chooseRandomWords(wordsToFind);
+//select 5 words randomly
+function chooseRandomWords(wordList: String[]): String[] {
+    const randomWords = wordList.sort(() => 0.5 - Math.random());
+    return randomWords.slice(0, 5)
+}
 
 export function FillBoardGridEasy(): String[][] {
 

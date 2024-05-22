@@ -19,7 +19,7 @@ const [timeElapsed, setTimeElapsed] = useState(0);
 const [timerActive, setTimerActive] = useState(false);
 
     useEffect(() => {
-      let interval = null;
+      let interval;
 
       if (timerActive) {
           interval = setInterval(() => {

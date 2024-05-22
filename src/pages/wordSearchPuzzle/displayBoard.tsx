@@ -18,7 +18,7 @@ const DisplayBoard = ({ boardGrid, wordsToFind  }): ReactElement => {
     const wordFoundColor = "rgb(18, 119, 113)";
 
     useEffect(() => {
-        let interval = null;
+        let interval;
 
         if (timerActive) {
             interval = setInterval(() => {
