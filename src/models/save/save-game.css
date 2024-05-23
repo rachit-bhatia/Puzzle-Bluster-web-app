@@ -23,6 +23,7 @@
     color: white;
     z-index: 10;
     border-radius: 16px;
+    width: 500px;
     box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.04);
   }
   
@@ -110,7 +111,7 @@
     font-size: 14px;
     border: none;
     color: #2c3e50;
-    background: #fcfcfc;
+    background: #c2c2c2;
     transition: all 0.25s ease;
   }
   
@@ -122,14 +123,17 @@
 
   .leaveBtn {
     margin-top: 10px;
+    position: absolute;
+    top: 5px;
+    left: 10px;
     cursor: pointer;
     font-weight: 500;
     padding: 11px 24px;
-    border-radius: 12px;
+    border-radius: 8px;
     font-size: 14px;
     border: none;
     color: #fff;
-    background: #777070;
+    background: #666666;
     transition: all 0.25s ease;
   }
 

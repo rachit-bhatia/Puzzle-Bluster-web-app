@@ -32,6 +32,7 @@ h1 {
 
 .gameHeading {
   color: rgb(92, 76, 56);
+  padding-bottom: 25px;
 }
 
 .boardCell {

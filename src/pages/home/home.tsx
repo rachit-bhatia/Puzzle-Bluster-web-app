@@ -37,15 +37,17 @@ function HomePage() {
   return (
     <div>
       {isSignOutSuccessful &&  <Navigate to="/signin" replace={true} /> }
-      <h2>Home</h2>
-      <p>Welcome to the Home page!</p>
-      <button onClick={onSignOut}>Sign Out</button>
+      <h1>Puzzle Bluster</h1>
+      <h3>Let's solve some Word Search Puzzles!</h3>
+      <div style = {{paddingTop: "100px"}}>
+      <button onClick={onSignOut} style = {{backgroundColor: "lightgray"}}>Sign Out</button>
       <Link to="/account-details">
-        <button>Account Details</button>
+        <button style = {{backgroundColor: "lightgray"}}>Account Details</button>
       </Link>
       <Link to="/difficultyselection">
-        <button>Choose Difficulty</button>
+        <button style = {{backgroundColor: "lightgray"}}>Start Game</button>
       </Link>
+      </div>
 
     </div>
   );

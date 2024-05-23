@@ -97,15 +97,15 @@ function AccountDetails() {
                     <input type="password" value={currentPassword} onChange={handleCurrentPasswordChange}></input>
                 </div>
                 <div className="input-box-ad">
-                    <div className="heading-3"> New Username (Optional):</div>
+                    <div className="heading-3" style={{paddingRight: "7px"}}> New Username (Optional):</div>
                     <input type="text" value={newUsername} onChange={handleUsernameChange}></input>
                 </div>
                 <div className="input-box-ad">
-                    <div className="heading-3"> New Password (Optional):</div>
+                    <div className="heading-3" style={{paddingRight: "11px"}}> New Password (Optional):</div>
                     <input type="password" value={password} onChange={handlePasswordChange}></input>
                 </div>
                 <div className="input-box-ad">
-                    <div className="heading-3"> Confirm New Password:</div>
+                    <div className="heading-3" style={{paddingRight: "30px"}}> Confirm New Password:</div>
                     <input type="password" value={confirmPassword} onChange={handleConfirmPasswordChange}></input>
                 </div>
                 <div>
