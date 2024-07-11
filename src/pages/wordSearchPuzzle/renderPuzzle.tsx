@@ -1,14 +1,8 @@
-
 import React from "react";
 import PuzzleContainer from "./puzzleContainer";
 import { useParams } from 'react-router-dom';
-import WordSearchBoardHard from './fillBoardGridHard';
-import WordSearchBoardEasy from './fillBoardGridEasy';
-import WordSearchBoardMedium from './fillBoardGridMedium';
-import { ReactElement, useEffect } from "react";
-import { wordsToFindEasy, FillBoardGridEasy } from "./fillBoardGridEasy";
-import { wordsToFindMedium, FillBoardGridMedium } from "./fillBoardGridMedium";
-import { wordsToFindHard, FillBoardGridHard } from './fillBoardGridHard';
+import { WordSearchBoard, FillBoardGrid } from "./fillBoardGrid";
+import { wordsToFindEasy, wordsToFindMedium, wordsToFindHard } from "./wordLists";
 
 function RenderPuzzle() {
   
@@ -24,41 +18,35 @@ function RenderPuzzle() {
 
     // useEffect(() => {
     //     sessionStorage.setItem('grid', JSON.stringify(board));
-        
     // }, [board]);
 
-    
+    storedGrid = sessionStorage.getItem('grid');
+    // board = storedGrid!=undefined ? JSON.parse(storedGrid) : FillBoardGridHard(); 
+
     if (difficulty === 'easy') {
-        storedGrid = sessionStorage.getItem('grid');
-        // board = storedGrid!=undefined ? JSON.parse(storedGrid) : FillBoardGridHard(); 
-        board = FillBoardGridEasy(); 
-        boardtype = <WordSearchBoardEasy newBoard={board}/>
-        wordsToFind1 = wordsToFindEasy;
-        wordsFound = []; // replace with the wordsFound from the corresponding difficulty level
-        timeElapsed = 30; 
+        const boardSize = 10 //10x10 board
+        const possibleDirections = [[1, 0], [0, 1]] //down, right
+        board = FillBoardGrid(boardSize, possibleDirections, wordsToFindEasy, false); 
+        boardtype = <WordSearchBoard newBoard={board} levelIndicator={"EASY"}/>
     }
+
     else if (difficulty === 'medium') {
-        storedGrid = sessionStorage.getItem('grid');
-        // board = storedGrid!=undefined ? JSON.parse(storedGrid) : FillBoardGridHard(); 
-        board = FillBoardGridMedium(); 
-        boardtype = <WordSearchBoardMedium/>
-        wordsToFind1 = wordsToFindMedium;
-        wordsFound = []; // replace with the wordsFound from the corresponding difficulty level
-        timeElapsed = 30; 
+        const boardSize = 12 //12x12 board
+        const possibleDirections = [[1, 0], [0, 1], [-1, 0], [0, -1]] //down, right, up, left
+        board = FillBoardGrid(boardSize, possibleDirections, wordsToFindMedium, false); 
+        boardtype = <WordSearchBoard newBoard={board} levelIndicator={"MEDIUM"}/>
     }
+
     else if (difficulty === 'hard') {
-        storedGrid = sessionStorage.getItem('grid');
-        // board = storedGrid!=undefined ? JSON.parse(storedGrid) : FillBoardGridHard(); 
-        board = FillBoardGridHard(); 
-        boardtype = <WordSearchBoardHard newBoard={board}/>
-        wordsToFind1 = wordsToFindHard;
-        wordsFound = []; // replace with the wordsFound from the corresponding difficulty level
-        timeElapsed = 30; 
+        const boardSize = 15 //15x15 board
+        const possibleDirections = [[1, 0], [0, 1], [-1, 0], [0, -1]] //down, right, up, left
+        board = FillBoardGrid(boardSize, possibleDirections, wordsToFindHard, true); 
+        boardtype = <WordSearchBoard newBoard={board} levelIndicator={"HARD"}/>
     }
 
-    
+    wordsFound = []; // replace with the wordsFound from the corresponding difficulty level
+    timeElapsed = 30; 
 
-    
     return (
         <div>
             <PuzzleContainer boardtype={boardtype} wordsToFind1={wordsToFind1} 

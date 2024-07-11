@@ -1,29 +1,27 @@
 import React from "react";
 import { auth } from "../../firebase/firebase";
 import{ useState } from 'react';
-import { Navigate, Link } from "react-router-dom";
+import { Navigate, Link, useNavigate } from "react-router-dom";
 import { UserAccount } from "../../models/shared";
+
+
 function HomePage() {
 
   const [errorMessage, setErrorMessage] = useState('');
   const [isSignOutSuccessful,setIsSignOutSuccessful] = useState(false)
+  const navigate = useNavigate();
 
   const onSignOut = async (event) => {
     event.preventDefault();
-    // You can add your logic for handling form submission here
-   
-
     try {
       await auth.signOut()
       console.log("sign out successful")
       setIsSignOutSuccessful(true)
-
-    }catch(error){
+    }
+    catch(error){
       setErrorMessage(errorMessage)
       console.log(error)
     }
-
-    
   }
 
   // REMOVE THIS ( JUST FOR TESTING)
@@ -40,13 +38,9 @@ function HomePage() {
       <h1>Puzzle Bluster</h1>
       <h3>Let's solve some Word Search Puzzles!</h3>
       <div style = {{paddingTop: "100px"}}>
-      <button onClick={onSignOut} style = {{backgroundColor: "lightgray"}}>Sign Out</button>
-      <Link to="/account-details">
-        <button style = {{backgroundColor: "lightgray"}}>Account Details</button>
-      </Link>
-      <Link to="/difficultyselection">
-        <button style = {{backgroundColor: "lightgray"}}>Start Game</button>
-      </Link>
+      <button onClick={onSignOut}>Sign Out</button>
+      <button onClick={() => navigate("/account-details")}>Account Details</button>
+      <button onClick={() => navigate("/difficultyselection")}>Start Game</button>
       </div>
 
     </div>

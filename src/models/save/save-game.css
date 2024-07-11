@@ -129,11 +129,11 @@
     cursor: pointer;
     font-weight: 500;
     padding: 11px 24px;
-    border-radius: 8px;
-    font-size: 14px;
-    border: none;
-    color: #fff;
-    background: #666666;
+    border-radius: 20px;
+    font-size: 15px;
+    border: 1px groove;
+    color: rgb(255, 235, 209);
+    background-color: rgb(121, 97, 63);
     transition: all 0.25s ease;
   }
 

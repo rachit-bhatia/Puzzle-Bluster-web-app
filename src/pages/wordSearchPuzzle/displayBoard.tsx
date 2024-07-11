@@ -6,16 +6,15 @@ import { auth } from "../../firebase/firebase";
 import React, { useEffect } from 'react';
 import { ReactElement, useState } from 'react';
 
-const DisplayBoard = ({ boardGrid, wordsToFind  }): ReactElement => {
+const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
 
+    let selection = ""
+    const wordFoundColor = "rgb(18, 119, 113)";
     const [isLetterSelected, setIsLetterSelected] = useState(false);
     let [selectedWord, setSelectedWord] = useState("");  //record the letters selected by the player
-    let selection = ""
-    const [timeElapsed, setTimeElapsed] = useState(0);
+    const [timeElapsed, setTimeElapsed] = useState(0);  //milliseconds
     const [timerActive, setTimerActive] = useState(false);
     const [foundWords, setFoundWords] = useState<string[]>([]);
-
-    const wordFoundColor = "rgb(18, 119, 113)";
 
     useEffect(() => {
         let interval;
@@ -30,6 +29,14 @@ const DisplayBoard = ({ boardGrid, wordsToFind  }): ReactElement => {
 
         return () => clearInterval(interval);  
     }, [timerActive, timeElapsed]);
+
+    //format time in mm:ss format
+    const formatTime = (curTime: number) => {
+        const seconds = Math.floor(curTime % 60);
+        const minutes = Math.floor((curTime / 60) % 60);
+    
+        return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      };
 
     useEffect(() => {
         if (foundWords.length === wordsToFind.length) {
@@ -141,7 +148,7 @@ const DisplayBoard = ({ boardGrid, wordsToFind  }): ReactElement => {
 
     return (
         <div className="boardGrid" onMouseLeave={letterReleased}>
-            <div className="timerDisplay">Time: {timeElapsed} seconds</div>
+            <div className="timerDisplay">{formatTime(timeElapsed)}</div>
             {boardGrid.map((boardRow) => (
                 <div className="boardRow">
 
@@ -157,15 +164,17 @@ const DisplayBoard = ({ boardGrid, wordsToFind  }): ReactElement => {
                     ))}
                 </div>
         ))}
-         <div className="wordList">
-          <h3>Words to find:</h3>
-          <ul>
+         <div>
+          {/* <h3>Words to find:</h3> */}
+          <ul style={{display: 'flex', padding: '10px', justifyContent: 'center'}}> 
             {wordsToFind.map((word, index) => (
               <li
                 key={index}
+                className='wordList'
                 style={{
-                  textDecoration: foundWords.includes(word) ? 'line-through' : 'none',
+                  backgroundColor: foundWords.includes(word) ? 'rgb(217, 152, 67)' : 'rgb(230, 176, 107)',
                   color: foundWords.includes(word) ? 'gray' : 'black',
+                  transition: 'color 0.2s, background-color 0.2s'
                 }}
               >
                 {word}
