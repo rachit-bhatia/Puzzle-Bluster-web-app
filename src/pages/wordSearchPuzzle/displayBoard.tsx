@@ -5,6 +5,7 @@ import { updateDoc, getDoc } from 'firebase/firestore';
 import { auth } from "../../firebase/firebase";
 import React, { useEffect } from 'react';
 import { ReactElement, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
 
@@ -15,6 +16,7 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
     const [timeElapsed, setTimeElapsed] = useState(0);  //milliseconds
     const [timerActive, setTimerActive] = useState(false);
     const [foundWords, setFoundWords] = useState<string[]>([]);
+    const { difficulty, levelId } = useParams();
 
     useEffect(() => {
         let interval;
@@ -118,6 +120,7 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
 
         //check if the selected word is one of the words to find
         if (wordsToFind.includes(selectedWord)) {
+
             setFoundWords((prevFoundWords) => [...prevFoundWords, selectedWord])
 
             //highlight the found solution word
@@ -126,6 +129,18 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
                     letter.style.backgroundColor = wordFoundColor;
                 }
             });
+
+            //save the level ID upon completion of level to unlock next level
+            if (foundWords.length >= wordsToFind.length-1) {
+                const completedLevels = JSON.parse(localStorage.getItem('completedLevels')!);
+                const levelStr = levelId?.match(/\d+/);
+                let levelNum: number;
+                if (levelStr) {
+                    levelNum = parseInt(levelStr[0])
+                    completedLevels[difficulty!] = levelNum;
+                    localStorage.setItem("completedLevels", JSON.stringify(completedLevels));
+                }
+            }
             // checkCompletion();
         } 
         

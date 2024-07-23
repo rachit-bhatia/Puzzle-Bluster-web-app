@@ -10,7 +10,7 @@ interface LevelIndicatorProps {
       position: 'absolute',
       top: '10px',
       right: '10px',
-      backgroundColor: '#666666',
+      backgroundColor: 'rgba(53, 42, 27, 0.6)',
       padding: '5px 10px',
       borderRadius: '5px',
       color: 'white',

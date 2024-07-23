@@ -5,7 +5,7 @@ import {BrowserRouter,Routes,Route} from 'react-router-dom'
 import SignUpPage from './pages/signUp/sign-up'
 import HomePage from './pages/home/home'
 import AccountDetails from './pages/accountDetails/account-details'
-import DifficultySelectionPage from './pages/difficultySelection/difficultySelection'
+import LevelSelection from './pages/levelSelection/levelSelection'
 import RenderPuzzle from './pages/wordSearchPuzzle/renderPuzzle'
 import React from 'react'
 
@@ -23,8 +23,8 @@ function App() {
           <Route path="/signin" element={<SignInPage/>} />
           <Route path="/signup" element={<SignUpPage/>} />
           <Route path="/account-details" element={<AccountDetails/>} />
-          <Route path="/difficultyselection" element={<DifficultySelectionPage/>} />
-          <Route path="/render/:difficulty" element={<RenderPuzzle/>} />
+          <Route path="/difficultyselection" element={<LevelSelection/>} />
+          <Route path="/render/:difficulty/:levelId" element={<RenderPuzzle/>} />
       </Routes>
     </BrowserRouter>
 

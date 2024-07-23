@@ -1,53 +1,19 @@
-const wordsToFindEasy: String[] = [
-    "APPLE", 
-    "MANGO", 
-    "MELON", 
-    "BREAD", 
-    "CRANE", 
-    "DREAM", 
-    "EARTH", 
-    "FLUTE", 
-    "GHOST", 
-    "HOUSE", 
-    "LIGHT", 
-    "OCEAN"
-];
+const wordsToFindEasy: {level1: string[]; level2: string[]; level3: string[];} = {
+    level1: [ "APPLE", "MANGO", "MELON", "BREAD", "CRANE"], 
+    level2: [ "DREAM", "EARTH", "FLUTE", "GHOST", "HOUSE"],
+    level3: [ "LIGHT", "OCEAN", "PEARL", "QUEEN", "RIVER"],
+};
 
+const wordsToFindMedium: {level1: string[]; level2: string[]; level3: string[];} = {
+    level1: [ "HELLO", "WORLD", "REACT", "JAVA", "COMPONENT"],
+    level2: [ "FUNCTION", "DEVELOP", "PROGRAM", "FRONTEND", "BACKEND"],
+    level3: [ "DATABASE", "SERVER", "CLIENT", "FETCH", "STATE"]
+};
 
-const wordsToFindMedium: string[] = [
-    "HELLO",
-    "WORLD",
-    "REACT",
-    "JAVA",
-    "COMPONENT",
-    "FUNCTION",
-    "DEVELOP",
-    "PROGRAM",
-    "FRONTEND",
-    "BACKEND",
-    "DATABASE",
-    "SERVER",
-    "CLIENT",
-    "FETCH",
-    "STATE",
-];
-
-const wordsToFindHard: String[] = [
-    "BREEZE", 
-    "MYSTERY", 
-    "CRYSTAL", 
-    "VOLCANO", 
-    "JOURNEY", 
-    "HORIZON", 
-    "ENIGMA", 
-    "FESTIVAL", 
-    "HARMONY", 
-    "SUNSHINE", 
-    "WHISPER", 
-    "SYMPHONY", 
-    "DESTINY", 
-    "ETERNITY", 
-    "PARADISE"
-];
+const wordsToFindHard: {level1: string[]; level2: string[]; level3: string[];} = {
+    level1: [ "SUNSET", "SUNRISE", "MOONLIGHT", "STARLIGHT", "TWILIGHT"],
+    level2: [ "AURORA", "BREEZE", "MYSTERY", "CRYSTAL", "VOLCANO"],
+    level3: [ "JOURNEY", "HORIZON", "ENIGMA", "FESTIVAL", "HARMONY"]
+};
 
 export { wordsToFindEasy, wordsToFindMedium, wordsToFindHard };

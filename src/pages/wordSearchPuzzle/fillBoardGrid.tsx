@@ -5,10 +5,10 @@ import LevelIndicator from './levelIndicator';
 
 let wordsToFind;
 
-function FillBoardGrid(iBoardSize: number, 
-                              directions: Array<Array<number>>,
-                              wordList: String[],
-                              isHardLevel: boolean): String[][] {
+function FillBoardGrid (iBoardSize: number, 
+                        directions: Array<Array<number>>,
+                        wordList: String[],
+                        isHardLevel: boolean): String[][] {
 
     const boardSize = iBoardSize; 
     const possibleDirections = directions  //possible dirctions where letters can be placed
@@ -49,7 +49,7 @@ function FillBoardGrid(iBoardSize: number,
             //add random letters if the cell is empty
             if(boardGrid[i][j] == ""){
                 boardGrid[i][j] = String.fromCharCode(65 + Math.random()*26);
-                // boardGrid[i][j] = "-";  //uncomment this line when testing to see exactly where the words are placed
+                boardGrid[i][j] = "-";  //uncomment this line when testing to see exactly where the words are placed
             }
         }
     }

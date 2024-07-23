@@ -48,7 +48,7 @@
   
   .title {
     text-align: left;
-    font-size: 24px;
+    font-size: 27px;
   }
   
   .subtitle {
@@ -110,5 +110,19 @@
     background-color: #a47459;
     box-shadow: 0 10px 20px -10px #785540;
     transform: translateY(-5px);
+  }
+
+  .button:disabled {
+    background-color: rgba(128, 128, 128, 0.59);
+    cursor: not-allowed;
+  }
+
+  .difficultyDropdown {
+    width: 120px;
+    right: 30px;
+  }
+
+  .menuItem {
+    background-color: #a47459;
   }
   
