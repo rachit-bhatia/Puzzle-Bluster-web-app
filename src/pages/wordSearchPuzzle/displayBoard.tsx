@@ -188,18 +188,20 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
                     </div>
                     <div className="modalActions">
                         <div className="actionsContainer">
-                        <button 
-                            style={{width: '200px'}}
-                            onClick={() => {
-                                navigate(`/render/${difficulty}/${nextLevelID}`);
-                                //reset all state variables
-                                setTimeElapsed(0);
-                                setTimerActive(false);
-                                setFoundWords([])
-                                setDialogOpen(false);
-                            }}>
-                            Next Level
-                        </button>
+                            <button 
+                                style={{width: '250px'}}
+                                onClick={() => {
+                                    //TODO: call save to db here
+                                    //navigate back to level selection if last level
+                                    levelId!="level3" ? navigate(`/render/${difficulty}/${nextLevelID}`) : navigate("/difficultyselection")
+                                    //reset required state variables
+                                    setTimeElapsed(0);
+                                    setTimerActive(false);
+                                    setFoundWords([])
+                                    setDialogOpen(false);
+                                }}>
+                                {levelId!="level3" ? "Next Level" : "Back to level selection"}
+                            </button>
                         </div>
                     </div>
                     </div>

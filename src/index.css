@@ -136,13 +136,13 @@ button:disabled:hover {
   margin: 0;
   padding: 10px;
   font-weight: 500;
-  font-size: 18px;
+  font-size: 20px;
   text-align: center;
 }
 
 .modalContent {
   padding: 10px;
-  font-size: 16px;
+  font-size: 18px;
   text-align: center;
 }
 

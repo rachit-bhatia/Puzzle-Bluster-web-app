@@ -39,17 +39,17 @@ const Modal = ({ setIsOpen, board, wordsToFind, wordsFound, timeElapsed}) => {
       <div className= "centered">
         <div className= "modal">
           <div className= "modalHeader">
-            <h5 className= "heading">Leave game</h5>
+            <h3 className= "heading">Leave game</h3>
           </div>
           <div className="modalContent">
             Are you sure you want to leave the game?
           </div>
           <div className="modalActions">
             <div className="actionsContainer">
-              <button style={{width: '200px'}} onClick={() => SaveGame()}>
+              <button className="deleteBtn" style={{width: '200px'}} onClick={() => SaveGame()}>
                 Save and exit
               </button>
-              <button style={{width: '200px'}} onClick={() => Leave()}>
+              <button className="exitBtn" style={{width: '200px'}} onClick={() => Leave()}>
                 Exit without saving
               </button>
             </div>
