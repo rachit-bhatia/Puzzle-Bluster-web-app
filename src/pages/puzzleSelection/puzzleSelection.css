@@ -1,0 +1,110 @@
+/* Global styling */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body,
+html {
+  height: 100%;
+  width: 100%;
+}
+
+/* Container for the entire page */
+.container {
+  background-color: #595959;
+  color: #ffffff;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* justify-content: center; */
+  padding: 20px;
+}
+
+/* Header styling */
+.header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.backButton {
+  margin-right: 10px;
+  color: #ffffff;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.title {
+  text-align: left;
+}
+
+.subtitle {
+  font-weight: lighter;
+  text-align: left;
+  text-indent: 1em;
+}
+.puzzle-carousel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.arrow {
+  font-size: 100px;
+  color: #999;
+  cursor: pointer;
+  user-select: none;
+  padding: 0 20px;
+}
+
+.puzzle-content {
+  text-align: center;
+}
+
+.puzzle-image {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.puzzle-name {
+  text-align: center;
+  font-size: 24px;
+  margin-top: 10px;
+}
+
+/* Button styling */
+.play-button {
+  width: 200px;
+  margin: 10px 0;
+  background-color: #b58969;
+  border: none;
+  color: #ffffff;
+  padding: 10px;
+  cursor: pointer;
+  font-size: 16px;
+  border-radius: 5px;
+}
+
+.button:hover {
+  background-color: #a47459;
+}
+
+.play-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.error-message {
+  color: red;
+  margin-top: 10px;
+}
