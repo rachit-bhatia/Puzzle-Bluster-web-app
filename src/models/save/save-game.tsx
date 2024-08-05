@@ -46,14 +46,11 @@ const Modal = ({ setIsOpen, board, wordsToFind, wordsFound, timeElapsed}) => {
           </div>
           <div className="modalActions">
             <div className="actionsContainer">
-              <button className="deleteBtn" onClick={() => SaveGame()}>
+              <button style={{width: '200px'}} onClick={() => SaveGame()}>
                 Save and exit
               </button>
-              <button className= "exitBtn" onClick={() => Leave()}>
+              <button style={{width: '200px'}} onClick={() => Leave()}>
                 Exit without saving
-              </button>
-              <button className="cancelBtn" onClick={() => setIsOpen(false)}>
-                Cancel 
               </button>
             </div>
           </div>

@@ -5,18 +5,23 @@ import { updateDoc, getDoc } from 'firebase/firestore';
 import { auth } from "../../firebase/firebase";
 import React, { useEffect } from 'react';
 import { ReactElement, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
 
     let selection = ""
     const wordFoundColor = "rgb(18, 119, 113)";
+
+    const navigate = useNavigate();
     const [isLetterSelected, setIsLetterSelected] = useState(false);
     let [selectedWord, setSelectedWord] = useState("");  //record the letters selected by the player
     const [timeElapsed, setTimeElapsed] = useState(0);  //milliseconds
     const [timerActive, setTimerActive] = useState(false);
     const [foundWords, setFoundWords] = useState<string[]>([]);
+    const [isDialogOpen, setDialogOpen] = useState(false);   //dialog box for level completion
+    const [nextLevelID, setLevelID] = useState(""); //setting ID of next level
     const { difficulty, levelId } = useParams();
+
 
     useEffect(() => {
         let interval;
@@ -84,7 +89,7 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
 
     //event handler for when the mouse is held down on a letter
     function letterHeld(event): void {
-        if (!timerActive) {
+        if (!timerActive && foundWords.length < wordsToFind.length) {
             setTimerActive(true);  // Start the timer when the first letter is held
         }
         if (event.target.style.backgroundColor != wordFoundColor) {
@@ -139,7 +144,13 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
                     levelNum = parseInt(levelStr[0])
                     completedLevels[difficulty!] = levelNum;
                     localStorage.setItem("completedLevels", JSON.stringify(completedLevels));
+
+                    setLevelID(`level${levelNum+1}`)  //id of next level
                 }
+
+                //display completed level message
+                setDialogOpen(true);
+
             }
             // checkCompletion();
         } 
@@ -159,11 +170,49 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
         selection = "";
         setSelectedWord(selection);
     }
+
+
+    //popup message for level completion 
+    function completionPopup(): JSX.Element {
+
+        return (
+            <div>
+                <div className="darkBG"  onClick={() => setDialogOpen(false)}/>
+                <div className= "centered">
+                    <div className= "modal">
+                    <div className= "modalHeader">
+                        <h5 className= "heading">Puzzle solved!</h5>
+                    </div>
+                    <div className="modalContent">
+                        Yay! You have found all the words on this board
+                    </div>
+                    <div className="modalActions">
+                        <div className="actionsContainer">
+                        <button 
+                            style={{width: '200px'}}
+                            onClick={() => {
+                                navigate(`/render/${difficulty}/${nextLevelID}`);
+                                //reset all state variables
+                                setTimeElapsed(0);
+                                setTimerActive(false);
+                                setFoundWords([])
+                                setDialogOpen(false);
+                            }}>
+                            Next Level
+                        </button>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
     
 
     return (
-        <div className="boardGrid" onMouseLeave={letterReleased}>
-            <div className="timerDisplay">{formatTime(timeElapsed)}</div>
+        <div className="boardGrid" key={levelId} onMouseLeave={letterReleased}>
+            {isDialogOpen && completionPopup()}
+            <div className="timerDisplay" key={levelId}>{formatTime(timeElapsed)}</div>
             {boardGrid.map((boardRow) => (
                 <div className="boardRow">
 

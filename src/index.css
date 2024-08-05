@@ -99,6 +99,60 @@ button:disabled:hover {
   font-style: italic;
 }
 
+.darkBG {
+  background-color: rgba(0, 0, 0, 0.2);
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  position: absolute;
+}
+
+.centered {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.modal {
+  width: 450px;
+  height: 180px;
+  background: rgb(211, 188, 166);
+  color: rgb(54, 40, 22);
+  z-index: 10;
+  border-radius: 16px;
+  width: 500px;
+  box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.04);
+}
+
+.modalHeader {
+  height: 50px;
+}
+
+.heading {
+  margin: 0;
+  padding: 10px;
+  font-weight: 500;
+  font-size: 18px;
+  text-align: center;
+}
+
+.modalContent {
+  padding: 10px;
+  font-size: 16px;
+  text-align: center;
+}
+
+.modalActions {
+  position: absolute;
+  bottom: 2px;
+  margin-bottom: 10px;
+  width: 100%;
+}
+
 
 
 

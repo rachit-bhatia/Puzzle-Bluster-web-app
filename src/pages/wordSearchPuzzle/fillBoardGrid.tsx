@@ -23,8 +23,7 @@ function FillBoardGrid (iBoardSize: number,
         }
     }
 
-    const randomWords = wordList.sort(() => 0.5 - Math.random());
-    wordsToFind = randomWords.slice(0,5)
+    wordsToFind = wordList;
 
     //loop through each solution word and place it on the board
     for(let i = 0; i < wordsToFind.length; i++){
