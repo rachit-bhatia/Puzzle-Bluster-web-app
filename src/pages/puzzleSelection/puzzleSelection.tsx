@@ -82,14 +82,16 @@ const PuzzleSelectionPage: React.FC = () => {
           <div className="arrow-content"> › </div>
         </div>
       </div>
-      <button
-        className="play-button"
-        onClick={handlePuzzleSelection}
-        disabled={isSubmitting}
-      >
-        Play
-      </button>
-      {errorMessage && <p className="error-message">{errorMessage}</p>}
+      <Link to="/difficultySelection">
+        <button
+          className="play-button"
+          onClick={handlePuzzleSelection}
+          disabled={isSubmitting}
+        >
+          Play
+        </button>
+        {errorMessage && <p className="error-message">{errorMessage}</p>}
+      </Link>
     </div>
   );
 };

@@ -23,7 +23,7 @@ function App() {
           path="/difficultyselection"
           element={<DifficultySelectionPage />}
         />
-        <Route path="/puzzleSelection" element={<PuzzleSelectionPage />} />
+        <Route path="/puzzleselection" element={<PuzzleSelectionPage />} />
         <Route path="/render/:difficulty" element={<RenderPuzzle />} />
       </Routes>
     </BrowserRouter>
