@@ -3,7 +3,7 @@ import { ReactElement, useState, useMemo } from "react";
 import Modal from '../../models/save/save-game';
 
 //Parameters for the game state such as difficulty and words found may be added
-const PuzzleContainer = ( { boardtype, board, wordsToFind1, wordsFound, timeElapsed}): ReactElement => {
+const PuzzleContainer = ( { boardtype, board, wordsToFind, wordsFound, timeElapsed}): ReactElement => {
 
     // let storedGrid = sessionStorage.getItem('grid');
     // let newboard = storedGrid ? JSON.parse(storedGrid) : board; 
@@ -19,7 +19,7 @@ const PuzzleContainer = ( { boardtype, board, wordsToFind1, wordsFound, timeElap
             <button className="leaveBtn"onClick={() => {setIsOpen(true);}}>
                 Leave game
             </button>
-            {isOpen && <Modal setIsOpen={setIsOpen} board={board} wordsToFind={wordsToFind1} wordsFound={wordsFound} timeElapsed={timeElapsed}/>}
+            {isOpen && <Modal setIsOpen={setIsOpen} board={board} wordsToFind={wordsToFind} wordsFound={wordsFound} timeElapsed={timeElapsed}/>}
             {/* {boardtype && React.cloneElement(boardtype)} */}
             {memoizedBoardType}
         </div>

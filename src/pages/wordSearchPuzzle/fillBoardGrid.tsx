@@ -3,25 +3,16 @@ import { ReactElement } from "react";
 import DisplayBoard from "./displayBoard";
 import LevelIndicator from './levelIndicator';
 
-//solution words that exist in the puzzle
-const wordsToFind: String[] = ["BREEZE", "MYSTERY", "CRYSTAL", "VOLCANO", "JOURNEY", "HORIZON", "ENIGMA", "FESTIVAL", "HARMONY", "SUNSHINE", "WHISPER", "SYMPHONY", "DESTINY", "ETERNITY", "PARADISE"];
+let wordsToFind;
 
-const wordsToFindHard = chooseRandomWords(wordsToFind);
-//select 5 words randomly
-function chooseRandomWords(wordList: String[]): String[] {
-    const randomWords = wordList.sort(() => 0.5 - Math.random());
-    return randomWords.slice(0, 5)
-}
+function FillBoardGrid (iBoardSize: number, 
+                        directions: Array<Array<number>>,
+                        wordList: String[],
+                        isHardLevel: boolean): String[][] {
 
-export function FillBoardGridHard(): String[][] {
-
-    const boardSize = 15;  //15x15 board
-
-    //set of 4 directions in which letters of solution words can be placed on the board
-    const possibleDirections = [[-1, 0], [1, 0], [0, -1], [0, 1]]
-
-    //create 2D array to store the board
-    var boardGrid: String[][] = new Array(boardSize);  
+    const boardSize = iBoardSize; 
+    const possibleDirections = directions  //possible dirctions where letters can be placed
+    var boardGrid: String[][] = new Array(boardSize);  //create 2D array to store the board
 
     for(let i = 0; i < boardSize; i++){
         boardGrid[i] = new Array(boardSize);
@@ -32,9 +23,11 @@ export function FillBoardGridHard(): String[][] {
         }
     }
 
+    wordsToFind = wordList;
+
     //loop through each solution word and place it on the board
-    for(let i = 0; i < wordsToFindHard.length; i++){
-        let word = wordsToFindHard[i];
+    for(let i = 0; i < wordsToFind.length; i++){
+        let word = wordsToFind[i];
 
         let isWordEntered = false;
 
@@ -46,7 +39,6 @@ export function FillBoardGridHard(): String[][] {
             //try to enter the word on the board
             isWordEntered = canEnterSolutionWords(randomRow, randomCol, word);
         }
-
     }
 
     //fill the rest of the board with random letters 
@@ -56,7 +48,7 @@ export function FillBoardGridHard(): String[][] {
             //add random letters if the cell is empty
             if(boardGrid[i][j] == ""){
                 boardGrid[i][j] = String.fromCharCode(65 + Math.random()*26);
-                // boardGrid[i][j] = "-";  //uncomment this line when testing to see exactly where the words are placed
+                boardGrid[i][j] = "-";  //uncomment this line when testing to see exactly where the words are placed
             }
         }
     }
@@ -65,8 +57,15 @@ export function FillBoardGridHard(): String[][] {
     function canEnterSolutionWords(startRow: number, startCol: number, solutionWord: String): boolean {
         let curRow = startRow;
         let curCol = startCol;
-
         let letterPositions = new Array(solutionWord.length);  //store the positions of the letters
+        let randomDirectionId;
+        let randomDirection;
+
+        //set direction for every word once only for easy and medium levels
+        if (!isHardLevel) {
+            randomDirectionId = Math.floor(Math.random() * possibleDirections.length);
+            randomDirection = possibleDirections[randomDirectionId];
+        }
 
         for (let i = 0; i < solutionWord.length; i++) {
             let letter = solutionWord.charAt(i);  //get each letter
@@ -84,9 +83,12 @@ export function FillBoardGridHard(): String[][] {
                 return false;
             }
 
-            //get random direction to place the next letter
-            let randomDirectionId = Math.floor(Math.random() * possibleDirections.length);
-            let randomDirection = possibleDirections[randomDirectionId];
+            //set new direction for every letter for hard level
+            if (isHardLevel) {
+                randomDirectionId = Math.floor(Math.random() * possibleDirections.length);
+                randomDirection = possibleDirections[randomDirectionId];
+            }
+
             curRow += randomDirection[0];
             curCol += randomDirection[1];
         }
@@ -106,19 +108,15 @@ export function FillBoardGridHard(): String[][] {
 }
 
 //display board UI
-const WordSearchBoardHard = ({newBoard}): ReactElement => {
-    //const board = FillBoardGrid();
+const WordSearchBoard = ({newBoard, levelIndicator}): ReactElement => {
 
     return (
         <div>
-            <h1 className="gameHeading" style={{paddingBottom: "5px"}}>Word Search</h1>
-            <LevelIndicator level="HARD" />
-            <DisplayBoard boardGrid={newBoard} wordsToFind={wordsToFindHard}/>
+            <h1 className="gameHeading">Word Search</h1>
+            <LevelIndicator level={levelIndicator} />
+            <DisplayBoard boardGrid={newBoard} wordsToFind={wordsToFind}/>
         </div>
     )
-} 
+}
 
-
-export default WordSearchBoardHard;
-export { wordsToFindHard };
-
+export { WordSearchBoard, FillBoardGrid, wordsToFind };

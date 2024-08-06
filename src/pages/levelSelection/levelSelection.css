@@ -12,14 +12,14 @@
   
   /* Container for the entire page */
   .container {
-    background-color: #595959;
-    color: #ffffff;
+    background-color: burlywood;
+    color: rgb(92, 76, 56);
     height: 100vh;
     width: 100vw;
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* justify-content: center; */
+    font-weight: bold;
     padding: 20px;
   }
   
@@ -33,21 +33,29 @@
   
   .backButton {
     margin-right: 10px;
-    color: #ffffff;
+    color: rgb(92, 76, 56);
     background: none;
     border: none;
-    font-size: 24px;
+    font-size: 28px;
     cursor: pointer;
+  }
+
+  .backButton:hover {
+    background: none;
+    transform: none;
+    box-shadow: none;
   }
   
   .title {
     text-align: left;
+    font-size: 27px;
   }
   
   .subtitle {
     font-weight: lighter;
     text-align: left;
     text-indent: 1em;
+    font-size: 14px;
   }
   
   /* Content styling */
@@ -87,16 +95,34 @@
   .button {
     width: 200px;
     margin: 10px 0;
-    background-color: #b58969;
+    background-color: rgb(121, 97, 63);
     border: none;
-    color: #ffffff;
+    color: rgb(255, 235, 209);
     padding: 10px;
     cursor: pointer;
-    font-size: 16px;
-    border-radius: 5px;
+    font-size: 18px;
+    border: 1px groove;
+    border-radius: 20px;
+    transition: all 0.25s ease;
   }
   
   .button:hover {
+    background-color: #a47459;
+    box-shadow: 0 10px 20px -10px #785540;
+    transform: translateY(-5px);
+  }
+
+  .button:disabled {
+    background-color: rgba(128, 128, 128, 0.59);
+    cursor: not-allowed;
+  }
+
+  .difficultyDropdown {
+    width: 120px;
+    right: 30px;
+  }
+
+  .menuItem {
     background-color: #a47459;
   }
   

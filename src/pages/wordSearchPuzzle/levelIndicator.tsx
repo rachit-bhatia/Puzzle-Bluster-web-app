@@ -10,17 +10,17 @@ interface LevelIndicatorProps {
       position: 'absolute',
       top: '10px',
       right: '10px',
-      backgroundColor: 'lightgray',
+      backgroundColor: 'rgba(53, 42, 27, 0.6)',
       padding: '5px 10px',
-      border: '0.5px solid black',
       borderRadius: '5px',
-      color: 'black',
+      color: 'white',
       fontWeight: 'bold',
+      opacity: '0.6',
     };
   
     return (
       <div style={indicatorStyle}>
-        LEVEL: {level}
+        {level}
       </div>
     );
   };
