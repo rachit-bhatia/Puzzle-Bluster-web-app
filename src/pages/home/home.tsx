@@ -1,9 +1,8 @@
 import React from "react";
 import { auth } from "../../firebase/firebase";
-import{ useState } from 'react';
+import { useState } from "react";
 import { Navigate, Link, useNavigate } from "react-router-dom";
 import { UserAccount } from "../../models/shared";
-
 
 function HomePage() {
 
@@ -22,11 +21,12 @@ function HomePage() {
       setErrorMessage(errorMessage)
       console.log(error)
     }
-  }
+  };
+}
 
-  // REMOVE THIS ( JUST FOR TESTING)
-  const getUsers = async (event) => {
-    event.preventDefault();
+// REMOVE THIS ( JUST FOR TESTING)
+const getUsers = async (event) => {
+  event.preventDefault();
 
     await UserAccount.getCollection()
     console.log(UserAccount.users)

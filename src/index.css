@@ -153,6 +153,19 @@ button:disabled:hover {
   width: 100%;
 }
 
+.nerdle-board {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.board-row {
+  display: flex;
+}
 
 
-
+.input-buttons button {
+  margin: 2px;
+  padding: 10px;
+  font-size: 16px;
+}
