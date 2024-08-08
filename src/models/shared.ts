@@ -21,7 +21,6 @@ class UserAccount {
   private _userUuid: string | null;
   private _username: string | null;
   private _difficulty: string | null = null;
-  private _gameType: string | null = null;
   private _board: string | null; // board configuration as json string
   private _wordsFound: string | null;
   private _wordsToFind: string | null;
@@ -53,9 +52,6 @@ class UserAccount {
   }
   get difficulty() {
     return this._difficulty;
-  }
-  get gameType() {
-    return this._gameType;
   }
   get wordsToFind() {
     return this._wordsToFind;
@@ -93,10 +89,6 @@ class UserAccount {
   }
   set difficulty(value) {
     this._difficulty = value;
-  }
-
-  set gameType(value) {
-    this._gameType = value;
   }
 
   set username(username) {
@@ -210,23 +202,6 @@ class UserAccount {
     } else {
       // const newUser = new UserAccount(userUuid);
       // newUser.difficulty = difficulty;
-      // await UserAccount.addUser(newUser);
-      console.log("Error.");
-    }
-  }
-
-  // Store puzzle selection
-  static async storePuzzle(
-    userUuid: string | undefined,
-    gameType: string
-  ): Promise<void> {
-    const user = UserAccount.users.find((u) => u.userUuid === userUuid);
-    if (user) {
-      user.gameType = gameType;
-      await UserAccount.updateUser(user);
-    } else {
-      // const newUser = new UserAccount(userUuid);
-      // newUser.gameType = gameType;
       // await UserAccount.addUser(newUser);
       console.log("Error.");
     }
