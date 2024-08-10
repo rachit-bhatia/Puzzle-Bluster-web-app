@@ -6,6 +6,7 @@ import { auth } from "../../firebase/firebase";
 import React, { useEffect } from 'react';
 import { ReactElement, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import AchievementManager from './achievementManager';
 
 const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
 
@@ -50,41 +51,12 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
             setTimerActive(false);
             console.log("timer stop");
             // saveGameTimeToUserAccount(timeElapsed);
+            AchievementManager.checkAndAwardAchievements(timeElapsed, difficulty, levelId, foundWords, wordsToFind);
             storeInDB(timeElapsed);
         }
     }, [foundWords, timeElapsed]);  // This effect listens to changes in foundWords
 
 
-    // async function storeInDB(gameTime) {
-    //     const user = auth.currentUser;
-        
-    //     if (user) {
-    //         const userRef = doc(db, "users", user.uid);
-    //         console.log(user.uid);
-    //         console.log(user.email);
-    //         console.log(userRef);
-    //         try {
-    //             const docSnapshot = await getDoc(userRef);
-    //             if (docSnapshot.exists()) {
-    //                 // If the document exists, update it
-    //                 await updateDoc(userRef, {
-    //                     gameTime: gameTime
-    //                 });
-    //                 console.log("Game time updated successfully");
-    //             } else {
-    //                 // If the document does not exist, create it
-    //                 await setDoc(userRef, {
-    //                     gameTime: gameTime
-    //                 });
-    //                 console.log("Game time set successfully");
-    //             }
-    //         } catch (error) {
-    //             console.error("Error saving game time: ", error);
-    //         }
-    //     } else {
-    //         console.error("No authenticated user found");
-    //     }
-    // }
     async function storeInDB(gameTime) {
         const user = auth.currentUser;
         
@@ -130,13 +102,7 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
         }
     }
     
-
-
-    // const saveGameTimeToUserAccount = async (time) => {
-    //     console.log("Saving game time to user account");
-    //     console.log(time);
-    // };
-
+    
 
     //event handler for when the mouse is held down on a letter
     function letterHeld(event): void {
