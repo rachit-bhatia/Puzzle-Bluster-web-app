@@ -55,24 +55,72 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
     }, [foundWords, timeElapsed]);  // This effect listens to changes in foundWords
 
 
+    // async function storeInDB(gameTime) {
+    //     const user = auth.currentUser;
+        
+    //     if (user) {
+    //         const userRef = doc(db, "users", user.uid);
+    //         console.log(user.uid);
+    //         console.log(user.email);
+    //         console.log(userRef);
+    //         try {
+    //             const docSnapshot = await getDoc(userRef);
+    //             if (docSnapshot.exists()) {
+    //                 // If the document exists, update it
+    //                 await updateDoc(userRef, {
+    //                     gameTime: gameTime
+    //                 });
+    //                 console.log("Game time updated successfully");
+    //             } else {
+    //                 // If the document does not exist, create it
+    //                 await setDoc(userRef, {
+    //                     gameTime: gameTime
+    //                 });
+    //                 console.log("Game time set successfully");
+    //             }
+    //         } catch (error) {
+    //             console.error("Error saving game time: ", error);
+    //         }
+    //     } else {
+    //         console.error("No authenticated user found");
+    //     }
+    // }
     async function storeInDB(gameTime) {
         const user = auth.currentUser;
+        
         if (user) {
-            const userRef = doc(db, "users", user.uid);
+            const userRef = doc(db, "users", user.email); // Using user.email as the reference key
+            const levelStr = levelId?.match(/\d+/);
+            const levelNum = levelStr ? parseInt(levelStr[0]) : 1;
+            const fieldKey = `${difficulty}${levelNum}gametime`;  // e.g., easy1gametime
+
             try {
                 const docSnapshot = await getDoc(userRef);
+                console.log("Document snapshot:", docSnapshot.exists());
+                console.log("Document data:", docSnapshot.data());
+                console.log("Field value:", docSnapshot.data()?.[fieldKey]);
                 if (docSnapshot.exists()) {
-                    // If the document exists, update it
-                    await updateDoc(userRef, {
-                        gameTime: gameTime
-                    });
-                    console.log("Game time updated successfully");
+                    // Check if the specific field exists in the document
+                    const data = docSnapshot.data();
+                    if (data[fieldKey] !== undefined) {
+                        // If the field exists, update it
+                        await updateDoc(userRef, {
+                            [fieldKey]: gameTime
+                        });
+                        console.log(`${fieldKey} updated successfully`);
+                    } else {
+                        // If the field does not exist, create it
+                        await updateDoc(userRef, {
+                            [fieldKey]: gameTime
+                        });
+                        console.log(`${fieldKey} created successfully`);
+                    }
                 } else {
-                    // If the document does not exist, create it
+                    // If the document does not exist, create it with the specific field
                     await setDoc(userRef, {
-                        gameTime: gameTime
+                        [fieldKey]: gameTime
                     });
-                    console.log("Game time set successfully");
+                    console.log(`${fieldKey} set successfully`);
                 }
             } catch (error) {
                 console.error("Error saving game time: ", error);
@@ -81,6 +129,9 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
             console.error("No authenticated user found");
         }
     }
+    
+
+
     // const saveGameTimeToUserAccount = async (time) => {
     //     console.log("Saving game time to user account");
     //     console.log(time);
