@@ -1,5 +1,5 @@
 import { db } from "../firebase/firebase";
-import {addDoc,collection,getDocs,updateDoc,deleteDoc,doc, query, where} from 'firebase/firestore'
+import {addDoc,collection,getDocs,updateDoc,deleteDoc,doc, query, where, setDoc} from 'firebase/firestore'
 
 class UserAccount {
 
@@ -131,18 +131,34 @@ class UserAccount {
     }
 
     // POST
+    // static async addUser(user: UserAccount): Promise<void> {
+    //     const docRef = await addDoc(UserAccount.collection, {
+
+    //         userUuid: user.userUuid,
+    //         board: user.board,
+    //         wordsFound: user.wordsFound,
+    //         wordsToFind: user.wordsToFind,
+    //         timeElapsed: user.timeElapsed,
+    //         username : user.username
+    //     });
+    // }
     static async addUser(user: UserAccount): Promise<void> {
-        const docRef = await addDoc(UserAccount.collection, {
-
-            userUuid: user.userUuid,
-            board: user.board,
-            wordsFound: user.wordsFound,
-            wordsToFind: user.wordsToFind,
-            timeElapsed: user.timeElapsed,
-            username : user.username
-        });
+        if (user.username) {
+            // Use the email as the document ID
+            const emailAsDocId = user.username;
+            
+            await setDoc(doc(UserAccount.collection, emailAsDocId), {
+                userUuid: user.userUuid,
+                board: user.board,
+                wordsFound: user.wordsFound,
+                wordsToFind: user.wordsToFind,
+                timeElapsed: user.timeElapsed,
+                username: user.username
+            });
+        } else {
+            throw new Error("Username (email) is required to create a document.");
+        }
     }
-
     // UPDATE
     static async updateUser(user: UserAccount): Promise<void> {
         // if doc id exists
