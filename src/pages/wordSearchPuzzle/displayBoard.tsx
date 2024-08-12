@@ -19,6 +19,7 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
     const [timerActive, setTimerActive] = useState(false);
     const [foundWords, setFoundWords] = useState<string[]>([]);
     const [isDialogOpen, setDialogOpen] = useState(false);   //dialog box for level completion
+    const [isSaveDialogOpen, setSaveDialogOpen] = useState(false);  //dialog box for saving game state
     const [nextLevelID, setLevelID] = useState(""); //setting ID of next level
     const { difficulty, levelId } = useParams();
 
@@ -85,6 +86,46 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
     //         console.error("No authenticated user found");
     //     }
     // }
+
+    //Function for serializing game state and storing to user account
+    async function savetoDB(gameTime, boardGrid, foundWords, difficulty, levelId) { 
+        const user = auth.currentUser;
+        if (user) {
+            const userRef = doc(db, "users", user.email);
+            const boardGridString = JSON.stringify(boardGrid);
+            const foundWordsString = JSON.stringify(foundWords);
+
+            const puzzleSaveState = {
+                gameTime: gameTime,
+                board: boardGridString,
+                foundWords: foundWordsString,
+                difficulty: difficulty,
+                levelId: levelId
+            }
+            try {
+                const docSnapshot = await getDoc(userRef);
+                if (docSnapshot.exists()) {
+                    // If the document exists, update it
+                    await updateDoc(userRef, {
+                        puzzleSaveState: puzzleSaveState
+                    });
+                    console.log("Game state saved sucessfully");
+                } else {
+                    // If the document does not exist, create it
+                    await setDoc(userRef, {
+                        puzzleSaveState: puzzleSaveState
+                    });
+                    console.log("Game state saved successfully");
+                }
+            } catch (error) {
+                console.error("Error saving game state: ", error);
+            }
+        } else {
+            console.error("No authenticated user found");
+        }
+
+    }
+
     async function storeInDB(gameTime) {
         const user = auth.currentUser;
         
@@ -129,6 +170,7 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
             console.error("No authenticated user found");
         }
     }
+    
     
 
 
@@ -195,7 +237,6 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
                     levelNum = parseInt(levelStr[0])
                     completedLevels[difficulty!] = levelNum;
                     localStorage.setItem("completedLevels", JSON.stringify(completedLevels));
-
                     setLevelID(`level${levelNum+1}`)  //id of next level
                 }
 
@@ -221,6 +262,49 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
         selection = "";
         setSelectedWord(selection);
     }
+
+    //popup message for saving game state
+    function savePopup(): JSX.Element {
+        return (
+            <div>
+                <div className="darkBG" onClick={() => setDialogOpen(false)}/>
+                <div className= "centered">
+                    <div className= "modal">
+                    <div className= "modalHeader">
+                        <h5 className= "heading">Save Game</h5>
+                    </div>
+                    <div className="modalContent">
+                        Do you want to save your progress and leave?
+                    </div>
+                    <div className="modalActions">
+                        <div className="saveContainer" style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <button 
+                                style={{width: '220px', margin: '0 20px'}}
+                                onClick={() => {
+                                    savetoDB(timeElapsed, boardGrid, foundWords, difficulty, levelId);
+                                    navigate("/home")
+                                    setTimeElapsed(0);
+                                    setTimerActive(false);
+                                    setFoundWords([])
+                                    setDialogOpen(false);
+                                }}>
+                                    {"Save and Exit"}
+                                </button>
+                                <button 
+                                    style={{width: '220px', margin: '0 20px'}}
+                                    onClick={() => {
+                                        setTimerActive(true);
+                                        setSaveDialogOpen(false);
+                                    }}>
+                                    {"Cancel"}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
 
 
     //popup message for level completion 
@@ -266,6 +350,13 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
         <div className="boardGrid" key={levelId} onMouseLeave={letterReleased}>
             {isDialogOpen && completionPopup()}
             <div className="timerDisplay" key={levelId}>{formatTime(timeElapsed)}</div>
+            <button onClick={() => {
+                setSaveDialogOpen(true);
+                setTimerActive(false);
+            }}>
+                {'Save Game'}
+            </button>
+            {isSaveDialogOpen && savePopup()}
             {boardGrid.map((boardRow) => (
                 <div className="boardRow">
 

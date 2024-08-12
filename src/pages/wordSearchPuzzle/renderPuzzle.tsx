@@ -60,7 +60,7 @@ function RenderPuzzle() {
     const boardtype = <WordSearchBoard newBoard={board} levelIndicator={levelIndicator!}/>
 
     const wordsFound = []; // replace with the wordsFound from the corresponding difficulty level
-    const timeElapsed = 30; 
+    const timeElapsed = 0; 
 
     return (
         <div>
