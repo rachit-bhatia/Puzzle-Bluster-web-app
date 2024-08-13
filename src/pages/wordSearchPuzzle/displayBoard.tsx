@@ -428,6 +428,7 @@ const DisplayBoard = ({ boardGrid, wordsToFind}): ReactElement => {
                                 onClick={() => {
                                     //TODO: call save to db here
                                     //navigate back to level selection if last level
+                                    setFoundPositions([]);
                                     levelId!="level3" ? navigate(`/render/${difficulty}/${nextLevelID}/0`) : navigate("/difficultyselection")
                                     //reset required state variables
                                     setTimeElapsed(0);
