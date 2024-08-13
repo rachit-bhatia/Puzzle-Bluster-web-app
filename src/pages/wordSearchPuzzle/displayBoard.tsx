@@ -6,6 +6,7 @@ import { auth } from "../../firebase/firebase";
 import React, { useEffect } from 'react';
 import { ReactElement, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import AchievementManager from './achievementManager';
 
 const DisplayBoard = ({ boardGrid, wordsToFind}): ReactElement => {
 
@@ -54,6 +55,7 @@ const DisplayBoard = ({ boardGrid, wordsToFind}): ReactElement => {
             setTimerActive(false);
             console.log("timer stop");
             // saveGameTimeToUserAccount(timeElapsed);
+            AchievementManager.checkAndAwardAchievements(timeElapsed, difficulty, levelId, foundWords, wordsToFind);
             storeInDB(timeElapsed);
         }
     }, [foundWords, timeElapsed]);  // This effect listens to changes in foundWords
