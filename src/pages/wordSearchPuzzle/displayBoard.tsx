@@ -7,7 +7,7 @@ import React, { useEffect } from 'react';
 import { ReactElement, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
+const DisplayBoard = ({ boardGrid, wordsToFind}): ReactElement => {
 
     let selection = ""
     const wordFoundColor = "rgb(18, 119, 113)";
@@ -21,7 +21,10 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
     const [isDialogOpen, setDialogOpen] = useState(false);   //dialog box for level completion
     const [isSaveDialogOpen, setSaveDialogOpen] = useState(false);  //dialog box for saving game state
     const [nextLevelID, setLevelID] = useState(""); //setting ID of next level
-    const { difficulty, levelId } = useParams();
+    const { difficulty, levelId, loadFlag } = useParams();
+    const boolLoadFlag = Number(loadFlag) === 1;
+    const [selectedPositions, setSelectedPositions] = useState<Array<{ row: number, col: number }>>([]);
+    const [foundPositions, setFoundPositions] = useState<Array<{ row: number, col: number }>>([]);
 
 
     useEffect(() => {
@@ -55,6 +58,73 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
         }
     }, [foundWords, timeElapsed]);  // This effect listens to changes in foundWords
 
+    // Load game state from user account
+    useEffect(() => {
+        const loadGameState = async () => {
+            if (boolLoadFlag) {
+                const user = auth.currentUser;
+                if (user) {
+                    const userRef = doc(db, "users", user.email);
+                    try {
+                        const docSnapshot = await getDoc(userRef);
+                        if (docSnapshot.exists()) {
+                            const data = docSnapshot.data();
+                            const puzzleSaveState = data.puzzleSaveState;
+                            const foundWords = JSON.parse(puzzleSaveState.foundWords);
+                            const foundPositions = JSON.parse(puzzleSaveState.foundPositions);
+                            const elapsedTime = puzzleSaveState.gameTime;
+
+                            // Now you can use these deserialized values in your application
+                            console.log("Game state loaded successfully", {
+                                foundWords,
+                                elapsedTime
+                            });
+
+                            setFoundWords(foundWords);
+                            setTimeElapsed(elapsedTime);
+                            setFoundPositions(foundPositions);
+                        } else {
+                            console.log("No saved game state found");
+                        }
+                    } catch (error) {
+                        console.error("Error loading game state: ", error);
+                    }
+                } else {
+                    console.error("No authenticated user found");
+                }
+            }
+        };
+        loadGameState();
+    },[boolLoadFlag]);
+
+    // Mark the words found in the board
+    function markAsFound(foundPositions: Array<{ row: number, col: number }>) {
+        if (!Array.isArray(boardGrid) || boardGrid.length === 0) {
+            console.error('Error: boardGrid is not initialized or is empty.');
+            return;
+        }
+    
+        // Get the number of columns in the boardGrid
+        const numCols = boardGrid[0].length;
+    
+        foundPositions.forEach(({ row, col }) => {
+            // Calculate the index of the board cell based on row and col
+            const index = row * numCols + col;
+    
+            // Find the corresponding board cell element
+            const boardCell = document.querySelectorAll('.boardCell')[index] as HTMLElement;
+    
+            // Change the background color of the board cell
+            if (boardCell) {
+                boardCell.style.backgroundColor = wordFoundColor;
+            }
+        });
+    }
+    
+    useEffect(() => {
+        // Call markAsFound after the component has been rendered
+        markAsFound(foundPositions);
+    }, [boardGrid]); // Dependency array to ensure it runs after boardGrid is initialized
 
     // async function storeInDB(gameTime) {
     //     const user = auth.currentUser;
@@ -87,6 +157,8 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
     //     }
     // }
 
+
+
     //Function for serializing game state and storing to user account
     async function savetoDB(gameTime, boardGrid, foundWords, difficulty, levelId) { 
         const user = auth.currentUser;
@@ -94,11 +166,13 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
             const userRef = doc(db, "users", user.email);
             const boardGridString = JSON.stringify(boardGrid);
             const foundWordsString = JSON.stringify(foundWords);
+            const foundPositionsString = JSON.stringify(foundPositions);
 
             const puzzleSaveState = {
                 gameTime: gameTime,
                 board: boardGridString,
                 foundWords: foundWordsString,
+                foundPositions: foundPositionsString,
                 difficulty: difficulty,
                 levelId: levelId
             }
@@ -123,7 +197,30 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
         } else {
             console.error("No authenticated user found");
         }
+    }
 
+    //Function for removing saved game state from user account
+    async function removeSave() {
+        const user = auth.currentUser;
+        if (user) {
+            const userRef = doc(db, "users", user.email);
+            try {
+                const docSnapshot = await getDoc(userRef);
+                if (docSnapshot.exists()) {
+                    // If the document exists, update it
+                    await updateDoc(userRef, {
+                        puzzleSaveState: {}
+                    });
+                    console.log("Game state removed successfully");
+                } else {
+                    console.log("No saved game state found");
+                }
+            } catch (error) {
+                console.error("Error removing game state: ", error);
+            }
+        } else {
+            console.error("No authenticated user found");
+        }
     }
 
     async function storeInDB(gameTime) {
@@ -181,7 +278,7 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
 
 
     //event handler for when the mouse is held down on a letter
-    function letterHeld(event): void {
+    function letterHeld(event, row, col): void {
         if (!timerActive && foundWords.length < wordsToFind.length) {
             setTimerActive(true);  // Start the timer when the first letter is held
         }
@@ -192,11 +289,12 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
             //record user selections
             selection += event.target.innerHTML;  
             setSelectedWord(selection);
+            setSelectedPositions([{row, col}]);
         }
     }
 
     //event handler for when the mouse is held down on a letter and moved to another letter
-    function letterContinueHeld(event): void {
+    function letterContinueHeld(event, row, col): void {
         
         if (event.target.style.backgroundColor == wordFoundColor) {
             letterReleased();   //stop highlighting if the word is already found
@@ -207,6 +305,7 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
             selection = selectedWord;
             selection += event.target.innerHTML;  
             setSelectedWord(selection);
+            setSelectedPositions((prevSelectedPositions) => [...prevSelectedPositions, { row, col }]);
         } 
     }
 
@@ -220,6 +319,7 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
         if (wordsToFind.includes(selectedWord)) {
 
             setFoundWords((prevFoundWords) => [...prevFoundWords, selectedWord])
+            setFoundPositions((prevFoundPositions) => [...prevFoundPositions, ...selectedPositions]);
 
             //highlight the found solution word
             boardLetters.forEach((letter) => {
@@ -242,6 +342,7 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
 
                 //display completed level message
                 setDialogOpen(true);
+                removeSave();
 
             }
             // checkCompletion();
@@ -306,7 +407,6 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
             );
         }
 
-
     //popup message for level completion 
     function completionPopup(): JSX.Element {
 
@@ -328,7 +428,7 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
                                 onClick={() => {
                                     //TODO: call save to db here
                                     //navigate back to level selection if last level
-                                    levelId!="level3" ? navigate(`/render/${difficulty}/${nextLevelID}`) : navigate("/difficultyselection")
+                                    levelId!="level3" ? navigate(`/render/${difficulty}/${nextLevelID}/0`) : navigate("/difficultyselection")
                                     //reset required state variables
                                     setTimeElapsed(0);
                                     setTimerActive(false);
@@ -357,18 +457,18 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
                 {'Save Game'}
             </button>
             {isSaveDialogOpen && savePopup()}
-            {boardGrid.map((boardRow) => (
-                <div className="boardRow">
-
-                    {boardRow.map((wordContent) => (
+            {boardGrid.map((boardRow, rowIndex) => (
+                <div className="boardRow" key={rowIndex}>
+                    {boardRow.map((wordContent, colIndex) => (
                         <button 
+                            key={`${rowIndex}-${colIndex}`}
                             className="boardCell"
-                            onMouseDown={letterHeld}
-                            onMouseEnter={letterContinueHeld}
+                            onMouseDown={(event) => letterHeld(event, rowIndex, colIndex)}
+                            onMouseEnter={(event) => letterContinueHeld(event, rowIndex, colIndex)}
                             onMouseUp={letterReleased}
                         >
                             {wordContent}
-                        </button>
+                        </button> 
                     ))}
                 </div>
         ))}

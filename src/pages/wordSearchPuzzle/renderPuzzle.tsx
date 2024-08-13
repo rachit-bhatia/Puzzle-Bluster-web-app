@@ -1,12 +1,17 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import PuzzleContainer from "./puzzleContainer";
+import { db } from '../../firebase/firebase';
+import { doc, getDoc } from 'firebase/firestore';
+import { auth } from "../../firebase/firebase";
 import { useParams } from 'react-router-dom';
 import { WordSearchBoard, FillBoardGrid } from "./fillBoardGrid";
 import { wordsToFindEasy, wordsToFindMedium, wordsToFindHard } from "./wordLists";
 
 function RenderPuzzle() {
   
-    const { difficulty, levelId } = useParams();
+    const {difficulty, levelId, loadFlag} = useParams();
+    const boolLoadFlag = Number(loadFlag) === 1;
+    const [loadBoardGrid, setBoardGrid] = useState<string[][]>([]);
     {console.log(difficulty)}
 
     let storedGrid: string | null;
@@ -16,6 +21,43 @@ function RenderPuzzle() {
     let possibleDirections: number[][];
     let levelIndicator: string;
     let isHardLevel: boolean = false;
+    
+    // Checks if the game state is to be loaded
+    useEffect(() => {
+        const loadGameState = async () => {
+            if (boolLoadFlag) {
+                const user = auth.currentUser;
+                if (user) {
+                    const userRef = doc(db, "users", user.email);
+                    try {
+                        const docSnapshot = await getDoc(userRef);
+                        if (docSnapshot.exists()) {
+                            const data = docSnapshot.data();
+                            const puzzleSaveState = data.puzzleSaveState;
+                            const boardGrid = JSON.parse(puzzleSaveState.board);
+
+                            // Now you can use these deserialized values in your application
+                            console.log("Game state loaded successfully", {
+                                boardGrid,
+                                difficulty,
+                                levelId
+                            });
+
+                            setBoardGrid(boardGrid);
+                        } else {
+                            console.log("No saved game state found");
+                        }
+                    } catch (error) {
+                        console.error("Error loading game state: ", error);
+                    }
+                } else {
+                    console.error("No authenticated user found");
+                }
+            }
+        };
+        loadGameState();
+    },[boolLoadFlag]);
+
 
     // useEffect(() => {
     //     sessionStorage.setItem('grid', JSON.stringify(board));
@@ -56,7 +98,14 @@ function RenderPuzzle() {
         levelWords = wordsToFind!.level3;
     }
 
-    const board = FillBoardGrid(boardSize!, possibleDirections!, levelWords!, isHardLevel); 
+    let board: String[][] = [];
+    if (!boolLoadFlag) {
+        board = FillBoardGrid(boardSize!, possibleDirections!, levelWords!, isHardLevel); 
+    }
+    else {
+        board = loadBoardGrid;
+    }
+
     const boardtype = <WordSearchBoard newBoard={board} levelIndicator={levelIndicator!}/>
 
     const wordsFound = []; // replace with the wordsFound from the corresponding difficulty level

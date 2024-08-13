@@ -97,9 +97,9 @@ const LevelSelection: React.FC = () => {
         </div>
         <div className="right-section">
           <div className="buttons">
-            <button className="button" onClick={() => navigate(`/render/${selectedDifficulty}/level1`)} disabled={isPrevLevelComplete(1)}>Level 1</button>
-            <button className="button" onClick={() => navigate(`/render/${selectedDifficulty}/level2`)} disabled={isPrevLevelComplete(2)}>Level 2</button>
-            <button className="button" onClick={() => navigate(`/render/${selectedDifficulty}/level3`)} disabled={isPrevLevelComplete(3)}>Level 3</button>
+            <button className="button" onClick={() => navigate(`/render/${selectedDifficulty}/level1/0`)} disabled={isPrevLevelComplete(1)}>Level 1</button>
+            <button className="button" onClick={() => navigate(`/render/${selectedDifficulty}/level2/0`)} disabled={isPrevLevelComplete(2)}>Level 2</button>
+            <button className="button" onClick={() => navigate(`/render/${selectedDifficulty}/level3/0`)} disabled={isPrevLevelComplete(3)}>Level 3</button>
           </div>
           {errorMessage && <p className="error-message">{errorMessage}</p>}
         </div>

@@ -24,7 +24,7 @@ function App() {
           <Route path="/signup" element={<SignUpPage/>} />
           <Route path="/account-details" element={<AccountDetails/>} />
           <Route path="/difficultyselection" element={<LevelSelection/>} />
-          <Route path="/render/:difficulty/:levelId" element={<RenderPuzzle/>} />
+          <Route path="/render/:difficulty/:levelId/:loadFlag" element={<RenderPuzzle/>} />
       </Routes>
     </BrowserRouter>
 
