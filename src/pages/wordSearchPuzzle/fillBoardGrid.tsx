@@ -2,6 +2,7 @@ import React from 'react';
 import { ReactElement } from "react";
 import DisplayBoard from "./displayBoard";
 import LevelIndicator from './levelIndicator';
+import SaveModal from '../../models/save/save-game';
 
 let wordsToFind;
 

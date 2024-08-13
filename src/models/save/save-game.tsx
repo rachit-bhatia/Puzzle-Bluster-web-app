@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { UserAccount } from "../shared";
 import "./save-game.css";
 
-const Modal = ({ setIsOpen, board, wordsToFind, wordsFound, timeElapsed}) => {
+const SaveModal = ({ setIsOpen, board, wordsToFind, wordsFound, timeElapsed}) => {
   const navigate = useNavigate();
 
   function SaveGame(){
@@ -19,7 +19,6 @@ const Modal = ({ setIsOpen, board, wordsToFind, wordsFound, timeElapsed}) => {
     navigate('/home')
   }
 
-  // HAoX2nZWjQWsKsmS3NXaAv6QmT62
   // user id for testing purposes
   async function storeInDB(){
     const storedUser = sessionStorage.getItem('uid');
@@ -60,4 +59,4 @@ const Modal = ({ setIsOpen, board, wordsToFind, wordsFound, timeElapsed}) => {
   );
 };
 
-export default Modal;
+export default SaveModal;
