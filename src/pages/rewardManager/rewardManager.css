@@ -1,0 +1,26 @@
+/* rewardManager.css */
+
+.achievement-label {
+  padding: 5px 10px;
+  border-radius: 5px;
+  display: inline-block;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 5px;
+}
+
+.achievement-label.bronze {
+  background-color: #cd7f32; /* Bronze color */
+}
+
+.achievement-label.silver {
+  background-color: #c0c0c0; /* Silver color */
+}
+
+.achievement-label.gold {
+  background-color: #ffd700; /* Gold color */
+}
+
+.achievement-label.others {
+  background-color: #6a1b9a; /* Default color for other achievements */
+}

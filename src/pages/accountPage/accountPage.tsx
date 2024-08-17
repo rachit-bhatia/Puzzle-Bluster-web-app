@@ -1,17 +1,40 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { auth } from "../../firebase/firebase"; // Import Firebase auth
+import { auth, db } from "../../firebase/firebase";
+import { doc, getDoc } from "firebase/firestore";
+import RewardManager from "../rewardManager/rewardManager";
 import "./accountPage.css";
+import "../rewardManager/rewardManager.css"; // Import the rewardManager CSS
 
 const AccountPage = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
+  const [achievements, setAchievements] = useState<string[]>([]);
+  const [latestAchievement, setLatestAchievement] = useState<string | null>(
+    null
+  );
 
   useEffect(() => {
     const user = auth.currentUser;
-    if (user) {
-      const usernameFromEmail = user?.email?.split("@")[0] || "";
+    if (user && user.email) {
+      const usernameFromEmail = user.email.split("@")[0];
       setUsername(usernameFromEmail);
+
+      const fetchAchievements = async () => {
+        const userRef = doc(db, "users", user.email);
+        const docSnapshot = await getDoc(userRef);
+
+        if (docSnapshot.exists()) {
+          const userAchievements = docSnapshot.data()?.achievements || [];
+          setAchievements(userAchievements);
+
+          if (userAchievements.length > 0) {
+            setLatestAchievement(userAchievements[userAchievements.length - 1]);
+          }
+        }
+      };
+
+      fetchAchievements();
     }
   }, []);
 
@@ -84,10 +107,28 @@ const AccountPage = () => {
             <div className="achievement-status">
               <h3>Achievement Status</h3>
               <div className="status-bar">
-                <div className="statuses">
-                  <span className="status">Status 1</span>
-                  <span className="status">Status 2</span>
-                </div>
+                {achievements.length > 0 ? (
+                  <div className="achievement-list">
+                    {achievements.map((achievement, index) => {
+                      let labelClass = "others";
+                      if (achievement.toLowerCase().includes("bronze")) {
+                        labelClass = "bronze";
+                      } else if (achievement.toLowerCase().includes("silver")) {
+                        labelClass = "silver";
+                      } else if (achievement.toLowerCase().includes("gold")) {
+                        labelClass = "gold";
+                      }
+
+                      return (
+                        <div key={index} className="achievement-item">
+                          <span className={`achievement-label ${labelClass}`}>
+                            {achievement}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : null}
               </div>
             </div>
           </section>
