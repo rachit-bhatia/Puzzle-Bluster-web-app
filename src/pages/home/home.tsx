@@ -121,7 +121,7 @@ function HomePage() {
       <h3>Let's solve some Word Search Puzzles!</h3>
       <div style={{ paddingTop: "100px" }}>
         <button onClick={onSignOut}>Sign Out</button>
-        <button onClick={() => navigate("/account-details")}>
+        <button onClick={() => navigate("/accountPage")}>
           Account Details
         </button>
         <button onClick={() => navigate("/difficultyselection")}>
