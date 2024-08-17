@@ -1,9 +1,19 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { auth } from "../../firebase/firebase"; // Import Firebase auth
 import "./accountPage.css";
 
 const AccountPage = () => {
   const navigate = useNavigate();
+  const [username, setUsername] = useState("");
+
+  useEffect(() => {
+    const user = auth.currentUser;
+    if (user) {
+      const usernameFromEmail = user?.email?.split("@")[0] || "";
+      setUsername(usernameFromEmail);
+    }
+  }, []);
 
   return (
     <div className="account-page">
@@ -35,7 +45,13 @@ const AccountPage = () => {
                       RANK
                       <span className="rank-number">1</span>
                     </span>
-                    <div className="username">Serati Ma </div>
+                    <div className="username">{username}</div>
+                    <button
+                      className="settings"
+                      onClick={() => navigate("/account-details")}
+                    >
+                      settings
+                    </button>
                   </div>
                   <div className="profile-info-2-2">
                     <div className="stat-buttons">
