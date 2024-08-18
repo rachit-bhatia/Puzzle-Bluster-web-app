@@ -1,10 +1,8 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import "./puzzleSelection.css"; // Import the CSS file
-import { UserAccount } from "../../models/shared"; // Adjust the import path as needed
+import { useNavigate } from "react-router-dom";
+import "./puzzleSelection.css";
 import { auth } from "../../firebase/firebase";
 
-// puzzle selection
 const puzzles = [
   { id: 1, name: "Word Puzzles", type: "Word" },
   { id: 2, name: "Math Puzzles", type: "Math" },
@@ -15,7 +13,7 @@ const PuzzleSelectionPage: React.FC = () => {
   const [currentPuzzleIndex, setCurrentPuzzleIndex] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const userUuid = auth.currentUser?.uid; // Replace this with the actual user UUID
+  const userUuid = auth.currentUser?.uid;
 
   const goToPreviousPuzzle = () => {
     setCurrentPuzzleIndex((prevIndex) =>
@@ -31,28 +29,24 @@ const PuzzleSelectionPage: React.FC = () => {
 
   const currentPuzzle = puzzles[currentPuzzleIndex];
 
-  const handlePuzzleSelection = async () => {
-    // setIsSubmitting(true);
-    // setErrorMessage(null);
+  const handlePuzzleSelection = () => {
+    setIsSubmitting(true);
+    setErrorMessage(null);
 
-    // try {
-    //   // Store the selection in Firestore
-    //   await UserAccount.storePuzzle(userUuid, currentPuzzle.type);
-    //   console.log("Puzzle selection stored");
-
-    //   // Navigate based on selection
-    //   navigate(`/render/${currentPuzzle}`);
-    // } catch (error) {
-    //   console.error("Error storing puzzle selection: ", error);
-    //   setErrorMessage("Failed to save selection. Please try again.");
-    // }
-
-    // setIsSubmitting(false);
-    if (currentPuzzle.type === "Word") {
-      navigate("/difficultySelection");
-    } else if (currentPuzzle.type === "Math") {
-      navigate("/mathPuzzle/nerdleBoard.tsx");
+    try {
+      if (currentPuzzle.type === "Word") {
+        navigate("/render-word/difficultySelection");
+      } else if (currentPuzzle.type === "Math") {
+        navigate("/render-math/difficultySelection");
+      } else {
+        throw new Error("Invalid puzzle type");
+      }
+    } catch (error) {
+      console.error("Error navigating to difficulty selection: ", error);
+      setErrorMessage("Failed to navigate. Please try again.");
     }
+
+    setIsSubmitting(false);
   };
 
   return (
@@ -82,16 +76,14 @@ const PuzzleSelectionPage: React.FC = () => {
           <div className="arrow-content"> › </div>
         </div>
       </div>
-      <Link to="/difficultySelection">
-        <button
-          className="play-button"
-          onClick={handlePuzzleSelection}
-          disabled={isSubmitting}
-        >
-          Play
-        </button>
-        {errorMessage && <p className="error-message">{errorMessage}</p>}
-      </Link>
+      <button
+        className="play-button"
+        onClick={handlePuzzleSelection}
+        disabled={isSubmitting}
+      >
+        Play
+      </button>
+      {errorMessage && <p className="error-message">{errorMessage}</p>}
     </div>
   );
 };
