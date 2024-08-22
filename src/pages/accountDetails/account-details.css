@@ -108,5 +108,6 @@
 }
 
 .delete-account-button:hover {
-    background-color: darkred;
+    background-color: lightcoral;
+    color: white;
 }
