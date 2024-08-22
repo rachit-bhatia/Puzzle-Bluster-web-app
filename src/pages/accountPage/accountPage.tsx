@@ -5,6 +5,7 @@ import { doc, getDoc } from "firebase/firestore";
 import RewardManager from "../rewardManager/rewardManager";
 import "./accountPage.css";
 import "../rewardManager/rewardManager.css"; // Import the rewardManager CSS
+import BackButton from "../../components/backButton";
 
 const AccountPage = () => {
   const navigate = useNavigate();
@@ -41,9 +42,7 @@ const AccountPage = () => {
   return (
     <div className="account-page">
       <div className="header">
-        <button className="back-button" onClick={() => navigate("/home")}>
-          ←
-        </button>
+        <BackButton></BackButton>
         <h4 className="title">Account</h4>
         <h6 className="subtitle">Profile</h6>
       </div>

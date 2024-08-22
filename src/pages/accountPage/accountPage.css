@@ -29,25 +29,25 @@ html {
   flex-direction: column;
   padding: 20px;
 }
-.header {
+.account-page .header {
   display: flex;
   align-items: center;
   width: 100%;
   margin-bottom: 20px;
 }
-.id-picture {
+.account-page .id-picture {
   display: flex;
   justify-content: center;
   margin-top: auto;
   margin-left: auto;
 }
-.id {
+.account-page .id {
   background-color: white;
   padding: 20px;
   border-radius: 10px;
   margin-top: auto;
 }
-.id-label {
+.account-page .id-label {
   background-color: var(--accent-color);
   text-align: center;
   font-weight: bold;
@@ -59,7 +59,7 @@ html {
   padding-right: 40px;
 }
 
-.id-number {
+.account-page .id-number {
   color: black;
   font-weight: bold;
   text-align: center;
@@ -82,7 +82,7 @@ html {
   cursor: pointer;
 } */
 
-.main-content {
+.account-page .main-content {
   display: flex;
   flex-direction: row;
   width: 100%;
@@ -90,7 +90,7 @@ html {
   margin: auto;
 }
 
-.profile-card {
+.account-page .profile-card {
   height: auto;
   width: auto;
   background-color: var(--card-color);
@@ -98,7 +98,7 @@ html {
   display: flex;
   flex-direction: row;
 }
-.stats-card {
+.account-page .stats-card {
   border-radius: 10px;
   padding: 20px;
   height: 100%;
@@ -109,56 +109,48 @@ html {
   flex-direction: column;
 }
 
-.back-button {
-  margin-right: 10px;
-  color: #ffffff;
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-}
 
-.title {
+.account-page .title {
   text-align: left;
 }
 
-.subtitle {
+.account-page .subtitle {
   font-weight: lighter;
   text-align: left;
   text-indent: 1em;
 }
 
-.profile-info {
+.account-page .profile-info {
   display: flex;
   flex-direction: row;
   margin: 20px;
   gap: 10px;
 }
 
-.profile-info-1 {
+.account-page .profile-info-1 {
   display: flex;
   flex-direction: row;
   gap: 10px;
 }
 
-.profile-info-2 {
+.account-page .profile-info-2 {
   display: flex;
   flex-direction: column;
   gap: 20px;
   flex: 1;
 }
-.profile-info-2-1 {
+.account-page .profile-info-2-1 {
   display: flex;
   flex-direction: row;
   gap: 20px;
 }
 
-.profile-info-2-2 {
+.account-page .profile-info-2-2 {
   display: flex;
   flex-direction: row;
   gap: 10px;
 }
-.avatar {
+.account-page .avatar {
   width: 150px;
   height: 150px;
   background-color: var(--accent-color);
@@ -175,7 +167,7 @@ html {
   margin: 20px;
 } */
 
-.rank {
+.account-page .rank {
   background-color: white;
   border-radius: 10px;
   font-weight: bold;
@@ -185,14 +177,14 @@ html {
   justify-content: center;
   padding: 20px;
 }
-.rank-number {
+.account-page .rank-number {
   font-weight: bold;
   color: black;
   display: flex;
   justify-content: center;
 }
 
-.username {
+.account-page .username {
   background-color: white;
   border-radius: 10px;
   font-weight: bold;
@@ -202,12 +194,12 @@ html {
   padding: 20px 70px;
 }
 
-.stat-buttons {
+.account-page .stat-buttons {
   display: flex;
   gap: 10px;
 }
 
-.stat-button {
+.account-page .stat-button {
   background-color: black;
   color: var(--text-color);
   border: none;
@@ -216,7 +208,7 @@ html {
   cursor: pointer;
 }
 
-.bio-section {
+.account-page .bio-section {
   background-color: var(--accent-color);
   width: 100%;
   padding: 10px;
@@ -226,7 +218,7 @@ html {
   align-items: center;
 }
 
-.edit-button {
+.account-page .edit-button {
   background-color: var(--button-color);
   color: var(--text-color);
   border: none;
@@ -235,8 +227,8 @@ html {
   cursor: pointer;
 }
 
-.score-bar,
-.status-bar {
+.account-page .score-bar,
+.account-page .status-bar {
   height: 10px;
   background-color: var(--background-color);
   border-radius: 5px;
@@ -245,13 +237,13 @@ html {
   display: flex;
 }
 .statuses,
-.scores {
+.account-page .scores {
   display: flex;
   flex-direction: row;
   gap: 30px;
 }
 .status,
-.score {
+.account-page .score {
   background-color: var(--accent-color);
   border-radius: 5px;
   padding: 30px 60px;
@@ -260,7 +252,7 @@ html {
   margin-top: 20px;
   justify-content: center;
 }
-.user-id {
+.account-page   .user-id {
   width: auto;
   color: white;
   display: flex;
@@ -268,7 +260,7 @@ html {
   padding: 20px;
 }
 
-.account-info {
+.account-page .account-info {
   width: 50%;
   display: flex;
   flex-direction: column;
@@ -277,21 +269,22 @@ html {
   flex: auto;
 }
 
-.achievement-status {
+.account-page .achievement-status {
   display: flex;
   flex-direction: column;
 }
 
-.stats-card {
+.account-page .stats-card {
   background-color: white;
   color: black;
   display: flex;
   flex-direction: column;
 }
 
-.achievement-list {
+.account-page .achievement-list {
   display: flex;
   flex-wrap: wrap;
+  flex-direction: column;
   gap: 10px;
   margin: 20px;
 }

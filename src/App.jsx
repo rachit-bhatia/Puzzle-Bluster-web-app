@@ -10,6 +10,7 @@ import RenderPuzzle from "./pages/wordSearchPuzzle/renderPuzzle";
 import RenderMathPuzzle from "./pages/mathPuzzle/renderMathPuzzle";
 import PuzzleSelection from "./pages/puzzleSelection/puzzleSelection";
 import HomePageGuest from "./pages/homeGuest/homeGuest";
+import Leaderboard from "./pages/leaderboard/leaderboard";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
       <Routes>
         <Route index element={<SignInPage />} />
         <Route path="/home" element={<HomePage />} />
+        <Route path="/leaderboard" element={<Leaderboard />} />
         <Route path="/home-guest" element={<HomePageGuest />} />
         <Route path="/signin" element={<SignInPage />} />
         <Route path="/signup" element={<SignUpPage />} />
