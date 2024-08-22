@@ -153,6 +153,14 @@ button:disabled:hover {
   width: 100%;
 }
 
+
+.inputButtons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 1000px; /* Adjust the max-width as needed */
+}
+
 .nerdle-board {
   display: flex;
   flex-direction: column;
@@ -163,6 +171,34 @@ button:disabled:hover {
   display: flex;
 }
 
+.inputButton {
+  width: 40px;
+  height: 40px;
+  font-size: 16px;
+  margin: 5px;
+  padding: 4px;
+  cursor: pointer;
+  border-radius: 8px;
+  color: black;
+  border-color:black;
+  border: 0.5px solid;
+  background-color: rgb(217, 152, 67) ;
+}
+
+.inputButton:hover {
+  box-shadow: 0 10px 20px -10px #785540;
+  transform: translateY(0px);
+  background-color: rgb(230, 176, 107);
+  color: grey;
+  border-color: grey;
+  }
+
+.gameBoardAndTimer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px; /* Space between grid and input buttons */
+}
 
 .input-buttons button {
   margin: 2px;

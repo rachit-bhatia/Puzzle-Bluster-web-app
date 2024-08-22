@@ -75,7 +75,7 @@ function SignInPage() {
            <button type="submit" disabled={isSigningIn || !(email !== "" && password !== "")} >Login</button>
 
            <div className="register-link">
-              <p>Don't have an account? <a href="/signup">Register</a></p>
+              <p>Don't have an account? <a href="/signup">Register</a> or start as <a href="/home-guest">Guest</a></p>
            </div>
 
          </form>

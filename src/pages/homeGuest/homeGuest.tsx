@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { Navigate, Link, useNavigate } from "react-router-dom";
 import { UserAccount } from "../../models/shared";
 
-function HomePage() {
+function HomePageGuest() {
   const [errorMessage, setErrorMessage] = useState("");
   const [isSignOutSuccessful, setIsSignOutSuccessful] = useState(false);
   const [isDialogOpen, setDialogOpen] = useState(false);
@@ -60,53 +60,6 @@ function HomePage() {
     checkSavedGame();
   }, [isDialogOpen]);
 
-  function loadPopup(): JSX.Element {
-    return (
-      <div>
-        <div className="darkBG" onClick={() => setDialogOpen(false)} />
-        <div className="centered">
-          <div className="modal">
-            <div className="modalHeader">
-              <h5 className="heading">Load Game</h5>
-            </div>
-            <div className="modalContent">
-              Do you want to load a previous saved game?
-            </div>
-            <div className="modalActions">
-              <div
-                className="modalContainer"
-                style={{ display: "flex", justifyContent: "space-between" }}
-              >
-                <button
-                  style={{ width: "220px", margin: "0 20px" }}
-                  onClick={() => {
-                    if (hasSavedGame) {
-                      // Assuming the saved game is always a word puzzle. If not, you'll need to store and retrieve the puzzle type as well.
-                      navigate(`/render-word/${difficulty}/${levelID}`);
-                      setDialogOpen(false);
-                    } else {
-                      setDialogOpen(false);
-                      setErrorMessage("No saved game found");
-                    }
-                  }}
-                >
-                  {"Load Game"}
-                </button>
-                <button
-                  style={{ width: "220px", margin: "0 20px" }}
-                  onClick={() => {
-                    setDialogOpen(false);
-                  }}
-                >
-                  {"Cancel"}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   // REMOVE THIS ( JUST FOR TESTING)
   const getUsers = async (event) => {
@@ -120,23 +73,13 @@ function HomePage() {
       {isSignOutSuccessful && <Navigate to="/signin" replace={true} />}
       <h1>Puzzle Bluster</h1>
       <h3>Let's solve some Word Search Puzzles!</h3>
-      <div style={{ paddingTop: "100px" }}>
-        <button onClick={onSignOut}>Sign Out</button>
-        <button onClick={() => navigate("/accountPage")}>
-          Account Details
+      <div style={{ paddingTop: "100px", paddingLeft: "100px"}}>
+        <button onClick={() => navigate("/puzzleselection")}>
+          Start Game
         </button>
-        <button onClick={() => navigate("/puzzleselection")}>Start Game</button>
-        <button
-          onClick={() => {
-            setDialogOpen(true);
-          }}
-        >
-          Load Game
-        </button>
-        {isDialogOpen && loadPopup()}
       </div>
     </div>
   );
 }
 
-export default HomePage;
+export default HomePageGuest;

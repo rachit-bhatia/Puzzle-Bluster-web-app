@@ -292,7 +292,6 @@ html {
 .achievement-list {
   display: flex;
   flex-wrap: wrap;
-  flex-direction: column;
   gap: 10px;
   margin: 20px;
 }
