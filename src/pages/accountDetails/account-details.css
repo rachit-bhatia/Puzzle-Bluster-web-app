@@ -96,3 +96,17 @@
     cursor: not-allowed;
     color: rgba(0, 0, 0, 0.6);
   }
+
+  .delete-account-button {
+    background-color: red;
+    color: white;
+    padding: 10px 20px;
+    margin-top: 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.delete-account-button:hover {
+    background-color: darkred;
+}
