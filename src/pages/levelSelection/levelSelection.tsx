@@ -4,6 +4,7 @@ import "./levelSelection.css"; // Import the CSS file
 import { UserAccount } from "../../models/shared"; // Adjust the import path as needed
 import { auth } from "../../firebase/firebase";
 import { Select, MenuItem, FormControl, InputLabel } from "@mui/material";
+import BackButton from "../../components/backButton";
 
 const LevelSelection: React.FC = () => {
   const navigate = useNavigate();
@@ -99,9 +100,7 @@ const LevelSelection: React.FC = () => {
   return (
     <div className="container">
       <div className="header">
-        <button className="backButton" onClick={() => navigate("/home")}>
-          ←
-        </button>
+        <BackButton></BackButton>
         <h4 className="title">
           {slicedPuzzleType.charAt(0).toUpperCase() +
             slicedPuzzleType.slice(1) +

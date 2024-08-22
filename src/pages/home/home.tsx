@@ -133,6 +133,9 @@ function HomePage() {
         >
           Load Game
         </button>
+        <button onClick={() => navigate("/leaderboard")}>
+          Leaderboard
+        </button>
         {isDialogOpen && loadPopup()}
       </div>
     </div>

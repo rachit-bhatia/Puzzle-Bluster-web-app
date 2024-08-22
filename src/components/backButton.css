@@ -1,0 +1,16 @@
+.backButton {
+    margin-right: 10px;
+    color: #ffffff;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    transition: background-color 0.1s ease, transform 0.1s ease;
+  }
+
+  .backButton:hover {
+    background-color:  rgb(167, 132, 103); /* Change to your desired hover background color */
+    transform: scale(1.05); /* Slightly increase the size on hover */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add a shadow effect */
+  }
+

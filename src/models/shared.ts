@@ -9,6 +9,7 @@ import {
   query,
   where,
   setDoc,
+  orderBy,
 } from "firebase/firestore";
 
 class UserAccount {
@@ -26,6 +27,9 @@ class UserAccount {
   private _wordsFound: string | null;
   private _wordsToFind: string | null;
   private _timeElapsed: number | null;
+  private _wordScore: number | null;
+  private _mathScore: number | null;
+
   // private _wordsFound: string[]; // can remove this if not needed
 
   // constructor
@@ -36,6 +40,9 @@ class UserAccount {
     this._wordsFound = ""; // can remove this if not needed
     this._wordsToFind = "";
     this._timeElapsed = 0;
+    this._wordScore = 0;
+    this._mathScore = 0;
+
   }
 
   // getters
@@ -63,6 +70,15 @@ class UserAccount {
   get username() {
     return this._username;
   }
+
+  get mathScore(){
+    return this._mathScore
+  }
+
+  get wordScore(){
+    return this._wordScore
+  }
+
 
   // Setters
 
@@ -96,6 +112,15 @@ class UserAccount {
     this._username = username;
   }
 
+  set mathScore(score){
+    this.mathScore = score
+  }
+
+  set wordScore(score){
+    this.mathScore = score
+  }
+
+
   // To recreate an instance of User ( since data retrieved from database is in json -> convert the json back into a User instance )
   fromData(docId, data) {
     this._docId = docId;
@@ -105,6 +130,9 @@ class UserAccount {
     this._wordsToFind = data["wordsToFind"] || "";
     this._timeElapsed = data["timeElapsed"] || 0;
     this._username = data["username"];
+    this._mathScore = data["mathScore"] || 0;
+    this._wordScore = data["wordScore"] || 0;
+
   }
 
   // CRUD operations
@@ -178,6 +206,9 @@ class UserAccount {
         wordsToFind: user.wordsToFind,
         timeElapsed: user.timeElapsed,
         username: user.username,
+        mathScore : user.mathScore,
+        wordScore : user.wordScore
+
       });
     } else {
       throw new Error("Username (email) is required to create a document.");
@@ -230,6 +261,76 @@ class UserAccount {
   //     // Your logic to get the user UUID
   //     return "unique-user-identifier"; // Replace with the actual logic to retrieve user UUID
   // }
+
+  // Method to get user's rank based on their score among all users
+  static async getUserRank(userUuid: string, puzzleType: string = "word"):  Promise<{ rank: number | null, sortedUsers: UserAccount[] } | null> {
+    try {
+      let q;
+      
+      if (puzzleType === "overall") {
+        // For overall rank, retrieve all users and calculate total scores
+        const allUsersQuery = query(this.collection);
+        const querySnapshot = await getDocs(allUsersQuery);
+
+        // Extract user data from querySnapshot
+        const users: { user: UserAccount; totalScore: number }[] = [];
+
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          const user = new UserAccount(doc.id);
+          user.fromData(doc.id, data);
+          
+          if (user.mathScore != null || user.wordScore !== null ){
+            // Calculate the total score for overall ranking
+              const totalScore = (user.mathScore ?? 0) + (user.wordScore ?? 0);
+            users.push({ user, totalScore });
+          }
+          
+        });
+        
+
+        // Sort users by total score in descending order
+        users.sort((a, b) => b.totalScore - a.totalScore);
+
+        // Find the user with the specified userUuid and determine their rank
+        const userIndex = users.findIndex(({ user }) => user._userUuid === userUuid);
+
+        const sortedUsers = users.map(({ user }) => user);
+
+        const rank = userIndex === -1 ? null : userIndex + 1;
+
+        // Return the rank (1-based index)
+        return { rank, sortedUsers };
+
+        
+      } else {
+        // For individual puzzle types (math or word), retrieve and sort accordingly
+        q = query(this.collection, orderBy(`${puzzleType}Score`, "desc"));
+        const querySnapshot = await getDocs(q);
+
+        // Extract user data from querySnapshot
+        const users: UserAccount[] = [];
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          const user = new UserAccount(null);
+          user.fromData(doc.id, data);
+          users.push(user);
+        });
+
+        // Find the user with the specified userUuid and determine their rank
+        const userIndex = users.findIndex(user => user._userUuid === userUuid);
+
+        const rank = userIndex === -1 ? null : userIndex + 1;
+        const sortedUsers = users; // Users are already sorted by the query
+        // Return the rank (1-based index)
+        return { rank, sortedUsers };
+      }
+    } catch (error) {
+      console.error("Error retrieving user rank:", error);
+      return null;
+    }
+  }
+
 }
 
 export { UserAccount };

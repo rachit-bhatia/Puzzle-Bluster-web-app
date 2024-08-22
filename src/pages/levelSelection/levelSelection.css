@@ -31,20 +31,7 @@
     margin-bottom: 20px;
   }
   
-  .backButton {
-    margin-right: 10px;
-    color: rgb(92, 76, 56);
-    background: none;
-    border: none;
-    font-size: 28px;
-    cursor: pointer;
-  }
-
-  .backButton:hover {
-    background: none;
-    transform: none;
-    box-shadow: none;
-  }
+  
   
   .title {
     text-align: left;
