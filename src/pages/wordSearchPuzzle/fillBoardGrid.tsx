@@ -3,8 +3,10 @@ import { ReactElement } from "react";
 import DisplayBoard from "./displayBoard";
 import LevelIndicator from './levelIndicator';
 import SaveModal from '../../models/save/save-game';
+import HintButton from '../hintButton';
 
-let wordsToFind;
+let wordsToFind: String[];
+const allWordsCoordinates: number[][][] = [];
 
 function FillBoardGrid (iBoardSize: number, 
                         directions: Array<Array<number>>,
@@ -30,7 +32,8 @@ function FillBoardGrid (iBoardSize: number,
     for(let i = 0; i < wordsToFind.length; i++){
         let word = wordsToFind[i];
 
-        let isWordEntered = false;
+        let isWordEntered: boolean = false;
+        let curWordPositions: number[][] = [];
 
         while (!isWordEntered) {
             //get random starting position
@@ -38,7 +41,11 @@ function FillBoardGrid (iBoardSize: number,
             let randomCol = Math.floor(Math.random() * boardSize);
 
             //try to enter the word on the board
-            isWordEntered = canEnterSolutionWords(randomRow, randomCol, word);
+            [isWordEntered, curWordPositions] = canEnterSolutionWords(randomRow, randomCol, word);
+
+            if (isWordEntered && allWordsCoordinates.length < wordsToFind.length) {
+                allWordsCoordinates.push(curWordPositions)  //add letter coordinates of all words
+            }
         }
     }
 
@@ -55,7 +62,9 @@ function FillBoardGrid (iBoardSize: number,
     }
 
     //returns true if the word is successfully entered onto the board with the randomly chosen positions
-    function canEnterSolutionWords(startRow: number, startCol: number, solutionWord: String): boolean {
+    function canEnterSolutionWords(startRow: number, 
+                                   startCol: number, 
+                                   solutionWord: String): [boolean, number[][]] {
         let curRow = startRow;
         let curCol = startCol;
         let letterPositions = new Array(solutionWord.length);  //store the positions of the letters
@@ -68,12 +77,15 @@ function FillBoardGrid (iBoardSize: number,
             randomDirection = possibleDirections[randomDirectionId];
         }
 
+        const wordPositions: number[][] = []
+
         for (let i = 0; i < solutionWord.length; i++) {
             let letter = solutionWord.charAt(i);  //get each letter
             
             if (isDirectionValid(curRow, curCol)) {
                 boardGrid[curRow][curCol] = letter;
                 letterPositions[i] = [curRow, curCol];
+                wordPositions.push([curRow, curCol])  //add the coordinates of each letter
             } else {
                 //reset the cells if the word cannot be entered
                 for (let j = 0; j < i; j++) {
@@ -81,7 +93,7 @@ function FillBoardGrid (iBoardSize: number,
                     let col = letterPositions[j][1];
                     boardGrid[row][col] = "";  //clear the board
                 }
-                return false;
+                return [false, []];
             }
 
             //set new direction for every letter for hard level
@@ -93,7 +105,7 @@ function FillBoardGrid (iBoardSize: number,
             curRow += randomDirection[0];
             curCol += randomDirection[1];
         }
-        return true;
+        return [true, wordPositions];
     }
 
 
@@ -105,6 +117,8 @@ function FillBoardGrid (iBoardSize: number,
         return false;
     }
 
+    console.log("Word Positions: ", allWordsCoordinates);
+
     return boardGrid;
 }
 
@@ -114,8 +128,11 @@ const WordSearchBoard = ({newBoard, levelIndicator}): ReactElement => {
     return (
         <div>
             <h1 className="gameHeading">Word Search</h1>
-            <LevelIndicator level={levelIndicator} />
-            <DisplayBoard boardGrid={newBoard} wordsToFind={wordsToFind}/>
+            <div style={{position: 'absolute', display: 'flex', top: '10px', right: '10px'}}>
+                <HintButton></HintButton>
+                <LevelIndicator level={levelIndicator} />
+            </div>
+            <DisplayBoard boardGrid={newBoard} wordsToFind={wordsToFind} allWordsCoordinates={allWordsCoordinates}/>
         </div>
     )
 }

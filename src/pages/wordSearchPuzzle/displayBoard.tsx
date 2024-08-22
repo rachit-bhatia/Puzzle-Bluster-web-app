@@ -7,7 +7,7 @@ import { ReactElement, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import AchievementManager from "./achievementManager";
 
-const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
+const DisplayBoard = ({ boardGrid, wordsToFind, allWordsCoordinates }): ReactElement => {
   let selection = "";
   const wordFoundColor = "rgb(18, 119, 113)";
 
@@ -28,6 +28,7 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
   const [foundPositions, setFoundPositions] = useState<
     Array<{ row: number; col: number }>
   >([]);
+  const [hintedLetters, setHintedLetters] = useState([]); //keep track of letters shown from hints
 
   useEffect(() => {
     let interval;
@@ -529,6 +530,20 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
     );
   }
 
+  function showLetterOnHint() {
+    let randID = Math.floor(Math.random() * allWordsCoordinates.length);
+    let hintWord = wordsToFind[randID];
+
+    while (foundWords.includes(hintWord)) {
+        randID = Math.floor(Math.random() * allWordsCoordinates.length);
+        hintWord = wordsToFind[randID];
+    }
+
+    const hintLetterPosition = allWordsCoordinates[randID][0];
+    const elemID = `${hintLetterPosition[0]}-${hintLetterPosition[1]}`;
+    document.getElementById(elemID)!.style.backgroundColor = "pink";
+  }
+
   return (
     <div className="boardGrid" key={levelId} onMouseLeave={letterReleased}>
       {isDialogOpen && completionPopup()}
@@ -549,6 +564,7 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
           {boardRow.map((wordContent, colIndex) => (
             <button
               key={`${rowIndex}-${colIndex}`}
+              id={`${rowIndex}-${colIndex}`}
               className="boardCell"
               onMouseDown={(event) => letterHeld(event, rowIndex, colIndex)}
               onMouseEnter={(event) =>
