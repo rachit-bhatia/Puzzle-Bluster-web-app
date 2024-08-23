@@ -17,7 +17,6 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
   const [timeElapsed, setTimeElapsed] = useState(0); //milliseconds
   const [timerActive, setTimerActive] = useState(false);
   const [foundWords, setFoundWords] = useState<string[]>([]);
-  const [completedLevels, setCompletedLevels] = useState({});
   const [isDialogOpen, setDialogOpen] = useState(false); //dialog box for level completion
   const [isSaveDialogOpen, setSaveDialogOpen] = useState(false); //dialog box for saving game state
   const [nextLevelID, setLevelID] = useState(""); //setting ID of next level
@@ -137,7 +136,6 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
 
   useEffect(() => {
     // Call markAsFound after the component has been rendered
-    loadProgress();
     markAsFound(foundPositions);
   }, [boardGrid]); // Dependency array to ensure it runs after boardGrid is initialized
 
@@ -208,7 +206,6 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
         foundPositions: foundPositionsString,
         difficulty: difficulty,
         levelId: levelId,
-        puzzleType: "word"
       };
       try {
         const docSnapshot = await getDoc(userRef);
@@ -246,48 +243,6 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
             puzzleSaveState: {},
           });
           console.log("Game state removed successfully");
-        } else {
-          console.log("No saved game state found");
-        }
-      } catch (error) {
-        console.error("Error removing game state: ", error);
-      }
-    } else {
-      console.error("No authenticated user found");
-    }
-  }
-
-  async function loadProgress(){
-    const user = auth.currentUser;
-    if (user) {
-      const userRef = doc(db, "users", user.email);
-      try {
-        const docSnapshot = await getDoc(userRef);
-        if (docSnapshot.exists()) {
-          const data = docSnapshot.data();
-          const completedLevels = JSON.parse(data.completedLevels);
-          setCompletedLevels(completedLevels);
-        } else {
-          console.log("No saved game state found");
-        }
-      } catch (error) {
-        console.error("Error removing game state: ", error);
-      }
-    } else {
-      console.error("No authenticated user found");
-    }
-  }
-
-  async function updateProgress() {
-    const user = auth.currentUser;
-    if (user) {
-      const userRef = doc(db, "users", user.email);
-      try {
-        const docSnapshot = await getDoc(userRef);
-        if (docSnapshot.exists()) {
-          await updateDoc(userRef, {
-            completedLevels: JSON.stringify(completedLevels),
-          });
         } else {
           console.log("No saved game state found");
         }
@@ -437,12 +392,18 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
 
       //save the level ID upon completion of level to unlock next level
       if (foundWords.length >= wordsToFind.length - 1) {
+        const completedLevels = JSON.parse(
+          localStorage.getItem("completedLevels")!
+        );
         const levelStr = levelId?.match(/\d+/);
         let levelNum: number;
         if (levelStr) {
           levelNum = parseInt(levelStr[0]);
           completedLevels[difficulty!] = levelNum;
-          updateProgress();
+          localStorage.setItem(
+            "completedLevels",
+            JSON.stringify(completedLevels)
+          );
           setLevelID(`level${levelNum + 1}`); //id of next level
         }
 
