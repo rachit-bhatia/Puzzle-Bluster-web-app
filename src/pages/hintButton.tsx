@@ -1,9 +1,9 @@
 import React from 'react';
 
 
-const HintButton = () => {
+const HintButton = ({ hintFunction }) => {
   return (
-    <button style={{marginRight: '20px'}}>
+    <button onClick={() => {hintFunction()}} style={{marginRight: '20px'}}>
       Show Hint
     </button>
   );

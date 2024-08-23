@@ -10,9 +10,13 @@ import LevelIndicator from './levelIndicator';
 import HintButton from '../hintButton';
 import { wordsToFind, allWordsCoordinates } from "./fillBoardGrid";
 
+// let showLetterOnHint = () => {console.log("Hint")};
+const wordFoundColor = "rgb(18, 119, 113)";
+const hintColor = "rgb(18, 118, 113)";
+const hintedLetters: string[] = [];  //keep track of letters shown from hints
+
 const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
   let selection = "";
-  const wordFoundColor = "rgb(18, 119, 113)";
 
   const navigate = useNavigate();
   const [isLetterSelected, setIsLetterSelected] = useState(false);
@@ -31,7 +35,7 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
   const [foundPositions, setFoundPositions] = useState<
     Array<{ row: number; col: number }>
   >([]);
-  const [hintedLetters, setHintedLetters] = useState([]); //keep track of letters shown from hints
+
 
   useEffect(() => {
     let interval;
@@ -424,6 +428,10 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
         if (letter.style.backgroundColor == "green") {
           letter.style.backgroundColor = "";
         }
+
+        if (hintedLetters.includes(letter.id)) {
+            letter.style.backgroundColor = hintColor;
+        }
       });
     }
 
@@ -533,19 +541,6 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
     );
   }
 
-  function showLetterOnHint() {
-    let randID = Math.floor(Math.random() * allWordsCoordinates.length);
-    let hintWord = wordsToFind[randID];
-
-    while (foundWords.includes(hintWord)) {
-        randID = Math.floor(Math.random() * allWordsCoordinates.length);
-        hintWord = wordsToFind[randID];
-    }
-
-    const hintLetterPosition = allWordsCoordinates[randID][0];
-    const elemID = `${hintLetterPosition[0]}-${hintLetterPosition[1]}`
-    document.getElementById(elemID)!.style.backgroundColor = "pink";
-  }
 
   return (
     <div className="boardGrid" key={levelId} onMouseLeave={letterReleased}>
@@ -606,6 +601,40 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
   );
 };
 
+//reveal a letter of any unfound word upon clicking hint
+const showLetterOnHint = () => {
+    console.log("Hint Pressed in new func")
+    let randID = Math.floor(Math.random() * allWordsCoordinates.length);
+    let hintWord = wordsToFind[randID];
+    
+    let hintLetterPosition = allWordsCoordinates[randID][0];
+    let letterID = `${hintLetterPosition[0]}-${hintLetterPosition[1]}`;
+    let letterElem = document.getElementById(letterID)!
+    let letterStyle = window.getComputedStyle(letterElem)
+
+    console.log("Word: ", hintWord);
+    console.log("Colour: ", letterStyle.backgroundColor);
+
+    //find a new letter to show for hint if the user has already found this one
+    while (letterStyle.backgroundColor == wordFoundColor || letterStyle.backgroundColor == hintColor) {
+        randID = Math.floor(Math.random() * allWordsCoordinates.length);
+        hintLetterPosition = allWordsCoordinates[randID][0];
+        letterID = `${hintLetterPosition[0]}-${hintLetterPosition[1]}`;
+        letterElem = document.getElementById(letterID)!
+        letterStyle = window.getComputedStyle(letterElem)
+    }
+    
+    hintedLetters.push(letterID);
+    letterElem.style.backgroundColor = hintColor;
+
+    // while (foundWords.includes(hintWord)) {
+    //     randID = Math.floor(Math.random() * allWordsCoordinates.length);
+    //     hintWord = wordsToFind[randID];
+    // }
+
+  }
+
+
 //display board UI
 const WordSearchBoard = ({newBoard, levelIndicator}): ReactElement => {
 
@@ -613,7 +642,7 @@ const WordSearchBoard = ({newBoard, levelIndicator}): ReactElement => {
         <div>
             <h1 className="gameHeading">Word Search</h1>
             <div style={{position: 'absolute', display: 'flex', top: '10px', right: '10px'}}>
-                <HintButton></HintButton>
+                <HintButton hintFunction={showLetterOnHint}></HintButton>
                 <LevelIndicator level={levelIndicator} />
             </div>
             <DisplayBoard boardGrid={newBoard} wordsToFind={wordsToFind}/>
