@@ -12,6 +12,7 @@ function HomePage() {
   const [difficulty, setDifficulty] = useState("");
   const [levelID, setLevelID] = useState("");
   const [hasSavedGame, setHasSavedGame] = useState(false);
+  const [puzzleType, setPuzzleType] = useState("");
   const navigate = useNavigate();
 
   const onSignOut = async (event) => {
@@ -41,9 +42,11 @@ function HomePage() {
               setHasSavedGame(true);
               const difficulty = puzzleSaveState.difficulty;
               const levelId = puzzleSaveState.levelId;
+              const puzzleType = puzzleSaveState.puzzleType;
 
               setDifficulty(difficulty);
               setLevelID(levelId);
+              setPuzzleType(puzzleType);
             } else {
               console.log("No saved game state found");
             }
@@ -82,7 +85,7 @@ function HomePage() {
                   onClick={() => {
                     if (hasSavedGame) {
                       // Assuming the saved game is always a word puzzle. If not, you'll need to store and retrieve the puzzle type as well.
-                      navigate(`/render-word/${difficulty}/${levelID}`);
+                      navigate(`/render-${puzzleType}/${difficulty}/${levelID}/1`);
                       setDialogOpen(false);
                     } else {
                       setDialogOpen(false);
