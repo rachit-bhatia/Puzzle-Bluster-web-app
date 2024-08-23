@@ -1,9 +1,3 @@
-import React from 'react';
-import { ReactElement } from "react";
-import DisplayBoard from "./displayBoard";
-import LevelIndicator from './levelIndicator';
-import SaveModal from '../../models/save/save-game';
-import HintButton from '../hintButton';
 
 let wordsToFind: String[];
 const allWordsCoordinates: number[][][] = [];
@@ -122,19 +116,4 @@ function FillBoardGrid (iBoardSize: number,
     return boardGrid;
 }
 
-//display board UI
-const WordSearchBoard = ({newBoard, levelIndicator}): ReactElement => {
-
-    return (
-        <div>
-            <h1 className="gameHeading">Word Search</h1>
-            <div style={{position: 'absolute', display: 'flex', top: '10px', right: '10px'}}>
-                <HintButton></HintButton>
-                <LevelIndicator level={levelIndicator} />
-            </div>
-            <DisplayBoard boardGrid={newBoard} wordsToFind={wordsToFind} allWordsCoordinates={allWordsCoordinates}/>
-        </div>
-    )
-}
-
-export { WordSearchBoard, FillBoardGrid, wordsToFind };
+export {FillBoardGrid, wordsToFind, allWordsCoordinates };

@@ -6,8 +6,11 @@ import React, { useEffect } from "react";
 import { ReactElement, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import AchievementManager from "./achievementManager";
+import LevelIndicator from './levelIndicator';
+import HintButton from '../hintButton';
+import { wordsToFind, allWordsCoordinates } from "./fillBoardGrid";
 
-const DisplayBoard = ({ boardGrid, wordsToFind, allWordsCoordinates }): ReactElement => {
+const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
   let selection = "";
   const wordFoundColor = "rgb(18, 119, 113)";
 
@@ -540,7 +543,7 @@ const DisplayBoard = ({ boardGrid, wordsToFind, allWordsCoordinates }): ReactEle
     }
 
     const hintLetterPosition = allWordsCoordinates[randID][0];
-    const elemID = `${hintLetterPosition[0]}-${hintLetterPosition[1]}`;
+    const elemID = `${hintLetterPosition[0]}-${hintLetterPosition[1]}`
     document.getElementById(elemID)!.style.backgroundColor = "pink";
   }
 
@@ -603,4 +606,20 @@ const DisplayBoard = ({ boardGrid, wordsToFind, allWordsCoordinates }): ReactEle
   );
 };
 
-export default DisplayBoard;
+//display board UI
+const WordSearchBoard = ({newBoard, levelIndicator}): ReactElement => {
+
+    return (
+        <div>
+            <h1 className="gameHeading">Word Search</h1>
+            <div style={{position: 'absolute', display: 'flex', top: '10px', right: '10px'}}>
+                <HintButton></HintButton>
+                <LevelIndicator level={levelIndicator} />
+            </div>
+            <DisplayBoard boardGrid={newBoard} wordsToFind={wordsToFind}/>
+        </div>
+    )
+}
+
+
+export default WordSearchBoard;
