@@ -85,7 +85,7 @@ html, body {
     flex-direction: column;
     width: 80%;
     gap: 10px;
-    height: calc(100vh - [header-height]); /* Adjust [header-height] as needed */
+    height: 50%; /* Adjust [header-height] as needed */
     overflow-y: auto; /* Add vertical scrollbar if content overflows */
   }
   
