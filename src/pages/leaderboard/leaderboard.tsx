@@ -5,6 +5,7 @@ import BackButton from "../../components/backButton";
 import { getAuth } from "firebase/auth";
 import { UserAccount } from "../../models/shared";
 import { act } from "react-dom/test-utils";
+import { auth } from "../../firebase/firebase";
 function Leaderboard() {
   const navigate = useNavigate();
 
@@ -34,9 +35,27 @@ function Leaderboard() {
   const [overallSortedUsers, setOverallSortedUsers] = useState<
     UserAccount[] | null
   >(null);
+
+  const[userAvatar,setUserAvatar] = useState("");
+
+  // Function to determine the image source
+  const getAvatarSrc = () => {
+    if (userAvatar === "") {
+      return ""; // No image source
+    } else if (userAvatar === "male") {
+      return "./public/img/maleAvatar.jpg";
+    } else if (userAvatar === "female") {
+      return "./public/img/femaleAvatar.jpg";
+    }
+    return ""; // Default case if no match
+  };
+  
+
+
   useEffect(() => {
     const auth = getAuth();
     const user = auth.currentUser;
+
 
     const fetchUserData = async () => {
       if (user) {
@@ -48,6 +67,7 @@ function Leaderboard() {
               UserAccount.getUserRank(user.uid, "math"),
               UserAccount.getUserRank(user.uid, "word"),
               UserAccount.getUserRank(user.uid, "overall"),
+              UserAccount.getUserByUuid(user.uid)
             ]);
 
           // Update state with the fetched data
@@ -61,6 +81,8 @@ function Leaderboard() {
 
           setOverallRank(overallData?.rank ?? null);
           setOverallSortedUsers(overallData?.sortedUsers ?? null);
+
+          setUserAvatar(userAccount.userAvatar? userAccount.userAvatar : "")  
         } catch (error) {
           console.error("Error fetching user data:", error);
         }
@@ -72,7 +94,7 @@ function Leaderboard() {
   const ProfileSection: React.FC = () => {
     return (
       <div className="profile-section">
-        <img src="user-image-url" alt="Profile" className="profile-image" />
+        <img src={getAvatarSrc()} className="profile-image" />
 
         <div className="profile-info">
           <h1 className="profile-name">
