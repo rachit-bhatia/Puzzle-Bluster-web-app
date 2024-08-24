@@ -152,6 +152,8 @@ function Leaderboard() {
           } else { // activeTab === 'overall'
             score = (user.wordScore ?? 0) + (user.mathScore ?? 0);
           }
+
+          let userOverallRank = overallSortedUsers?.findIndex(overallUser => overallUser.userUuid === user.userUuid);
   
           return (
             <div key={index} className="score-item">
@@ -162,7 +164,9 @@ function Leaderboard() {
                 {/* Use displayName */}
                 <div className="score">{score}</div>
                 {/* Display the score based on activeTab */}
-                <div className="rank-number">Overall Rank {index + 1}</div>
+                <div className="rank-number">
+                  Overall Rank { userOverallRank? userOverallRank + 1 : "N/A"}
+                </div>
               </div>
             </div>
           );
