@@ -615,7 +615,7 @@ function getRandomHintLetter(): [number, string, HTMLElement] {
 //reveal a letter of any unfound word upon clicking hint
 function showLetterOnHint() {
     if (hintedLetters.length >= allWordsCoordinates.length) {
-        console.log("All words have been found", hintedLetters)
+        console.log("All hints have been found", hintedLetters)
     } else {
         console.log("Hint Pressed");
         let [randID, letterID, letterElem] = getRandomHintLetter();
