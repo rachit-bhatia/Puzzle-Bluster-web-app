@@ -1,6 +1,6 @@
 
 let wordsToFind: String[];
-const allWordsCoordinates: number[][][] = [];
+let allWordsCoordinates: number[][][];
 
 function FillBoardGrid (iBoardSize: number, 
                         directions: Array<Array<number>>,
@@ -21,6 +21,7 @@ function FillBoardGrid (iBoardSize: number,
     }
 
     wordsToFind = wordList;
+    allWordsCoordinates = [];
 
     //loop through each solution word and place it on the board
     for(let i = 0; i < wordsToFind.length; i++){
@@ -37,7 +38,7 @@ function FillBoardGrid (iBoardSize: number,
             //try to enter the word on the board
             [isWordEntered, curWordPositions] = canEnterSolutionWords(randomRow, randomCol, word);
 
-            if (isWordEntered && allWordsCoordinates.length < wordsToFind.length) {
+            if (isWordEntered) {
                 allWordsCoordinates.push(curWordPositions)  //add letter coordinates of all words
             }
         }
@@ -99,6 +100,7 @@ function FillBoardGrid (iBoardSize: number,
             curRow += randomDirection[0];
             curCol += randomDirection[1];
         }
+        // console.log(solutionWord, " - ", wordPositions)
         return [true, wordPositions];
     }
 
@@ -111,6 +113,7 @@ function FillBoardGrid (iBoardSize: number,
         return false;
     }
 
+    //TODO: remove the 1st half of coordinates since only the 2nd half is the correct rendering of the board
     console.log("Word Positions: ", allWordsCoordinates);
 
     return boardGrid;

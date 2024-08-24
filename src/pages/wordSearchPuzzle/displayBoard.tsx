@@ -10,10 +10,9 @@ import LevelIndicator from './levelIndicator';
 import HintButton from '../hintButton';
 import { wordsToFind, allWordsCoordinates } from "./fillBoardGrid";
 
-// let showLetterOnHint = () => {console.log("Hint")};
 const wordFoundColor = "rgb(18, 119, 113)";
 const hintColor = "rgb(18, 118, 113)";
-const hintedLetters: string[] = [];  //keep track of letters shown from hints
+let hintedLetters: string[] = [];  //keep track of letters shown from hints
 
 const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
   let selection = "";
@@ -519,6 +518,7 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
                     //TODO: call save to db here
                     //navigate back to level selection if last level
                     setFoundPositions([]);
+                    hintedLetters = [];
                     levelId != "level3"
                       ? navigate(`/render-word/${difficulty}/${nextLevelID}/0`)
                       : navigate("/render-word/levelselection");
@@ -601,37 +601,47 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
   );
 };
 
-//reveal a letter of any unfound word upon clicking hint
-const showLetterOnHint = () => {
-    console.log("Hint Pressed in new func")
+
+function getRandomHintLetter(): [number, string, HTMLElement] {
     let randID = Math.floor(Math.random() * allWordsCoordinates.length);
-    let hintWord = wordsToFind[randID];
-    
-    let hintLetterPosition = allWordsCoordinates[randID][0];
-    let letterID = `${hintLetterPosition[0]}-${hintLetterPosition[1]}`;
-    let letterElem = document.getElementById(letterID)!
-    let letterStyle = window.getComputedStyle(letterElem)
+    const hintLetterPosition = allWordsCoordinates[randID][0];
+    const letterID = `${hintLetterPosition[0]}-${hintLetterPosition[1]}`;
+    const letterElem = document.getElementById(letterID)!;
 
-    console.log("Word: ", hintWord);
-    console.log("Colour: ", letterStyle.backgroundColor);
+    return [randID, letterID, letterElem];
+}
 
-    //find a new letter to show for hint if the user has already found this one
-    while (letterStyle.backgroundColor == wordFoundColor || letterStyle.backgroundColor == hintColor) {
-        randID = Math.floor(Math.random() * allWordsCoordinates.length);
-        hintLetterPosition = allWordsCoordinates[randID][0];
-        letterID = `${hintLetterPosition[0]}-${hintLetterPosition[1]}`;
-        letterElem = document.getElementById(letterID)!
-        letterStyle = window.getComputedStyle(letterElem)
+
+//reveal a letter of any unfound word upon clicking hint
+function showLetterOnHint() {
+    if (hintedLetters.length >= allWordsCoordinates.length) {
+        console.log("All words have been found", hintedLetters)
+    } else {
+        console.log("Hint Pressed");
+        let [randID, letterID, letterElem] = getRandomHintLetter();
+        let letterStyle = window.getComputedStyle(letterElem)
+        
+        //find a new letter to show for hint if the user has already found this one
+        while (letterStyle.backgroundColor == wordFoundColor || letterStyle.backgroundColor == hintColor) {
+            [randID, letterID, letterElem] = getRandomHintLetter();
+            letterStyle = window.getComputedStyle(letterElem)
+        }
+        
+        hintedLetters.push(letterID);
+        letterElem.style.backgroundColor = hintColor;
+
+        //show last letter of word also if difficulty is hard
+        const path = window.location.pathname;
+        if (path.includes("hard")) {
+            const hintWord = allWordsCoordinates[randID];
+            const lastLetterPosition = hintWord[hintWord.length - 1];
+            const lastLetterID = `${lastLetterPosition[0]}-${lastLetterPosition[1]}`;
+            const lastLetterElem = document.getElementById(lastLetterID)!;
+            
+            hintedLetters.push(lastLetterID);
+            lastLetterElem.style.backgroundColor = hintColor;
+        }
     }
-    
-    hintedLetters.push(letterID);
-    letterElem.style.backgroundColor = hintColor;
-
-    // while (foundWords.includes(hintWord)) {
-    //     randID = Math.floor(Math.random() * allWordsCoordinates.length);
-    //     hintWord = wordsToFind[randID];
-    // }
-
   }
 
 
