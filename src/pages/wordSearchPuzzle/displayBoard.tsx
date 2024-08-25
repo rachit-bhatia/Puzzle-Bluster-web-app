@@ -613,46 +613,52 @@ function getRandomHintLetter(): [number, string, HTMLElement] {
 
 
 //reveal a letter of any unfound word upon clicking hint
-function showLetterOnHint() {
-    if (hintedLetters.length >= allWordsCoordinates.length) {
-        console.log("All hints have been found", hintedLetters)
-    } else {
-        console.log("Hint Pressed");
-        let [randID, letterID, letterElem] = getRandomHintLetter();
-        let letterStyle = window.getComputedStyle(letterElem)
-        
-        //find a new letter to show for hint if the user has already found this one
-        while (letterStyle.backgroundColor == wordFoundColor || letterStyle.backgroundColor == hintColor) {
-            [randID, letterID, letterElem] = getRandomHintLetter();
-            letterStyle = window.getComputedStyle(letterElem)
-        }
-        
-        hintedLetters.push(letterID);
-        letterElem.style.backgroundColor = hintColor;
-
-        //show last letter of word also if difficulty is hard
-        const path = window.location.pathname;
-        if (path.includes("hard")) {
-            const hintWord = allWordsCoordinates[randID];
-            const lastLetterPosition = hintWord[hintWord.length - 1];
-            const lastLetterID = `${lastLetterPosition[0]}-${lastLetterPosition[1]}`;
-            const lastLetterElem = document.getElementById(lastLetterID)!;
-            
-            hintedLetters.push(lastLetterID);
-            lastLetterElem.style.backgroundColor = hintColor;
-        }
-    }
+function showLetterOnHint(setButtonDisabled) {
+  
+  console.log("Hint Pressed");
+  let [randID, letterID, letterElem] = getRandomHintLetter();
+  let letterStyle = window.getComputedStyle(letterElem)
+  
+  //find a new letter to show for hint if the user has already found this one
+  while (letterStyle.backgroundColor == wordFoundColor || letterStyle.backgroundColor == hintColor) {
+    [randID, letterID, letterElem] = getRandomHintLetter();
+    letterStyle = window.getComputedStyle(letterElem)
   }
+  
+  hintedLetters.push(letterID);
+  letterElem.style.backgroundColor = hintColor;
+  
+  const path = window.location.pathname;
+  //show last letter of word also if difficulty is hard (two letter for each hint)
+  if (path.includes("hard")) {
+      const hintWord = allWordsCoordinates[randID];
+      const lastLetterPosition = hintWord[hintWord.length - 1];
+      const lastLetterID = `${lastLetterPosition[0]}-${lastLetterPosition[1]}`;
+      const lastLetterElem = document.getElementById(lastLetterID)!;
+      
+      hintedLetters.push(lastLetterID);
+      lastLetterElem.style.backgroundColor = hintColor;
+  }
+
+  //limit to 2 hints for easy and medium, and hard
+  if ((!path.includes("hard") && hintedLetters.length >= 2) || (path.includes("hard") && hintedLetters.length >= 4)) {
+    setButtonDisabled(true);
+    console.log("All hints have been found", hintedLetters)
+  }
+    
+}
 
 
 //display board UI
 const WordSearchBoard = ({newBoard, levelIndicator}): ReactElement => {
 
+  const [isHintDisabled, setHintDisabled] = useState(false);
+
     return (
         <div>
             <h1 className="gameHeading">Word Search</h1>
             <div style={{position: 'absolute', display: 'flex', top: '10px', right: '10px'}}>
-                <HintButton hintFunction={showLetterOnHint}></HintButton>
+                <HintButton isHintDisabled={isHintDisabled} setHintDisabled={setHintDisabled} hintFunction={showLetterOnHint}></HintButton>
                 <LevelIndicator level={levelIndicator} />
             </div>
             <DisplayBoard boardGrid={newBoard} wordsToFind={wordsToFind}/>
