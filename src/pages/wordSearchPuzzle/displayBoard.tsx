@@ -48,6 +48,11 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
     setRemainingHints(2 - hintedLetters.length);
   }
 
+  useEffect(() => {
+    setTimerActive(true);
+    setTimeElapsed(0);
+  }, [levelId, boardGrid]);
+
 
   useEffect(() => {
     let interval;
@@ -399,9 +404,9 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
 
   //event handler for when the mouse is held down on a letter
   function letterHeld(event, row, col): void {
-    if (!timerActive && foundWords.length < wordsToFind.length) {
-      setTimerActive(true); // Start the timer when the first letter is held
-    }
+    // if (!timerActive && foundWords.length < wordsToFind.length) {
+    //   setTimerActive(true); // Start the timer when the first letter is held
+    // }
     if (event.target.style.backgroundColor != wordFoundColor) {
       setIsLetterSelected(true);
       event.target.style.backgroundColor = "green";
