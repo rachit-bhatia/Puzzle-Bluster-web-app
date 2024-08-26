@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "./levelSelection.css"; // Import the CSS file
-import { UserAccount } from "../../models/shared"; // Adjust the import path as needed
 import { auth } from "../../firebase/firebase";
+import { db } from "../../firebase/firebase";
+import { doc, updateDoc, getDoc } from "firebase/firestore";
 import { Select, MenuItem, FormControl, InputLabel } from "@mui/material";
 import BackButton from "../../components/backButton";
 
@@ -10,45 +11,63 @@ const LevelSelection: React.FC = () => {
   const navigate = useNavigate();
   const { puzzleType } = useParams<{ puzzleType: string }>();
   const slicedPuzzleType = puzzleType?.slice(7) ?? "";
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [completedLevelsList, setCompletedLevelsList] = useState({
+    easy: 0,
+    medium: 0,
+    hard: 0,
+  });
+  const [difficulty, setDifficulty] = useState("easy");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  //get current level progress
-  const completedLevels = () => {
-    if (localStorage.getItem("completedLevels") != null) {
-      return JSON.parse(localStorage.getItem("completedLevels")!);
+  async function initializeProgress() {
+    const user = auth.currentUser;
+    if (user) {
+      const userRef = doc(db, "users", user.email);
+      try {
+        const docSnapshot = await getDoc(userRef);
+        if (docSnapshot.exists()) {
+          const data = docSnapshot.data();
+          const progressField = `${slicedPuzzleType}CompletedLevels`;
+
+          if (data?.Progress?.[progressField]) {
+            const completedLevels = JSON.parse(data.Progress[progressField]);
+            const savedDifficulty = data.Progress?.savedDifficulty || "easy";
+            setCompletedLevelsList(completedLevels);
+            setDifficulty(savedDifficulty);
+          } else {
+            await updateDoc(userRef, {
+              [`Progress.${progressField}`]: JSON.stringify(completedLevelsList),
+              "Progress.savedDifficulty": difficulty,
+            });
+          }
+        }
+      } catch (error) {
+        console.error("Error loading game state: ", error);
+      }
     } else {
-      const levelProgress = { easy: 0, medium: 0, hard: 0 };
-      localStorage.setItem("completedLevels", JSON.stringify(levelProgress));
-      return levelProgress;
+      console.error("No authenticated user found");
     }
-  };
-
-  const [selectedDifficulty, setSelectedDifficulty] = useState(() => {
-    const savedDifficulty = localStorage.getItem("savedDifficulty");
-    return savedDifficulty !== null ? JSON.parse(savedDifficulty) : "easy";
-  });
-
-  async function HandleDifficultySelection() {
-    const userUuid = auth.currentUser?.uid; // Replace this with the actual user UUID
-
-    setIsSubmitting(true);
-    setErrorMessage(null);
-
-    try {
-      // Store the selection in Firestore
-      await UserAccount.storeDifficulty(userUuid, selectedDifficulty);
-      console.log("Difficulty selection stored - ", selectedDifficulty);
-
-      // Navigate based on selection
-      // navigate(`/render/${selectedDifficulty}`);
-    } catch (error) {
-      console.error("Error storing difficulty selection: ", error);
-      setErrorMessage("Failed to save selection. Please try again.");
-    }
-
-    setIsSubmitting(false);
   }
+
+  async function updateProgress() {
+    const user = auth.currentUser;
+    if (user) {
+      const userRef = doc(db, "users", user.email);
+      try {
+        const progressField = `${slicedPuzzleType}CompletedLevels`;
+
+        await updateDoc(userRef, {
+          "Progress.savedDifficulty": difficulty,
+          [`Progress.${progressField}`]: JSON.stringify(completedLevelsList),
+        });
+      } catch (error) {
+        console.error("Error updating progress: ", error);
+      }
+    } else {
+      console.error("No authenticated user found");
+    }
+  }
+
 
   function DiffcultyDropdown() {
     return (
@@ -57,17 +76,13 @@ const LevelSelection: React.FC = () => {
         className="difficultyDropdown"
         style={{ position: "absolute" }}
       >
-        <InputLabel style={{ fontSize: "18px" }}>Diffculty</InputLabel>
+        <InputLabel style={{ fontSize: "18px" }}>Difficulty</InputLabel>
         <Select
-          value={selectedDifficulty}
+          value={difficulty}
           label="Difficulty"
-          onChange={(event) => {
-            setSelectedDifficulty(event.target.value);
-            localStorage.setItem(
-              "savedDifficulty",
-              JSON.stringify(event.target.value)
-            );
-            HandleDifficultySelection();
+          onChange={async (event) => {
+            setDifficulty(event.target.value);
+            await updateProgress();
           }}
           style={{
             color: "rgb(92, 76, 56)",
@@ -86,21 +101,18 @@ const LevelSelection: React.FC = () => {
   }
 
   function isPrevLevelComplete(curLevel: number): boolean {
-    const prevCompletedLevel = completedLevels()[selectedDifficulty];
-    if (curLevel - prevCompletedLevel <= 1) {
-      return false;
-    }
-    return true;
+    const prevCompletedLevel = completedLevelsList[difficulty];
+    return curLevel - prevCompletedLevel > 1;
   }
 
   useEffect(() => {
-    console.log("Current puzzle type value:", puzzleType); // This should now log either "word" or "math" based on the URL
-  }, [puzzleType]);
+    initializeProgress();
+  }, []);
 
   return (
     <div className="container">
       <div className="header">
-        <BackButton></BackButton>
+        <BackButton />
         <h4 className="title">
           {slicedPuzzleType.charAt(0).toUpperCase() +
             slicedPuzzleType.slice(1) +
@@ -123,7 +135,7 @@ const LevelSelection: React.FC = () => {
               className="button"
               onClick={() => {
                 console.log("Level 1 button clicked");
-                navigate(`/${puzzleType}/${selectedDifficulty}/level1/0`);
+                navigate(`/${puzzleType}/${difficulty}/level1/0`);
               }}
               disabled={isPrevLevelComplete(1)}
             >
@@ -132,7 +144,7 @@ const LevelSelection: React.FC = () => {
             <button
               className="button"
               onClick={() =>
-                navigate(`/${puzzleType}/${selectedDifficulty}/level2/0`)
+                navigate(`/${puzzleType}/${difficulty}/level2/0`)
               }
               disabled={isPrevLevelComplete(2)}
             >
@@ -141,7 +153,7 @@ const LevelSelection: React.FC = () => {
             <button
               className="button"
               onClick={() =>
-                navigate(`/${puzzleType}/${selectedDifficulty}/level3/0`)
+                navigate(`/${puzzleType}/${difficulty}/level3/0`)
               }
               disabled={isPrevLevelComplete(3)}
             >
