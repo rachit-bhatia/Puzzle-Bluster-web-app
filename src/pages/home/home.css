@@ -1,0 +1,48 @@
+.home-container {
+  display: flex;
+  justify-content: center;
+  height: 100vh;
+  background-color: #595959;
+  color: white;
+}
+
+.home-container .content {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.game-image {
+  width: 200px;
+  height: auto;
+  margin-bottom: 20px;
+}
+
+.PuzzleGame {
+  font-weight: bold;
+  font-size: 3em;
+  margin-bottom: 20px;
+}
+
+.button-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.button-container button {
+  width: 200px;
+  padding: 10px;
+  margin: 5px 0;
+  background-color: #a67c52;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1.2em;
+}
+
+.button-container button:hover {
+  background-color: #8a5a3b;
+}

@@ -1,115 +1,107 @@
 /* Global styling */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;900&display=swap");
+
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  
-  body, html {
-    height: 100%;
-    width: 100%;
-  }
-  
-  /* Container for the entire page */
-  .container {
-    background-color: burlywood;
-    color: rgb(92, 76, 56);
-    height: 100vh;
-    width: 100vw;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    font-weight: bold;
-    padding: 20px;
-  }
-  
-  /* Header styling */
-  .header {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    margin-bottom: 20px;
-  }
-  
-  
-  
-  .title {
-    text-align: left;
-    font-size: 27px;
-  }
-  
-  .subtitle {
-    font-weight: lighter;
-    text-align: left;
-    text-indent: 1em;
-    font-size: 14px;
-  }
-  
-  /* Content styling */
-  .content {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-  }
-  
-  .left-section, .right-section {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  /* Image styling */
-  .image {
-    width: 300px;
-    height: 300px;
-    border-radius: 50%;
-    margin-bottom: 20px;
-    object-fit: cover;
-  }
-  
-  /* Button container styling */
-  .buttons {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  /* Button styling */
-  .button {
-    width: 200px;
-    margin: 10px 0;
-    background-color: rgb(121, 97, 63);
-    border: none;
-    color: rgb(255, 235, 209);
-    padding: 10px;
-    cursor: pointer;
-    font-size: 18px;
-    border: 1px groove;
-    border-radius: 20px;
-    transition: all 0.25s ease;
-  }
-  
-  .button:hover {
-    background-color: #a47459;
-    box-shadow: 0 10px 20px -10px #785540;
-    transform: translateY(-5px);
-  }
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-  .button:disabled {
-    background-color: rgba(128, 128, 128, 0.59);
-    cursor: not-allowed;
-  }
+body,
+html {
+  height: 100%;
+  width: 100%;
+  font-family: "Poppins", sans-serif;
+}
 
-  .difficultyDropdown {
-    width: 120px;
-    right: 30px;
-  }
+/* Container for the entire page */
+.container {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-weight: bold;
+  padding: 20px;
+}
 
-  .menuItem {
-    background-color: #a47459;
-  }
-  
+/* Header styling */
+.header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.title {
+  text-align: left;
+  font-size: 27px;
+}
+
+/* Content styling */
+.content {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.left-section,
+.right-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Image styling */
+.image {
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  margin-bottom: 20px;
+  object-fit: cover;
+}
+
+/* Button container styling */
+.buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.button {
+  width: 200px;
+  padding: 10px;
+  margin: 5px 0;
+  background-color: #a67c52;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1.2em;
+}
+
+.button:hover {
+  background-color: #8a5a3b;
+}
+
+.button:disabled {
+  background-color: rgba(128, 128, 128, 0.59);
+  cursor: not-allowed;
+}
+
+.difficultyDropdown {
+  width: 120px;
+  right: 30px;
+  background-color: #a67c52;
+  color: white;
+}
+
+.menuItem {
+  background-color: #a47459;
+}

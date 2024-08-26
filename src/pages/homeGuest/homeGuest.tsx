@@ -2,8 +2,9 @@ import React from "react";
 import { auth, db } from "../../firebase/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import { useState, useEffect } from "react";
-import { Navigate, Link, useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { UserAccount } from "../../models/shared";
+import "../home/home.css";
 
 function HomePageGuest() {
   const [errorMessage, setErrorMessage] = useState("");
@@ -60,7 +61,6 @@ function HomePageGuest() {
     checkSavedGame();
   }, [isDialogOpen]);
 
-
   // REMOVE THIS ( JUST FOR TESTING)
   const getUsers = async (event) => {
     event.preventDefault();
@@ -70,13 +70,22 @@ function HomePageGuest() {
   };
   return (
     <div>
-      {isSignOutSuccessful && <Navigate to="/signin" replace={true} />}
-      <h1>Puzzle Bluster</h1>
-      <h3>Let's solve some Word Search Puzzles!</h3>
-      <div style={{ paddingTop: "100px", paddingLeft: "100px"}}>
-        <button onClick={() => navigate("/puzzleselection")}>
-          Start Game
-        </button>
+      <div className="home-container">
+        {isSignOutSuccessful && <Navigate to="/signin" replace={true} />}
+        <div className="content">
+          <img
+            src="/img/homepageani.gif"
+            alt="Puzzle Game"
+            className="game-image"
+          />
+          <div className="PuzzleGame">Puzzle Game</div>
+          <div className="button-container" style={{ paddingTop: "20px" }}>
+            <button onClick={() => navigate("/puzzleselection")}>
+              Start Game
+            </button>
+            <button onClick={() => navigate("/signin")}>Login / Sign Up</button>
+          </div>
+        </div>
       </div>
     </div>
   );

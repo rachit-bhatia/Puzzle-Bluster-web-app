@@ -100,7 +100,7 @@ const LevelSelection: React.FC = () => {
   return (
     <div className="container">
       <div className="header">
-        <BackButton></BackButton>
+        <BackButton />
         <h4 className="title">
           {slicedPuzzleType.charAt(0).toUpperCase() +
             slicedPuzzleType.slice(1) +

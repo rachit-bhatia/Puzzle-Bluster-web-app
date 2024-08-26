@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth, db } from "../../firebase/firebase";
 import { doc, getDoc } from "firebase/firestore";
-import RewardManager from "../rewardManager/rewardManager";
 import "./accountPage.css";
 import "../rewardManager/rewardManager.css"; // Import the rewardManager CSS
 import BackButton from "../../components/backButton";
@@ -42,12 +41,12 @@ const AccountPage = () => {
   return (
     <div className="account-page">
       <div className="header">
-        <BackButton></BackButton>
+        <BackButton />
         <h4 className="title">Account</h4>
         <h6 className="subtitle">Profile</h6>
       </div>
       <main className="main-content">
-        <section className="user-id">
+        {/* <section className="user-id">
           <div className="id-picture">
             <img src="./public/img/images.jpg" alt="ID" />
           </div>
@@ -55,7 +54,7 @@ const AccountPage = () => {
             <span className="id-label">ID</span>
             <span className="id-number">123456789</span>
           </div>
-        </section>
+        </section> */}
         <section className="account-info">
           <div className="profile-card">
             <div className="profile-info">
@@ -76,9 +75,9 @@ const AccountPage = () => {
                     </button>
                   </div>
                   <div className="profile-info-2-2">
-                    <div className="stat-buttons">
-                      <button className="stat-button">Stat 1</button>
-                      <button className="stat-button">Stat 2</button>
+                    <div className="stat-labels">
+                      <label className="stat-label">Stat 1</label>
+                      <label className="stat-label">Stat 2</label>
                     </div>
                   </div>
 
