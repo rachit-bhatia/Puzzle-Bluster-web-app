@@ -50,7 +50,6 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
 
   useEffect(() => {
     setTimerActive(true);
-    setTimeElapsed(0);
   }, [levelId, boardGrid]);
 
 
