@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./puzzleSelection.css";
 import { auth } from "../../firebase/firebase";
+import BackButton from "../../components/backButton";
 
 const puzzles = [
   { id: 1, name: "Word Puzzles", type: "word" },
@@ -32,9 +33,7 @@ const PuzzleSelection: React.FC = () => {
   return (
     <div className="container">
       <div className="header">
-        <button className="backButton" onClick={() => navigate("/home")}>
-          ←
-        </button>
+        <BackButton />
         <h4 className="title">Select Puzzle</h4>
         <h6 className="subtitle">Word / Math</h6>
       </div>

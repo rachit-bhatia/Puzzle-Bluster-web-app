@@ -1,50 +1,63 @@
-import React from 'react';
+import React from "react";
 import { ReactElement } from "react";
 import DisplayMathBoard from "./displayMathBoard";
-import LevelIndicator from './levelIndicator';
+import LevelIndicator from "./levelIndicator";
 
 let puzzleSolutions: string[];
 
-function FillMathBoardGrid(gridHeight: number, levelSolutions: string[], isHardLevel: boolean, isMediumLevel: boolean): string[][] {
-    const grid = new Array(gridHeight).fill(null).map(() => new Array(5).fill(''));
+function FillMathBoardGrid(
+  gridHeight: number,
+  levelSolutions: string[],
+  isHardLevel: boolean,
+  isMediumLevel: boolean
+): string[][] {
+  const grid = new Array(gridHeight)
+    .fill(null)
+    .map(() => new Array(5).fill(""));
 
-    puzzleSolutions = levelSolutions;
-    console.log(`Filling Board Grid with Solutions: `, puzzleSolutions);
+  puzzleSolutions = levelSolutions;
+  console.log(`Filling Board Grid with Solutions: `, puzzleSolutions);
 
-    for (let i = 0; i < gridHeight; i++) {
-        let solution = puzzleSolutions[i];
-        if (!solution) {
-            console.error(`No solution found for grid row ${i}.`);
-            continue;
-        }
-        grid[i] = generatePuzzleRow(solution, isHardLevel,isMediumLevel);
+  for (let i = 0; i < gridHeight; i++) {
+    let solution = puzzleSolutions[i];
+    if (!solution) {
+      console.error(`No solution found for grid row ${i}.`);
+      continue;
     }
+    grid[i] = generatePuzzleRow(solution, isHardLevel, isMediumLevel);
+  }
 
-    return grid;
+  return grid;
 }
 
-function generatePuzzleRow(solution: string, isHardLevel: boolean, isMediumLevel: boolean): string[] {
-    let row: string[] = [];
+function generatePuzzleRow(
+  solution: string,
+  isHardLevel: boolean,
+  isMediumLevel: boolean
+): string[] {
+  let row: string[] = [];
 
-    if (isMediumLevel)
-        row = [solution[0], '?', '?', '=', solution[4]];
-    else if (!isHardLevel && !isMediumLevel) {
-        row = [solution[0], '?', solution[2], '=', solution[4]];
-    } else {
-        row = ['?', '?', '?', '=', solution[4]];
-    }
+  if (isMediumLevel) row = [solution[0], "?", "?", "=", solution[4]];
+  else if (!isHardLevel && !isMediumLevel) {
+    row = [solution[0], "?", solution[2], "=", solution[4]];
+  } else {
+    row = ["?", "?", "?", "=", solution[4]];
+  }
 
-    return row;
+  return row;
 }
 
 const MathPuzzleBoard = ({ newBoard, levelIndicator }): ReactElement => {
-    return (
-        <div>
-            <h1 className="gameHeading">Math Puzzle</h1>
-            <LevelIndicator level={levelIndicator} />
-            <DisplayMathBoard boardGrid={newBoard} puzzleSolutions={puzzleSolutions} />
-        </div>
-    );
-}
+  return (
+    <div>
+      <h1 className="gameHeading">Math Puzzle</h1>
+      <LevelIndicator level={levelIndicator} />
+      <DisplayMathBoard
+        boardGrid={newBoard}
+        puzzleSolutions={puzzleSolutions}
+      />
+    </div>
+  );
+};
 
 export { MathPuzzleBoard, FillMathBoardGrid, puzzleSolutions };

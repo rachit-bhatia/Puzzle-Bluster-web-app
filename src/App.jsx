@@ -11,12 +11,15 @@ import RenderMathPuzzle from "./pages/mathPuzzle/renderMathPuzzle";
 import PuzzleSelection from "./pages/puzzleSelection/puzzleSelection";
 import HomePageGuest from "./pages/homeGuest/homeGuest";
 import Leaderboard from "./pages/leaderboard/leaderboard";
+import DesktopPage from "./pages/desktopPage/desktopPage";
+import NavBar from "./components/navBar";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route index element={<SignInPage />} />
+        <Route index element={<DesktopPage />} />
+        {/* <Route index element={<SignInPage />} /> */}
         <Route path="/home" element={<HomePage />} />
         <Route path="/leaderboard" element={<Leaderboard />} />
         <Route path="/home-guest" element={<HomePageGuest />} />

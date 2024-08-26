@@ -434,9 +434,9 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
     return (
       <div>
         <div className="darkBG" onClick={() => setDialogOpen(false)} />
-        <div className="centered">
+        <div className="centered padding" style={{ textAlign: "center" }}>
           <div className="modal">
-            <div className="modalHeader">
+            <div className="modalHeader padding">
               <h5 className="heading">Save Game</h5>
             </div>
             <div className="modalContent">
