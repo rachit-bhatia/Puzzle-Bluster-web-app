@@ -16,7 +16,7 @@ const DesktopPage: React.FC = () => {
               <br />
               Puzzle at a <span className="highlight">Time!</span>
             </h1>
-            <p className="subtitle">Multiple puzzle games</p>
+            <p className="desktop-subtitle">Multiple puzzle games</p>
             <div className="button-container">
               <button
                 className="action-button start-button"

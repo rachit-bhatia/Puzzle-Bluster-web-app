@@ -42,10 +42,10 @@ const AccountPage = () => {
     <div className="account-page">
       <div className="header">
         <BackButton />
-        <h4 className="title">Account</h4>
-        <h6 className="subtitle">Profile</h6>
+        <div className="title">Account</div>
+        <div className="subtitle">Profile</div>
       </div>
-      <main className="main-content">
+      <main className="content">
         {/* <section className="user-id">
           <div className="id-picture">
             <img src="./public/img/images.jpg" alt="ID" />

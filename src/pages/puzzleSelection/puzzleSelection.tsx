@@ -34,8 +34,8 @@ const PuzzleSelection: React.FC = () => {
     <div className="container">
       <div className="header">
         <BackButton />
-        <h4 className="title">Select Puzzle</h4>
-        <h6 className="subtitle">Word / Math</h6>
+        <div className="title">Select Puzzle</div>
+        <div className="subtitle">Word / Math</div>
       </div>
       <div className="puzzle-carousel">
         <div className="arrow left" onClick={goToPreviousPuzzle}>
