@@ -5,6 +5,7 @@ import BackButton from "../../components/backButton";
 import { getAuth } from "firebase/auth";
 import { UserAccount } from "../../models/shared";
 import { act } from "react-dom/test-utils";
+import { auth } from "../../firebase/firebase";
 function Leaderboard() {
   const navigate = useNavigate();
 
@@ -34,9 +35,27 @@ function Leaderboard() {
   const [overallSortedUsers, setOverallSortedUsers] = useState<
     UserAccount[] | null
   >(null);
+
+  const[userAvatar,setUserAvatar] = useState("");
+
+  // Function to determine the image source
+  const getAvatarSrc = () => {
+    if (userAvatar === "") {
+      return ""; // No image source
+    } else if (userAvatar === "male") {
+      return "./public/img/maleAvatar.jpg";
+    } else if (userAvatar === "female") {
+      return "./public/img/femaleAvatar.jpg";
+    }
+    return ""; // Default case if no match
+  };
+  
+
+
   useEffect(() => {
     const auth = getAuth();
     const user = auth.currentUser;
+
 
     const fetchUserData = async () => {
       if (user) {
@@ -48,6 +67,7 @@ function Leaderboard() {
               UserAccount.getUserRank(user.uid, "math"),
               UserAccount.getUserRank(user.uid, "word"),
               UserAccount.getUserRank(user.uid, "overall"),
+              UserAccount.getUserByUuid(user.uid)
             ]);
 
           // Update state with the fetched data
@@ -61,6 +81,8 @@ function Leaderboard() {
 
           setOverallRank(overallData?.rank ?? null);
           setOverallSortedUsers(overallData?.sortedUsers ?? null);
+
+          setUserAvatar(userAccount.userAvatar? userAccount.userAvatar : "")  
         } catch (error) {
           console.error("Error fetching user data:", error);
         }
@@ -71,26 +93,26 @@ function Leaderboard() {
 
   const ProfileSection: React.FC = () => {
     return (
-      <div className="profile-section">
-        <img src="user-image-url" alt="Profile" className="profile-image" />
+      <div className="profile-section-leaderboard">
+        <img src={getAvatarSrc()} className="profile-image" />
 
-        <div className="profile-info">
-          <h1 className="profile-name">
+        <div className="profile-info-leaderboard">
+          <h1 className="profile-name-leaderboard">
             {userRetrieved?.username?.split("@")[0]}
           </h1>
 
-          <div className="profile-ranks">
-            <div className="profile-rank">
+          <div className="profile-ranks-leaderboard">
+            <div className="profile-rank-leaderboard">
               <span>Math Rank</span>
               <h2>{mathRank ?? "N/A"}</h2>
             </div>
-            <div className="profile-rank">
+            <div className="profile-rank-leaderboard">
               <span>Word Rank</span>
               <h2>{wordRank ?? "N/A"}</h2>
             </div>
           </div>
         </div>
-        <div className="profile-rank">
+        <div className="profile-rank-leaderboard">
           <span>Overall Rank</span>
           <h2>{overallRank ?? "N/A"}</h2>
         </div>
@@ -138,7 +160,7 @@ function Leaderboard() {
       }
     
     return (
-        <div className="score-list">
+        <div className="score-list-leaderboard">
         {sortedUsers.map((user, index) => {
           // Display the username or "N/A" if it's null
           const displayName = user.username ? user.username.split("@")[0] : "N/A";
@@ -152,17 +174,21 @@ function Leaderboard() {
           } else { // activeTab === 'overall'
             score = (user.wordScore ?? 0) + (user.mathScore ?? 0);
           }
+
+          let userOverallRank = overallSortedUsers?.findIndex(overallUser => overallUser.userUuid === user.userUuid);
   
           return (
-            <div key={index} className="score-item">
-              <div className="rank">{index + 1}</div>
+            <div key={index} className="score-item-leaderboard">
+              <div className="rank-leaderboard">{index + 1}</div>
               {/* Assuming index as rank */}
-              <div className="score-info">
-                <div className="name">{displayName}</div>
+              <div className="score-info-leaderboard">
+                <div className="name-leaderboard">{displayName}</div>
                 {/* Use displayName */}
-                <div className="score">{score}</div>
+                <div className="score-leaderboard">{score}</div>
                 {/* Display the score based on activeTab */}
-                <div className="rank-number">Overall Rank {index + 1}</div>
+                <div className="rank-number-leaderboard">
+                  Overall Rank { userOverallRank? userOverallRank + 1 : "N/A"}
+                </div>
               </div>
             </div>
           );

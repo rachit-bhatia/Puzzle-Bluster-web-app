@@ -29,6 +29,7 @@ class UserAccount {
   private _timeElapsed: number | null;
   private _wordScore: number | null;
   private _mathScore: number | null;
+  private _userAvatar: string | null;
 
   // private _wordsFound: string[]; // can remove this if not needed
 
@@ -42,6 +43,8 @@ class UserAccount {
     this._timeElapsed = 0;
     this._wordScore = 0;
     this._mathScore = 0;
+    this._userAvatar = "male";
+
 
   }
 
@@ -79,6 +82,10 @@ class UserAccount {
     return this._wordScore
   }
 
+  get userAvatar(){
+    return this._userAvatar
+  }
+
 
   // Setters
 
@@ -113,11 +120,15 @@ class UserAccount {
   }
 
   set mathScore(score){
-    this.mathScore = score
+    this._mathScore = score
   }
 
   set wordScore(score){
-    this.mathScore = score
+    this._wordScore = score
+  }
+
+  set userAvatar(userAvatar){
+    this._userAvatar = userAvatar
   }
 
 
@@ -132,7 +143,7 @@ class UserAccount {
     this._username = data["username"];
     this._mathScore = data["mathScore"] || 0;
     this._wordScore = data["wordScore"] || 0;
-
+    this._userAvatar = data["userAvatar"]
   }
 
   // CRUD operations
@@ -207,7 +218,8 @@ class UserAccount {
         timeElapsed: user.timeElapsed,
         username: user.username,
         mathScore : user.mathScore,
-        wordScore : user.wordScore
+        wordScore : user.wordScore,
+        userAvatar : user.userAvatar
 
       });
     } else {
@@ -230,6 +242,24 @@ class UserAccount {
       });
     } else {
       throw new Error("Cannot update user without a userUuid");
+    }
+  }
+
+  static async changeAvatar(avatar : String , user: UserAccount): Promise<boolean> {
+    try {
+      // Reference to the user document
+      const userRef = doc(UserAccount.collection, user.docId);
+
+      // Update the avatar field
+      await updateDoc(userRef, {
+        userAvatar: avatar
+      });
+
+      console.log('Avatar updated successfully.');
+      return true
+    } catch (error) {
+      console.error('Error updating avatar:', error);
+      return false
     }
   }
 

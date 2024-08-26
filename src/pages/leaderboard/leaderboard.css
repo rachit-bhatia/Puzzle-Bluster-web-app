@@ -1,123 +1,130 @@
-html,
-body {
-  height: 100%;
-  margin: 0;
-  overflow: hidden; /* Prevent scrollbars on the entire page */
-  font-family: "Poppins", sans-serif;
-}
+html, body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden; /* Prevent scrollbars on the entire page */
+  }
+  
+  
+  .page-content{
+    display: flex;
+    width: 100%;
+    height:100%;
+    align-items: center;
+    flex-direction: column;
+  }
+  
+  
+  .profile-section-leaderboard {
+    display: flex;
+    align-items: center;
+    background-color:  rgb(167, 132, 103);
+    padding: 20px;
+    border-radius: 10px;
+    color: #fff;
+    width:80%;
+    height : 30%;
+    margin-bottom: 20px;
+  }
+  
+  
+  .profile-image {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    border: 2px solid rgb(255, 255, 255); /* Example style for image border */
+    margin-right: 20px;
+  }
+  
+  .profile-info-leaderboard {
+    flex: 1;
+  }
+  
+  .profile-name-leaderboard {
+    font-size: 36px;
+    margin-bottom: 20px;
+  
+  }
+  
+  .profile-ranks-leaderboard {
+    display: flex;
+    gap: 40px;
+  
+  }
+  
+  .profile-rank-leaderboard {
+    text-align: center;
+  }
+  
+  
+  
+  .tab-navigation {
+    display: flex;
+    width: 80%;
+    gap: 10px;
+    margin: 20px 0;
+  }
+  
+  .tab {
+    padding: 10px 20px;
+    border: none;
+    background-color:  rgb(167, 132, 103);
+    color: #363131;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  .tab.active {
+    border-bottom: 2px solid rgb(165, 79, 8); /* Example active tab style */
+    color : white
+  }
+  
+  
+  
+  .score-list-leaderboard {
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+    gap: 10px;
+    height: 50%; /* Adjust [header-height] as needed */
+    overflow-y: auto; /* Add vertical scrollbar if content overflows */
+  }
+  
+  .score-item-leaderboard {
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .rank-leaderboard {
+    font-size: 24px;
+    font-weight: bold;
+    margin-right: 20px;
+    color : black;
+  }
 
-.page-content {
-  display: flex;
-  width: 100%;
-  height: 100%;
-  align-items: center;
-  flex-direction: column;
-}
-
-.profile-section {
-  display: flex;
-  align-items: center;
-  background-color: rgb(167, 132, 103);
-  padding: 20px;
-  border-radius: 10px;
-  color: #fff;
-  width: 80%;
-  height: 30%;
-  margin-bottom: 20px;
-}
-
-.profile-image {
-  width: 200px;
-  height: 200px;
-  border-radius: 50%;
-  border: 2px solid rgb(255, 255, 255); /* Example style for image border */
-  margin-right: 20px;
-}
-
-.profile-info {
-  flex: 1;
-}
-
-.profile-name {
-  font-size: 36px;
-  margin-bottom: 40px;
-}
-
-.profile-ranks {
-  display: flex;
-  gap: 40px;
-}
-
-.profile-rank {
-  text-align: center;
-}
-
-.tab-navigation {
-  display: flex;
-  width: 80%;
-  gap: 10px;
-  margin: 20px 0;
-}
-
-.tab {
-  padding: 10px 20px;
-  border: none;
-  background-color: rgb(167, 132, 103);
-  color: #363131;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.tab.active {
-  border-bottom: 2px solid rgb(165, 79, 8); /* Example active tab style */
-  color: white;
-}
-
-.score-list {
-  display: flex;
-  flex-direction: column;
-  width: 80%;
-  gap: 10px;
-  height: calc(100vh - [header-height]); /* Adjust [header-height] as needed */
-  overflow-y: auto; /* Add vertical scrollbar if content overflows */
-}
-
-.score-item {
-  display: flex;
-  align-items: center;
-  background-color: #fff;
-  padding: 10px;
-  border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.rank {
-  font-size: 24px;
-  font-weight: bold;
-  margin-right: 20px;
-  color: black;
-}
-
-.name {
+.name-leaderboard {
   margin-right: 20px;
   color: rgb(83, 80, 80);
 }
 
-.score-info {
+.score-info-leaderboard {
   flex: 1;
 }
 
-.score-info h3 {
+.score-info-leaderboard h3 {
   margin-bottom: 5px;
 }
 
-.score-info .score {
+.score-info-leaderboard .score-leaderboard {
   font-size: 20px;
   font-weight: bold;
   color: #d1a575;
 }
 
-.rank-number {
+.rank-number-leaderboard {
   font-size: 14px;
   color: #999;
 }
