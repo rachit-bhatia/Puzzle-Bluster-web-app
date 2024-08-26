@@ -94,10 +94,10 @@ function Leaderboard() {
   const ProfileSection: React.FC = () => {
     return (
       <div className="profile-section-leaderboard">
-        <img src={getAvatarSrc()} className="profile-image-leaderboard" />
+        <img src={getAvatarSrc()} className="profile-image" />
 
         <div className="profile-info-leaderboard">
-          <h1 className="profile-name">
+          <h1 className="profile-name-leaderboard">
             {userRetrieved?.username?.split("@")[0]}
           </h1>
 

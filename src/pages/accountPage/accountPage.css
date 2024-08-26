@@ -285,9 +285,14 @@
   margin-top: 10px;
 }
 
+.account-page .select-button {
+  background-color: #ba9366; /* Grey color for disabled state */
+  color: white
+}
+
 .account-page .select-button:disabled {
   background-color: grey; /* Grey color for disabled state */
-  color: lightgrey;
+  color: rgb(255, 255, 255);
 }
 
 .account-page .button-row {
