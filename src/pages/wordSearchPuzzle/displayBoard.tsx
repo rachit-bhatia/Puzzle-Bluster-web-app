@@ -6,15 +6,15 @@ import React, { useEffect } from "react";
 import { ReactElement, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import AchievementManager from "./achievementManager";
-import LevelIndicator from './levelIndicator';
-import HintButton from '../hintButton';
+import LevelIndicator from '../../components/levelIndicator';
+import HintButton from '../../components/hintButton';
 import { wordsToFind, allWordsCoordinates } from "./fillBoardGrid";
 
 const wordFoundColor = "rgb(18, 119, 113)";
 const hintColor = "rgb(18, 118, 113)";
 let hintedLetters: string[] = [];  //keep track of letters shown from hints
 
-const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
+const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHints }): ReactElement => {
   let selection = "";
 
   const navigate = useNavigate();
@@ -34,6 +34,18 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
   const [foundPositions, setFoundPositions] = useState<
     Array<{ row: number; col: number }>
   >([]);
+
+  // hintedLetters = []; //reset hinted letters on new level
+
+  //set remaining number of hints
+  if ((difficulty!="hard" && hintedLetters.length >= 2) || (difficulty=="hard" && hintedLetters.length >= 4)) {
+    setRemainingHints(0);
+    setHintDisabled(true);
+  } else if (difficulty=="hard") {
+    setRemainingHints(2 - hintedLetters.length/2);
+  } else {
+    setRemainingHints(2 - hintedLetters.length);
+  }
 
 
   useEffect(() => {
@@ -416,6 +428,7 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
 
         //display completed level message
         setDialogOpen(true);
+        setHintDisabled(true);
         removeSave();
       }
       // checkCompletion();
@@ -519,6 +532,7 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
                     //navigate back to level selection if last level
                     setFoundPositions([]);
                     hintedLetters = [];
+                    setHintDisabled(false);
                     levelId != "level3"
                       ? navigate(`/render-word/${difficulty}/${nextLevelID}/0`)
                       : navigate("/render-word/levelselection");
@@ -653,15 +667,24 @@ function showLetterOnHint(setButtonDisabled) {
 const WordSearchBoard = ({newBoard, levelIndicator}): ReactElement => {
 
   const [isHintDisabled, setHintDisabled] = useState(false);
+  const [remainingHints, setRemainingHints] = useState(0);
 
     return (
         <div>
             <h1 className="gameHeading">Word Search</h1>
             <div style={{position: 'absolute', display: 'flex', top: '10px', right: '10px'}}>
-                <HintButton isHintDisabled={isHintDisabled} setHintDisabled={setHintDisabled} hintFunction={showLetterOnHint}></HintButton>
+                <HintButton 
+                  isHintDisabled={isHintDisabled} 
+                  setHintDisabled={setHintDisabled} 
+                  hintFunction={showLetterOnHint} 
+                  remainingHints={remainingHints}/>
                 <LevelIndicator level={levelIndicator} />
             </div>
-            <DisplayBoard boardGrid={newBoard} wordsToFind={wordsToFind}/>
+            <DisplayBoard 
+              boardGrid={newBoard} 
+              wordsToFind={wordsToFind} 
+              setHintDisabled={setHintDisabled}
+              setRemainingHints={setRemainingHints}/>
         </div>
     )
 }

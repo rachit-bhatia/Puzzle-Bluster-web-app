@@ -1,7 +1,6 @@
 import React from 'react';
 import { ReactElement } from "react";
 import DisplayMathBoard from "./displayMathBoard";
-import LevelIndicator from './levelIndicator';
 
 let puzzleSolutions: string[];
 
@@ -41,8 +40,7 @@ const MathPuzzleBoard = ({ newBoard, levelIndicator }): ReactElement => {
     return (
         <div>
             <h1 className="gameHeading">Math Puzzle</h1>
-            <LevelIndicator level={levelIndicator} />
-            <DisplayMathBoard boardGrid={newBoard} puzzleSolutions={puzzleSolutions} />
+            <DisplayMathBoard boardGrid={newBoard} puzzleSolutions={puzzleSolutions} levelIndicator={levelIndicator}/>
         </div>
     );
 }

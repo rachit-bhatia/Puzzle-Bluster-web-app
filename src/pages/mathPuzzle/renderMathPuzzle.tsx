@@ -1,13 +1,18 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import PuzzleContainer from "./mathPuzzleContainer";
 import { useParams } from 'react-router-dom';
+import { db } from "../../firebase/firebase";
+import { doc, getDoc } from "firebase/firestore";
+import { auth } from "../../firebase/firebase";
 import { MathPuzzleBoard, FillMathBoardGrid } from "./fillMathBoardGrid";
 import { solutionsEasy, solutionsMedium, solutionsHard } from "./puzzleSolutions";
 
 
 function RenderMathPuzzle() {
-    const { difficulty, levelId } = useParams();
+    const { difficulty, levelId, loadFlag } = useParams();
+    const boolLoadFlag = Number(loadFlag) === 1;
     console.log(`Difficulty: ${difficulty}, Level ID: ${levelId}`);
+    const [loadBoardGrid, setBoardGrid] = useState<string[][]>([]);
 
     let storedGrid: string | null;
     let gridHeight: number;
@@ -18,6 +23,42 @@ function RenderMathPuzzle() {
     let isMediumLevel: boolean = false;
 
     storedGrid = sessionStorage.getItem('grid');
+
+     // Checks if the game state is to be loaded
+  useEffect(() => {
+    const loadGameState = async () => {
+      if (boolLoadFlag) {
+        const user = auth.currentUser;
+        if (user) {
+          const userRef = doc(db, "users", user.email);
+          try {
+            const docSnapshot = await getDoc(userRef);
+            if (docSnapshot.exists()) {
+              const data = docSnapshot.data();
+              const puzzleSaveState = data.puzzleSaveState;
+              const boardGrid = JSON.parse(puzzleSaveState.board);
+
+              // Now you can use these deserialized values in your application
+              console.log("Game state loaded successfully", {
+                boardGrid,
+                difficulty,
+                levelId,
+              });
+
+              setBoardGrid(boardGrid);
+            } else {
+              console.log("No saved game state found");
+            }
+          } catch (error) {
+            console.error("Error loading game state: ", error);
+          }
+        } else {
+          console.error("No authenticated user found");
+        }
+      }
+    };
+    loadGameState();
+  }, [boolLoadFlag]);
 
     // Assign the puzzle solutions based on difficulty
     if (difficulty === 'easy') {
@@ -69,12 +110,17 @@ function RenderMathPuzzle() {
         console.error("Level solutions are undefined.");
         return <div>Error: Level solutions are undefined.</div>;
     }
+    let board: String[][] = [];
+    if (!boolLoadFlag){
+        board = FillMathBoardGrid(gridHeight, levelSolutions, isHardLevel,isMediumLevel);
+    } else {
+        board = loadBoardGrid
+    }
 
-    const board = FillMathBoardGrid(gridHeight, levelSolutions, isHardLevel,isMediumLevel);
     const boardtype = <MathPuzzleBoard newBoard={board} levelIndicator={levelIndicator!}/>
 
     const solvedPuzzles = []; // replace with the solvedPuzzles from the corresponding difficulty level
-    const timeElapsed = 30;
+    const timeElapsed = 0;
 
     return (
         <div>
