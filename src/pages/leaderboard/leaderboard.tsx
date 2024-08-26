@@ -93,26 +93,26 @@ function Leaderboard() {
 
   const ProfileSection: React.FC = () => {
     return (
-      <div className="profile-section">
-        <img src={getAvatarSrc()} className="profile-image" />
+      <div className="profile-section-leaderboard">
+        <img src={getAvatarSrc()} className="profile-image-leaderboard" />
 
-        <div className="profile-info">
+        <div className="profile-info-leaderboard">
           <h1 className="profile-name">
             {userRetrieved?.username?.split("@")[0]}
           </h1>
 
-          <div className="profile-ranks">
-            <div className="profile-rank">
+          <div className="profile-ranks-leaderboard">
+            <div className="profile-rank-leaderboard">
               <span>Math Rank</span>
               <h2>{mathRank ?? "N/A"}</h2>
             </div>
-            <div className="profile-rank">
+            <div className="profile-rank-leaderboard">
               <span>Word Rank</span>
               <h2>{wordRank ?? "N/A"}</h2>
             </div>
           </div>
         </div>
-        <div className="profile-rank">
+        <div className="profile-rank-leaderboard">
           <span>Overall Rank</span>
           <h2>{overallRank ?? "N/A"}</h2>
         </div>
@@ -160,7 +160,7 @@ function Leaderboard() {
       }
     
     return (
-        <div className="score-list">
+        <div className="score-list-leaderboard">
         {sortedUsers.map((user, index) => {
           // Display the username or "N/A" if it's null
           const displayName = user.username ? user.username.split("@")[0] : "N/A";
@@ -178,15 +178,15 @@ function Leaderboard() {
           let userOverallRank = overallSortedUsers?.findIndex(overallUser => overallUser.userUuid === user.userUuid);
   
           return (
-            <div key={index} className="score-item">
-              <div className="rank">{index + 1}</div>
+            <div key={index} className="score-item-leaderboard">
+              <div className="rank-leaderboard">{index + 1}</div>
               {/* Assuming index as rank */}
-              <div className="score-info">
-                <div className="name">{displayName}</div>
+              <div className="score-info-leaderboard">
+                <div className="name-leaderboard">{displayName}</div>
                 {/* Use displayName */}
-                <div className="score">{score}</div>
+                <div className="score-leaderboard">{score}</div>
                 {/* Display the score based on activeTab */}
-                <div className="rank-number">
+                <div className="rank-number-leaderboard">
                   Overall Rank { userOverallRank? userOverallRank + 1 : "N/A"}
                 </div>
               </div>
