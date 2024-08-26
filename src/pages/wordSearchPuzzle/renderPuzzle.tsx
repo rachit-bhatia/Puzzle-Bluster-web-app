@@ -4,7 +4,8 @@ import { db } from "../../firebase/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import { auth } from "../../firebase/firebase";
 import { useParams } from "react-router-dom";
-import { WordSearchBoard, FillBoardGrid } from "./fillBoardGrid";
+import { FillBoardGrid } from "./fillBoardGrid";
+import WordSearchBoard from "./displayBoard";
 import {
   wordsToFindEasy,
   wordsToFindMedium,

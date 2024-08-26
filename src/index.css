@@ -147,3 +147,9 @@ button:disabled:hover {
   transform: scale(1.05); /* Slightly increase the size on hover */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add a shadow effect */
 }
+
+
+button:disabled {
+  background-color: #b3a08e;
+  cursor: not-allowed;
+}

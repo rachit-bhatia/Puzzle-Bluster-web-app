@@ -4,11 +4,14 @@ import { auth } from "../../firebase/firebase";
 import { doc, setDoc, updateDoc, getDoc } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
 import AchievementManagerMath from "./achievementManagerMath";
+import HintButton from "../../components/hintButton";
+import LevelIndicator from "../../components/levelIndicator";
 
-const DisplayMathBoard = ({ boardGrid, puzzleSolutions }) => {
+const DisplayMathBoard = ({ boardGrid, puzzleSolutions, levelIndicator }) => {
   const navigate = useNavigate();
-  const { difficulty, levelId } = useParams();
-
+  const { difficulty, levelId, loadFlag } = useParams();
+  const boolLoadFlag = Number(loadFlag) === 1;
+  const [completedLevels, setCompletedLevels] = useState({});
   const [selectedCell, setSelectedCell] = useState<[number, number] | null>(
     null
   );
@@ -16,8 +19,12 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions }) => {
   const [timerActive, setTimerActive] = useState(false);
   const [solvedPuzzles, setSolvedPuzzles] = useState<string[]>([]);
   const [cellStatus, setCellStatus] = useState<string[][]>([]);
+  const [isSaveDialogOpen, setSaveDialogOpen] = useState(false);
   const [editableCells, setEditableCells] = useState<boolean[][]>([]);
   const [isDialogOpen, setDialogOpen] = useState(false);
+  const [hintUsed, setHintUsed] = useState(false);
+  const [remainingHints, setRemainingHints] = useState(0);
+  const [isHintDisabled, setHintDisabled] = useState(false);
 
   const levelMap = {
     level1: "level2",
@@ -25,19 +32,27 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions }) => {
     level3: "level3",
   };
 
-  const nextLevelID = levelMap[levelId] || "level3"; // Default to level3 if anything goes wrong
+  const nextLevelID = levelMap[levelId] || "level3";
 
   useEffect(() => {
     resetBoard();
+    loadProgress();
+
+    loadGameState();
   }, [boardGrid]);
 
   const resetBoard = () => {
-    setCellStatus(boardGrid.map((row) => row.map(() => ""))); // Initialize with empty strings
+    setCellStatus(boardGrid.map((row) => row.map(() => "")));
     setEditableCells(boardGrid.map((row) => row.map((cell) => cell === "?")));
     setTimeElapsed(0);
     setTimerActive(false);
     setSolvedPuzzles([]);
     setSelectedCell(null);
+    setHintUsed(false);
+
+    const hintsBasedOnDifficulty =
+      difficulty === "easy" ? 1 : difficulty === "medium" ? 2 : 2;
+    setRemainingHints(hintsBasedOnDifficulty);
   };
 
   useEffect(() => {
@@ -51,6 +66,164 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions }) => {
 
     return () => clearInterval(interval);
   }, [timerActive]);
+
+  const handleHintClick = (setButtonDisabled) => {
+    const hintableRows = [];
+
+    // Identify rows that need a hint
+    for (let rowIndex = 0; rowIndex < boardGrid.length; rowIndex++) {
+      const row = boardGrid[rowIndex];
+      if (
+        !["+","-","*","/"].includes(row[1]) || 
+        cellStatus[rowIndex][1] !== "correct" // Ensure hint is not for a correct column
+      ) {
+        hintableRows.push(rowIndex);
+      }
+    }
+
+    if (hintableRows.length > 0) {
+      // Select a random row from the hintable rows
+      const randomIndex = Math.floor(Math.random() * hintableRows.length);
+      const rowIndex = hintableRows[randomIndex];
+
+      const updatedGrid = [...boardGrid];
+      updatedGrid[rowIndex][1] = puzzleSolutions[rowIndex][1]; // Provide hint by revealing the operator
+
+      setHintUsed(true);
+      setRemainingHints((prevHints) => prevHints - 1);
+      saveHintsToDB();
+      checkSolution(updatedGrid, rowIndex);
+    } 
+
+    if (remainingHints == 1) {
+      setHintDisabled(true); // Disable hint button when hints have been used up
+    }
+
+  };
+
+  const saveHintsToDB = async () => {
+    const user = auth.currentUser;
+    if (user) {
+      const userRef = doc(db, "users", user.email);
+      try {
+        await updateDoc(userRef, {
+          [`${difficulty}${levelId}HintsRemaining`]: remainingHints,
+        });
+        console.log("Remaining hints saved successfully");
+      } catch (error) {
+        console.error("Error saving remaining hints: ", error);
+      }
+    }
+  };
+
+  const loadGameState = async () => {
+    if (boolLoadFlag) {
+      const user = auth.currentUser;
+      if (user) {
+        const userRef = doc(db, "users", user.email);
+        try {
+          const docSnapshot = await getDoc(userRef);
+          if (docSnapshot.exists()) {
+            const data = docSnapshot.data();
+            const puzzleSaveState = data.puzzleSaveState;
+            const savedCellStatus = JSON.parse(puzzleSaveState.cellStatus);
+            const savedEditableCells = JSON.parse(puzzleSaveState.editableCells);
+            const elapsedTime = puzzleSaveState.gameTime;
+
+            setCellStatus(savedCellStatus);
+            setEditableCells(savedEditableCells);
+            setTimeElapsed(elapsedTime);
+            setHintUsed(puzzleSaveState.hintUsed || false);
+
+            const savedHints = data[`${difficulty}${levelId}HintsRemaining`];
+            const maxHints = difficulty === "easy" ? 1 : difficulty === "medium" ? 2 : 3;
+            if (savedHints !== undefined && savedHints <= maxHints) {
+              setRemainingHints(savedHints);
+            } else {
+              setRemainingHints(maxHints);
+            }
+
+            checkAllSolutions(boardGrid, savedCellStatus);
+            setTimerActive(true);
+          } else {
+            console.log("No saved game state found");
+          }
+        } catch (error) {
+          console.error("Error loading game state: ", error);
+        }
+      } else {
+        console.error("No authenticated user found");
+      }
+    } else {
+      setTimerActive(true);
+    }
+  };
+
+  async function savetoDB() {
+    const user = auth.currentUser;
+    if (user) {
+      const userRef = doc(db, "users", user.email);
+      const boardGridString = JSON.stringify(boardGrid);
+      const cellStatusString = JSON.stringify(cellStatus);
+      const editableCellsString = JSON.stringify(editableCells);
+
+      const puzzleSaveState = {
+        gameTime: timeElapsed,
+        board: boardGridString,
+        cellStatus: cellStatusString,
+        editableCells: editableCellsString,
+        difficulty: difficulty,
+        levelId: levelId,
+        puzzleType: "math",
+        hintUsed: hintUsed,
+        remainingHints: remainingHints, // Save remaining hints
+      };
+      try {
+        const docSnapshot = await getDoc(userRef);
+        if (docSnapshot.exists()) {
+          await updateDoc(userRef, {
+            puzzleSaveState: puzzleSaveState,
+            [`${difficulty}${levelId}HintsRemaining`]: remainingHints,
+          });
+          console.log("Game state saved successfully");
+        } else {
+          await setDoc(userRef, {
+            puzzleSaveState: puzzleSaveState,
+            [`${difficulty}${levelId}HintsRemaining`]: remainingHints,
+          });
+          console.log("Game state saved successfully");
+        }
+      } catch (error) {
+        console.error("Error saving game state: ", error);
+      }
+    } else {
+      console.error("No authenticated user found");
+    }
+  }
+
+  const checkAllSolutions = (grid, loadedCellStatus) => {
+    const updatedCellStatus = [...loadedCellStatus];
+    grid.forEach((row, rowIndex) => {
+      let rowIsCorrect = true;
+      row.forEach((cellValue, colIndex) => {
+        const correctCellInput = puzzleSolutions[rowIndex][colIndex];
+        if (cellValue === correctCellInput) {
+          updatedCellStatus[rowIndex][colIndex] = "correct";
+        } else {
+          updatedCellStatus[rowIndex][colIndex] = "incorrect";
+          rowIsCorrect = false;
+        }
+      });
+
+      if (rowIsCorrect) {
+        updatedCellStatus[rowIndex] = updatedCellStatus[rowIndex].map(
+          () => "correct"
+        );
+      }
+    });
+
+    setCellStatus(updatedCellStatus);
+  };
 
   const handleCellClick = (rowIndex, colIndex) => {
     if (editableCells[rowIndex] && editableCells[rowIndex][colIndex]) {
@@ -78,20 +251,18 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions }) => {
     const updatedEditableCells = [...editableCells];
     let rowIsCorrect = true;
 
-    // Check each cell in the row
     grid[rowIndex].forEach((cellValue, colIndex) => {
       const correctCellInput = puzzleSolutions[rowIndex][colIndex];
 
       if (cellValue === correctCellInput) {
         updatedCellStatus[rowIndex][colIndex] = "correct";
-        updatedEditableCells[rowIndex][colIndex] = false; // Disable further editing
+        updatedEditableCells[rowIndex][colIndex] = false;
       } else {
         updatedCellStatus[rowIndex][colIndex] = "incorrect";
-        rowIsCorrect = false; // If any cell is incorrect, the row isn't fully correct
+        rowIsCorrect = false;
       }
     });
 
-    // If the entire row is correct, mark the whole row as correct
     if (rowIsCorrect) {
       updatedCellStatus[rowIndex] = updatedCellStatus[rowIndex].map(
         () => "correct"
@@ -101,14 +272,22 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions }) => {
     setCellStatus(updatedCellStatus);
     setEditableCells(updatedEditableCells);
 
-    // Check if all rows are solved to show the completion dialog
     const allSolved = updatedCellStatus.every((row) =>
       row.every((status) => status === "correct")
     );
     if (allSolved) {
+      const levelStr = levelId?.match(/\d+/);
+      let levelNum;
+      if (levelStr) {
+        levelNum = parseInt(levelStr[0]);
+        completedLevels[difficulty!] = levelNum;
+        updateProgress();
+      }
       setTimerActive(false);
       setDialogOpen(true);
+      setHintDisabled(true);
       storeInDB(timeElapsed, difficulty, levelId);
+      removeSave();
       AchievementManagerMath.checkAndAwardAchievements(
         timeElapsed,
         difficulty,
@@ -117,19 +296,69 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions }) => {
     }
   };
 
-  function difficultyToNumber(difficulty: string): number {
-    // Convert the difficulty string to a number
-    switch (difficulty) {
-      case "easy":
-        return 1;
-      case "medium":
-        return 2;
-      case "hard":
-        return 3;
-      default:
-        return 0;
+  const removeSave = async () => {
+    const user = auth.currentUser;
+    if (user) {
+      const userRef = doc(db, "users", user.email);
+      try {
+        const docSnapshot = await getDoc(userRef);
+        if (docSnapshot.exists()) {
+          await updateDoc(userRef, {
+            puzzleSaveState: {},
+          });
+          console.log("Game state removed successfully");
+        } else {
+          console.log("No saved game state found");
+        }
+      } catch (error) {
+        console.error("Error removing game state: ", error);
+      }
+    } else {
+      console.error("No authenticated user found");
     }
-  }
+  };
+
+  const loadProgress = async () => {
+    const user = auth.currentUser;
+    if (user) {
+      const userRef = doc(db, "users", user.email);
+      try {
+        const docSnapshot = await getDoc(userRef);
+        if (docSnapshot.exists()) {
+          const data = docSnapshot.data();
+          const completedLevels = JSON.parse(data.Progress.mathCompletedLevels);
+          setCompletedLevels(completedLevels);
+        } else {
+          console.log("No saved game state found");
+        }
+      } catch (error) {
+        console.error("Error loading progress: ", error);
+      }
+    } else {
+      console.error("No authenticated user found");
+    }
+  };
+
+  const updateProgress = async () => {
+    const user = auth.currentUser;
+    if (user) {
+      const userRef = doc(db, "users", user.email);
+      try {
+        const docSnapshot = await getDoc(userRef);
+        if (docSnapshot.exists()) {
+          await updateDoc(userRef, {
+            "Progress.mathCompletedLevels": JSON.stringify(completedLevels),
+          });
+        } else {
+          console.log("No saved game state found");
+        }
+      } catch (error) {
+        console.error("Error updating progress: ", error);
+      }
+    } else {
+      console.error("No authenticated user found");
+    }
+  };
 
   async function storeInDB(gameTime, difficulty, levelId) {
     const user = auth.currentUser;
@@ -139,7 +368,7 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions }) => {
       const levelStr = levelId?.match(/\d+/);
       const levelNum = levelStr ? parseInt(levelStr[0]) : 1;
       const score =
-        difficultyToNumber(difficulty) * 2 * (levelNum * (100 - gameTime + 1)); // Score calculation
+        difficultyToNumber(difficulty) * 2 * (levelNum * (100 - gameTime + 1));
 
       const fieldKey = `${difficulty}${levelNum}gametime`;
       const scoreKey = `mathScore`;
@@ -166,6 +395,19 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions }) => {
     }
   }
 
+  function difficultyToNumber(difficulty: string): number {
+    switch (difficulty) {
+      case "easy":
+        return 1;
+      case "medium":
+        return 2;
+      case "hard":
+        return 3;
+      default:
+        return 0;
+    }
+  }
+
   const formatTime = (curTime) => {
     const seconds = Math.floor(curTime % 60);
     const minutes = Math.floor((curTime / 60) % 60);
@@ -174,9 +416,56 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions }) => {
       .padStart(2, "0")}`;
   };
 
-  const completionPopup = () => {
+  function savePopup(): JSX.Element {
     return (
       <div>
+        <div className="darkBG" onClick={() => setDialogOpen(false)} />
+        <div className="centered">
+          <div className="modal">
+            <div className="modalHeader">
+              <h5 className="heading">Save Game</h5>
+            </div>
+            <div className="modalContent" style={{fontStyle: "normal", fontWeight: "normal"}}>
+              Do you want to save your progress and leave?
+            </div>
+            <div className="modalActions">
+              <div
+                className="saveContainer"
+                style={{ display: "flex", justifyContent: "space-between" }}
+              >
+                <button
+                  style={{ width: "220px", margin: "0 20px", borderRadius: "250px", scale: "0.8" }}
+                  onClick={() => {
+                    savetoDB();
+                    navigate("/home");
+                    setTimeElapsed(0);
+                    setTimerActive(false);
+                    resetBoard();
+                    setDialogOpen(false);
+                  }}
+                >
+                  {"Save and Exit"}
+                </button>
+                <button
+                  style={{ width: "220px", margin: "0 20px", borderRadius: "250px", scale: "0.8" }}
+                  onClick={() => {
+                    setTimerActive(true);
+                    setSaveDialogOpen(false);
+                  }}
+                >
+                  {"Cancel"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const completionPopup = () => {
+    return (
+      <div style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", zIndex: 1000 }}>
         <div className="darkBG" onClick={() => setDialogOpen(false)} />
         <div className="centered">
           <div className="modal">
@@ -187,12 +476,13 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions }) => {
               Yay! You have solved all the puzzles on this board
             </div>
             <div className="modalActions">
-              <div className="actionsContainer">
+              <div className="actionsContainer" style={{ display: "flex", justifyContent: "center" }}>
                 <button
                   style={{ width: "250px" }}
                   onClick={() => {
                     setDialogOpen(false);
-                    resetBoard(); // Reset the board before navigating
+                    setHintDisabled(false);
+                    resetBoard();
                     if (levelId !== "level3") {
                       navigate(`/render-math/${difficulty}/${nextLevelID}/0`);
                     } else {
@@ -216,7 +506,22 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions }) => {
     <div className="mathPuzzleContainer">
       {isDialogOpen && completionPopup()}
       <div className="gameBoardAndTimer">
-        <div className="timerDisplay">{formatTime(timeElapsed)}</div>
+        <div className="timerDisplay" style={{display: "flex"}}>
+          <button
+          style={{
+            scale: "0.8"
+          }}
+          onClick={() => {
+            setSaveDialogOpen(true);
+            setTimerActive(false);
+          }}
+        >
+          {"Save Game"}
+        </button>
+        {isSaveDialogOpen && savePopup()}
+        <div style={{flexGrow: 1}}>{formatTime(timeElapsed)}</div>
+        </div>
+        
         <div className="boardGrid">
           {boardGrid.map((boardRow, rowIndex) => (
             <div className="boardRow" key={rowIndex}>
@@ -280,6 +585,14 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions }) => {
             {symbol}
           </button>
         ))}
+      </div>
+      <div style={{position: 'absolute', display: 'flex', top: '10px', right: '10px'}}>
+        <HintButton
+          hintFunction={handleHintClick}
+          setHintDisabled={setHintDisabled}
+          isHintDisabled={isHintDisabled}
+          remainingHints={remainingHints} />
+        <LevelIndicator level={levelIndicator} />
       </div>
     </div>
   );

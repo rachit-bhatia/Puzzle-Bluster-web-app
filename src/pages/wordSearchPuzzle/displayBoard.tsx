@@ -6,10 +6,16 @@ import React, { useEffect } from "react";
 import { ReactElement, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import AchievementManager from "./achievementManager";
+import LevelIndicator from '../../components/levelIndicator';
+import HintButton from '../../components/hintButton';
+import { wordsToFind, allWordsCoordinates } from "./fillBoardGrid";
 
-const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
+const wordFoundColor = "rgb(18, 119, 113)";
+const hintColor = "rgb(18, 118, 113)";
+let hintedLetters: string[] = [];  //keep track of letters shown from hints
+
+const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHints }): ReactElement => {
   let selection = "";
-  const wordFoundColor = "rgb(18, 119, 113)";
 
   const navigate = useNavigate();
   const [isLetterSelected, setIsLetterSelected] = useState(false);
@@ -17,6 +23,7 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
   const [timeElapsed, setTimeElapsed] = useState(0); //milliseconds
   const [timerActive, setTimerActive] = useState(false);
   const [foundWords, setFoundWords] = useState<string[]>([]);
+  const [completedLevels, setCompletedLevels] = useState({});
   const [isDialogOpen, setDialogOpen] = useState(false); //dialog box for level completion
   const [isSaveDialogOpen, setSaveDialogOpen] = useState(false); //dialog box for saving game state
   const [nextLevelID, setLevelID] = useState(""); //setting ID of next level
@@ -28,6 +35,24 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
   const [foundPositions, setFoundPositions] = useState<
     Array<{ row: number; col: number }>
   >([]);
+
+  // hintedLetters = []; //reset hinted letters on new level
+
+  //set remaining number of hints
+  if ((difficulty!="hard" && hintedLetters.length >= 2) || (difficulty=="hard" && hintedLetters.length >= 4)) {
+    setRemainingHints(0);
+    setHintDisabled(true);
+  } else if (difficulty=="hard") {
+    setRemainingHints(2 - hintedLetters.length/2);
+  } else {
+    setRemainingHints(2 - hintedLetters.length);
+  }
+
+  useEffect(() => {
+    setTimerActive(true);
+    setTimeElapsed(0);
+  }, [levelId, boardGrid]);
+
 
   useEffect(() => {
     let interval;
@@ -136,6 +161,7 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
 
   useEffect(() => {
     // Call markAsFound after the component has been rendered
+    loadProgress();
     markAsFound(foundPositions);
   }, [boardGrid]); // Dependency array to ensure it runs after boardGrid is initialized
 
@@ -206,6 +232,7 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
         foundPositions: foundPositionsString,
         difficulty: difficulty,
         levelId: levelId,
+        puzzleType: "word"
       };
       try {
         const docSnapshot = await getDoc(userRef);
@@ -230,6 +257,7 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
     }
   }
 
+
   //Function for removing saved game state from user account
   async function removeSave() {
     const user = auth.currentUser;
@@ -253,6 +281,49 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
       console.error("No authenticated user found");
     }
   }
+
+  async function loadProgress(){
+    const user = auth.currentUser;
+    if (user) {
+      const userRef = doc(db, "users", user.email);
+      try {
+        const docSnapshot = await getDoc(userRef);
+        if (docSnapshot.exists()) {
+          const data = docSnapshot.data();
+          const completedLevels = JSON.parse(data.Progress.wordCompletedLevels);
+          setCompletedLevels(completedLevels);
+        } else {
+          console.log("No saved game state found");
+        }
+      } catch (error) {
+        console.error("Error removing game state: ", error);
+      }
+    } else {
+      console.error("No authenticated user found");
+    }
+  }
+
+  async function updateProgress() {
+    const user = auth.currentUser;
+    if (user) {
+      const userRef = doc(db, "users", user.email);
+      try {
+        const docSnapshot = await getDoc(userRef);
+        if (docSnapshot.exists()) {
+          await updateDoc(userRef, {
+            "Progress.wordCompletedLevels": JSON.stringify(completedLevels),
+          });
+        } else {
+          console.log("No saved game state found");
+        }
+      } catch (error) {
+        console.error("Error removing game state: ", error);
+      }
+    } else {
+      console.error("No authenticated user found");
+    }
+  }
+
 
   async function storeInDB(
     gameTime: number,
@@ -333,9 +404,9 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
 
   //event handler for when the mouse is held down on a letter
   function letterHeld(event, row, col): void {
-    if (!timerActive && foundWords.length < wordsToFind.length) {
-      setTimerActive(true); // Start the timer when the first letter is held
-    }
+    // if (!timerActive && foundWords.length < wordsToFind.length) {
+    //   setTimerActive(true); // Start the timer when the first letter is held
+    // }
     if (event.target.style.backgroundColor != wordFoundColor) {
       setIsLetterSelected(true);
       event.target.style.backgroundColor = "green";
@@ -392,23 +463,18 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
 
       //save the level ID upon completion of level to unlock next level
       if (foundWords.length >= wordsToFind.length - 1) {
-        const completedLevels = JSON.parse(
-          localStorage.getItem("completedLevels")!
-        );
         const levelStr = levelId?.match(/\d+/);
         let levelNum: number;
         if (levelStr) {
           levelNum = parseInt(levelStr[0]);
           completedLevels[difficulty!] = levelNum;
-          localStorage.setItem(
-            "completedLevels",
-            JSON.stringify(completedLevels)
-          );
+          updateProgress();
           setLevelID(`level${levelNum + 1}`); //id of next level
         }
 
         //display completed level message
         setDialogOpen(true);
+        setHintDisabled(true);
         removeSave();
       }
       // checkCompletion();
@@ -419,6 +485,10 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
       boardLetters.forEach((letter) => {
         if (letter.style.backgroundColor == "green") {
           letter.style.backgroundColor = "";
+        }
+
+        if (hintedLetters.includes(letter.id)) {
+            letter.style.backgroundColor = hintColor;
         }
       });
     }
@@ -507,6 +577,8 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
                     //TODO: call save to db here
                     //navigate back to level selection if last level
                     setFoundPositions([]);
+                    hintedLetters = [];
+                    setHintDisabled(false);
                     levelId != "level3"
                       ? navigate(`/render-word/${difficulty}/${nextLevelID}/0`)
                       : navigate("/render-word/levelselection");
@@ -529,6 +601,7 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
     );
   }
 
+
   return (
     <div className="boardGrid" key={levelId} onMouseLeave={letterReleased}>
       {isDialogOpen && completionPopup()}
@@ -549,6 +622,7 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
           {boardRow.map((wordContent, colIndex) => (
             <button
               key={`${rowIndex}-${colIndex}`}
+              id={`${rowIndex}-${colIndex}`}
               className="boardCell"
               onMouseDown={(event) => letterHeld(event, rowIndex, colIndex)}
               onMouseEnter={(event) =>
@@ -587,4 +661,79 @@ const DisplayBoard = ({ boardGrid, wordsToFind }): ReactElement => {
   );
 };
 
-export default DisplayBoard;
+
+function getRandomHintLetter(): [number, string, HTMLElement] {
+    let randID = Math.floor(Math.random() * allWordsCoordinates.length);
+    const hintLetterPosition = allWordsCoordinates[randID][0];
+    const letterID = `${hintLetterPosition[0]}-${hintLetterPosition[1]}`;
+    const letterElem = document.getElementById(letterID)!;
+
+    return [randID, letterID, letterElem];
+}
+
+
+//reveal a letter of any unfound word upon clicking hint
+function showLetterOnHint(setButtonDisabled) {
+  
+  console.log("Hint Pressed");
+  let [randID, letterID, letterElem] = getRandomHintLetter();
+  let letterStyle = window.getComputedStyle(letterElem)
+  
+  //find a new letter to show for hint if the user has already found this one
+  while (letterStyle.backgroundColor == wordFoundColor || letterStyle.backgroundColor == hintColor) {
+    [randID, letterID, letterElem] = getRandomHintLetter();
+    letterStyle = window.getComputedStyle(letterElem)
+  }
+  
+  hintedLetters.push(letterID);
+  letterElem.style.backgroundColor = hintColor;
+  
+  const path = window.location.pathname;
+  //show last letter of word also if difficulty is hard (two letter for each hint)
+  if (path.includes("hard")) {
+      const hintWord = allWordsCoordinates[randID];
+      const lastLetterPosition = hintWord[hintWord.length - 1];
+      const lastLetterID = `${lastLetterPosition[0]}-${lastLetterPosition[1]}`;
+      const lastLetterElem = document.getElementById(lastLetterID)!;
+      
+      hintedLetters.push(lastLetterID);
+      lastLetterElem.style.backgroundColor = hintColor;
+  }
+
+  //limit to 2 hints for easy and medium, and hard
+  if ((!path.includes("hard") && hintedLetters.length >= 2) || (path.includes("hard") && hintedLetters.length >= 4)) {
+    setButtonDisabled(true);
+    console.log("All hints have been found", hintedLetters)
+  }
+    
+}
+
+
+//display board UI
+const WordSearchBoard = ({newBoard, levelIndicator}): ReactElement => {
+
+  const [isHintDisabled, setHintDisabled] = useState(false);
+  const [remainingHints, setRemainingHints] = useState(0);
+
+    return (
+        <div>
+            <h1 className="gameHeading">Word Search</h1>
+            <div style={{position: 'absolute', display: 'flex', top: '10px', right: '10px'}}>
+                <HintButton 
+                  isHintDisabled={isHintDisabled} 
+                  setHintDisabled={setHintDisabled} 
+                  hintFunction={showLetterOnHint} 
+                  remainingHints={remainingHints}/>
+                <LevelIndicator level={levelIndicator} />
+            </div>
+            <DisplayBoard 
+              boardGrid={newBoard} 
+              wordsToFind={wordsToFind} 
+              setHintDisabled={setHintDisabled}
+              setRemainingHints={setRemainingHints}/>
+        </div>
+    )
+}
+
+
+export default WordSearchBoard;

@@ -1,10 +1,6 @@
-import React from 'react';
-import { ReactElement } from "react";
-import DisplayBoard from "./displayBoard";
-import LevelIndicator from './levelIndicator';
-import SaveModal from '../../models/save/save-game';
 
-let wordsToFind;
+let wordsToFind: String[];
+let allWordsCoordinates: number[][][];
 
 function FillBoardGrid (iBoardSize: number, 
                         directions: Array<Array<number>>,
@@ -25,12 +21,14 @@ function FillBoardGrid (iBoardSize: number,
     }
 
     wordsToFind = wordList;
+    allWordsCoordinates = [];
 
     //loop through each solution word and place it on the board
     for(let i = 0; i < wordsToFind.length; i++){
         let word = wordsToFind[i];
 
-        let isWordEntered = false;
+        let isWordEntered: boolean = false;
+        let curWordPositions: number[][] = [];
 
         while (!isWordEntered) {
             //get random starting position
@@ -38,7 +36,11 @@ function FillBoardGrid (iBoardSize: number,
             let randomCol = Math.floor(Math.random() * boardSize);
 
             //try to enter the word on the board
-            isWordEntered = canEnterSolutionWords(randomRow, randomCol, word);
+            [isWordEntered, curWordPositions] = canEnterSolutionWords(randomRow, randomCol, word);
+
+            if (isWordEntered) {
+                allWordsCoordinates.push(curWordPositions)  //add letter coordinates of all words
+            }
         }
     }
 
@@ -55,7 +57,9 @@ function FillBoardGrid (iBoardSize: number,
     }
 
     //returns true if the word is successfully entered onto the board with the randomly chosen positions
-    function canEnterSolutionWords(startRow: number, startCol: number, solutionWord: String): boolean {
+    function canEnterSolutionWords(startRow: number, 
+                                   startCol: number, 
+                                   solutionWord: String): [boolean, number[][]] {
         let curRow = startRow;
         let curCol = startCol;
         let letterPositions = new Array(solutionWord.length);  //store the positions of the letters
@@ -68,12 +72,15 @@ function FillBoardGrid (iBoardSize: number,
             randomDirection = possibleDirections[randomDirectionId];
         }
 
+        const wordPositions: number[][] = []
+
         for (let i = 0; i < solutionWord.length; i++) {
             let letter = solutionWord.charAt(i);  //get each letter
             
             if (isDirectionValid(curRow, curCol)) {
                 boardGrid[curRow][curCol] = letter;
                 letterPositions[i] = [curRow, curCol];
+                wordPositions.push([curRow, curCol])  //add the coordinates of each letter
             } else {
                 //reset the cells if the word cannot be entered
                 for (let j = 0; j < i; j++) {
@@ -81,7 +88,7 @@ function FillBoardGrid (iBoardSize: number,
                     let col = letterPositions[j][1];
                     boardGrid[row][col] = "";  //clear the board
                 }
-                return false;
+                return [false, []];
             }
 
             //set new direction for every letter for hard level
@@ -93,7 +100,8 @@ function FillBoardGrid (iBoardSize: number,
             curRow += randomDirection[0];
             curCol += randomDirection[1];
         }
-        return true;
+        // console.log(solutionWord, " - ", wordPositions)
+        return [true, wordPositions];
     }
 
 
@@ -105,19 +113,10 @@ function FillBoardGrid (iBoardSize: number,
         return false;
     }
 
+    //TODO: remove the 1st half of coordinates since only the 2nd half is the correct rendering of the board
+    console.log("Word Positions: ", allWordsCoordinates);
+
     return boardGrid;
 }
 
-//display board UI
-const WordSearchBoard = ({newBoard, levelIndicator}): ReactElement => {
-
-    return (
-        <div>
-            <h1 className="gameHeading">Word Search</h1>
-            <LevelIndicator level={levelIndicator} />
-            <DisplayBoard boardGrid={newBoard} wordsToFind={wordsToFind}/>
-        </div>
-    )
-}
-
-export { WordSearchBoard, FillBoardGrid, wordsToFind };
+export {FillBoardGrid, wordsToFind, allWordsCoordinates };
