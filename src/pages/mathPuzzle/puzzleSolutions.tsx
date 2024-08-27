@@ -6,7 +6,7 @@ const solutionsEasy: { level1: string[]; level2: string[]; level3: string[]; } =
 
 const solutionsMedium: { level1: string[]; level2: string[]; level3: string[]; } = {
     level1: ["5-2=3", "8/8=1", "6+3=9", "7-7=0", "3*2=6"],
-    level2: ["4/4=1", "9/9=1", "2+2=4", "7*2=14", "6/2=3"],
+    level2: ["4/4=1", "9/9=1", "2+2=4", "7-8=1", "6/2=3"],
     level3: ["8-8=0", "1-1=0", "4*2=8", "9*2=18", "3-3=0"]
 };
 
