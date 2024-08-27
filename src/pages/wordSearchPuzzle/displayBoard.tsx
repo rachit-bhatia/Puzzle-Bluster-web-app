@@ -669,8 +669,8 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
               className="wordList"
               style={{
                 backgroundColor: foundWords.includes(word)
-                  ? "rgb(217, 152, 67)"
-                  : "rgb(230, 176, 107)",
+                  ? "rgb(220, 152, 80)"
+                  : "rgb(215, 152, 70)",
                 color: foundWords.includes(word) ? "gray" : "black",
                 transition: "color 0.2s, background-color 0.2s",
               }}

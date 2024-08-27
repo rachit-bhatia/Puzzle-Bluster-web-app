@@ -51,7 +51,7 @@ function FillBoardGrid (iBoardSize: number,
             //add random letters if the cell is empty
             if(boardGrid[i][j] == ""){
                 boardGrid[i][j] = String.fromCharCode(65 + Math.random()*26);
-                boardGrid[i][j] = "-";  //uncomment this line when testing to see exactly where the words are placed
+                // boardGrid[i][j] = "-";  //uncomment this line when testing to see exactly where the words are placed
             }
         }
     }
