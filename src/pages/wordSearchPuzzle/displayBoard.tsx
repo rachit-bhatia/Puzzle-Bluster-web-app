@@ -48,6 +48,10 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
     setRemainingHints(2 - hintedLetters.length);
   }
 
+  useEffect(() => {
+    setTimerActive(true);
+  }, [levelId, boardGrid]);
+
 
   useEffect(() => {
     let interval;
@@ -104,6 +108,7 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
               const foundWords = JSON.parse(puzzleSaveState.foundWords);
               const foundPositions = JSON.parse(puzzleSaveState.foundPositions);
               const elapsedTime = puzzleSaveState.gameTime;
+              const hintedLettersLoad = JSON.parse(puzzleSaveState.hintedLetters);
 
               // Now you can use these deserialized values in your application
               console.log("Game state loaded successfully", {
@@ -114,6 +119,8 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
               setFoundWords(foundWords);
               setTimeElapsed(elapsedTime);
               setFoundPositions(foundPositions);
+              hintedLetters = hintedLettersLoad;
+
             } else {
               console.log("No saved game state found");
             }
@@ -158,6 +165,11 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
     // Call markAsFound after the component has been rendered
     loadProgress();
     markAsFound(foundPositions);
+    if (hintedLetters.length > 0) {
+      for (let i = 0; i < hintedLetters.length; i++) {
+        document.getElementById(hintedLetters[i])!.style.backgroundColor = hintColor;
+      }
+    }
   }, [boardGrid]); // Dependency array to ensure it runs after boardGrid is initialized
 
   // async function storeInDB(gameTime) {
@@ -219,12 +231,14 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
       const boardGridString = JSON.stringify(boardGrid);
       const foundWordsString = JSON.stringify(foundWords);
       const foundPositionsString = JSON.stringify(foundPositions);
+      const hintedLettersString = JSON.stringify(hintedLetters);
 
       const puzzleSaveState = {
         gameTime: gameTime,
         board: boardGridString,
         foundWords: foundWordsString,
         foundPositions: foundPositionsString,
+        hintedLetters: hintedLettersString,
         difficulty: difficulty,
         levelId: levelId,
         puzzleType: "word"
@@ -399,9 +413,9 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
 
   //event handler for when the mouse is held down on a letter
   function letterHeld(event, row, col): void {
-    if (!timerActive && foundWords.length < wordsToFind.length) {
-      setTimerActive(true); // Start the timer when the first letter is held
-    }
+    // if (!timerActive && foundWords.length < wordsToFind.length) {
+    //   setTimerActive(true); // Start the timer when the first letter is held
+    // }
     if (event.target.style.backgroundColor != wordFoundColor) {
       setIsLetterSelected(true);
       event.target.style.backgroundColor = "green";
@@ -499,12 +513,12 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
     return (
       <div>
         <div className="darkBG" onClick={() => setDialogOpen(false)} />
-        <div className="centered">
+        <div className="centered padding" style={{ textAlign: "center" }}>
           <div className="modal">
-            <div className="modalHeader">
-              <h5 className="heading">Save Game</h5>
+            <div className="modalHeader padding">
+              <h5 className="heading" style={{fontSize : "20px" , paddingTop : "10px"}} >Save Game</h5>
             </div>
-            <div className="modalContent">
+            <div className="modalContent" style={{ paddingBottom : "30px" ,paddingTop : "10px" }}>
               Do you want to save your progress and leave?
             </div>
             <div className="modalActions">
@@ -526,6 +540,8 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
                     setTimeElapsed(0);
                     setTimerActive(false);
                     setFoundWords([]);
+                    hintedLetters = [];
+                    setHintDisabled(false);
                     setDialogOpen(false);
                   }}
                 >
@@ -551,19 +567,20 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
   //popup message for level completion
   function completionPopup(): JSX.Element {
     return (
+
       <div>
         <div className="darkBG" onClick={() => setDialogOpen(false)} />
-        <div className="centered">
+        <div className="centered padding" style={{ textAlign: "center"}}>
           <div className="modal">
-            <div className="modalHeader">
-              <h5 className="heading">Puzzle solved!</h5>
+            <div className="modalHeader padding">
+              <h5 className="heading" style={{fontSize : "20px" , paddingTop : "10px"}}>Puzzle solved!</h5>
             </div>
-            <div className="modalContent">
+            <div className="modalContent"  style={{ paddingBottom : "30px" ,paddingTop : "10px" }}>
               Yay! You have found all the words on this board
             </div>
             <div className="modalActions">
               <div
-                className="actionsContainer"
+                className="saveContainer"
                 style={{ display: "flex", justifyContent: "center" }}
               >
                 <button
