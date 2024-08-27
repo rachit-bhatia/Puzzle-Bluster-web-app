@@ -7,6 +7,7 @@ import { ReactElement, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import AchievementManager from "./achievementManager";
 import LevelIndicator from '../../components/levelIndicator';
+import BackButton from "../../components/backButton";
 import HintButton from '../../components/hintButton';
 import { wordsToFind, allWordsCoordinates } from "./fillBoardGrid";
 
@@ -36,7 +37,8 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
     Array<{ row: number; col: number }>
   >([]);
 
-  // hintedLetters = []; //reset hinted letters on new level
+  //reset hints on entering new level
+  useEffect(() => {hintedLetters = [];}, []);
 
   //set remaining number of hints
   if ((difficulty!="hard" && hintedLetters.length >= 2) || (difficulty=="hard" && hintedLetters.length >= 4)) {
@@ -44,8 +46,10 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
     setHintDisabled(true);
   } else if (difficulty=="hard") {
     setRemainingHints(2 - hintedLetters.length/2);
+    setHintDisabled(false);
   } else {
     setRemainingHints(2 - hintedLetters.length);
+    setHintDisabled(false);
   }
 
   useEffect(() => {
@@ -717,15 +721,21 @@ const WordSearchBoard = ({newBoard, levelIndicator}): ReactElement => {
 
     return (
         <div>
+            <div style={{position: 'absolute', display: 'flex', top: '10px', left: '10px'}}>
+              <BackButton returnPath={"/render-word/levelselection"}/>
+            </div>
             <h1 className="gameHeading">Word Search</h1>
             <div style={{position: 'absolute', display: 'flex', top: '10px', right: '10px'}}>
                 <HintButton 
                   isHintDisabled={isHintDisabled} 
                   setHintDisabled={setHintDisabled} 
                   hintFunction={showLetterOnHint} 
-                  remainingHints={remainingHints}/>
+                  remainingHints={remainingHints}
+                  setRemainingHints={setRemainingHints}/>
+
                 <LevelIndicator level={levelIndicator} />
             </div>
+
             <DisplayBoard 
               boardGrid={newBoard} 
               wordsToFind={wordsToFind} 
