@@ -1,4 +1,6 @@
 /* Global styling */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;900&display=swap");
+
 * {
   margin: 0;
   padding: 0;
@@ -9,18 +11,18 @@ body,
 html {
   height: 100%;
   width: 100%;
+  font-family: "Poppins", sans-serif;
 }
 
 /* Container for the entire page */
 .container {
-  background-color: #595959;
-  color: #ffffff;
+  background-color: var(--background-color);
+  color: var(--text-color);
   height: 100vh;
   width: 100vw;
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* justify-content: center; */
   padding: 20px;
 }
 
@@ -32,24 +34,13 @@ html {
   margin-bottom: 20px;
 }
 
-.backButton {
-  margin-right: 10px;
-  color: #ffffff;
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-}
-
-.title {
-  text-align: left;
-}
-
-.subtitle {
-  font-weight: lighter;
+.container .subtitle {
   text-align: left;
   text-indent: 1em;
+  color: white;
+  font-weight: lighter;
 }
+
 .puzzle-carousel {
   display: flex;
   align-items: center;
@@ -85,26 +76,16 @@ html {
 /* Button styling */
 .play-button {
   width: 200px;
-  margin: 10px 0;
-  background-color: #b58969;
-  border: none;
-  color: #ffffff;
   padding: 10px;
-  cursor: pointer;
-  font-size: 16px;
+  margin: 5px 0;
+  background-color: #a67c52;
+  color: white;
+  border: none;
   border-radius: 5px;
+  cursor: pointer;
+  font-size: 1.2em;
 }
 
-.button:hover {
-  background-color: #a47459;
-}
-
-.play-button:disabled {
-  background-color: #cccccc;
-  cursor: not-allowed;
-}
-
-.error-message {
-  color: red;
-  margin-top: 10px;
+.play-button:hover {
+  background-color: #8a5a3b;
 }

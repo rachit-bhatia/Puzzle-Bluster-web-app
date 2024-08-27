@@ -4,6 +4,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { useState, useEffect } from "react";
 import { Navigate, Link, useNavigate } from "react-router-dom";
 import { UserAccount } from "../../models/shared";
+import "./home.css";
 
 function HomePage() {
   const [errorMessage, setErrorMessage] = useState("");
@@ -70,9 +71,9 @@ function HomePage() {
         <div className="centered">
           <div className="modal">
             <div className="modalHeader">
-              <h5 className="heading">Load Game</h5>
+              <h5 className="heading" style={{fontSize : "20px" , paddingTop : "10px"}}>Load Game</h5>
             </div>
-            <div className="modalContent">
+            <div className="modalContent" style={{ paddingBottom : "30px" ,paddingTop : "10px" }}>
               Do you want to load a previous saved game?
             </div>
             <div className="modalActions">
@@ -119,26 +120,34 @@ function HomePage() {
     console.log(UserAccount.users);
   };
   return (
-    <div>
+    <div className="home-container">
       {isSignOutSuccessful && <Navigate to="/signin" replace={true} />}
-      <h1>Puzzle Bluster</h1>
-      <h3>Let's solve some Word Search Puzzles!</h3>
-      <div style={{ paddingTop: "100px" }}>
-        <button onClick={onSignOut}>Sign Out</button>
-        <button onClick={() => navigate("/accountPage")}>
-          Account Details
-        </button>
-        <button onClick={() => navigate("/puzzleselection")}>Start Game</button>
-        <button
-          onClick={() => {
-            setDialogOpen(true);
-          }}
-        >
-          Load Game
-        </button>
-        <button onClick={() => navigate("/leaderboard")}>
-          Leaderboard
-        </button>
+      <div className="content">
+        <img
+          src="/img/homepageani.gif"
+          alt="Puzzle Game"
+          className="game-image"
+        />
+        <div className="PuzzleGame">Puzzle Game</div>
+        <div className="button-container" style={{ paddingTop: "20px" }}>
+          <button
+            onClick={() => {
+              setDialogOpen(true);
+            }}
+          >
+            Load Game
+          </button>
+          <button onClick={() => navigate("/puzzleselection")}>
+            Start Game
+          </button>
+
+          <button onClick={() => navigate("/accountPage")}>
+            Account Details
+          </button>
+
+          <button onClick={() => navigate("/leaderboard")}>Leaderboard</button>
+          <button onClick={onSignOut}>Sign Out</button>
+        </div>
         {isDialogOpen && loadPopup()}
       </div>
     </div>

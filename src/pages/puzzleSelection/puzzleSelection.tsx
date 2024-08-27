@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./puzzleSelection.css";
 import { auth } from "../../firebase/firebase";
+import BackButton from "../../components/backButton";
 
 const puzzles = [
   { id: 1, name: "Word Puzzles", type: "word" },
@@ -11,6 +12,10 @@ const puzzles = [
 const PuzzleSelection: React.FC = () => {
   const navigate = useNavigate();
   const [currentPuzzleIndex, setCurrentPuzzleIndex] = useState(0);
+  // const [currentPuzzleIndex, setCurrentPuzzleIndex] = useState(() => {
+  //   const savedPuzzle = localStorage.getItem('savedPuzzle');
+  //   return savedPuzzle !== null ? JSON.parse(savedPuzzle) : 1;
+  // });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const userUuid = auth.currentUser?.uid;
@@ -19,12 +24,16 @@ const PuzzleSelection: React.FC = () => {
     setCurrentPuzzleIndex((prevIndex) =>
       prevIndex > 0 ? prevIndex - 1 : puzzles.length - 1
     );
+    localStorage.setItem('savedPuzzle', JSON.stringify(currentPuzzleIndex));
+    console.log("Puzzle: ", localStorage.getItem('savedPuzzle'));
   };
 
   const goToNextPuzzle = () => {
     setCurrentPuzzleIndex((prevIndex) =>
       prevIndex < puzzles.length - 1 ? prevIndex + 1 : 0
     );
+    localStorage.setItem('savedPuzzle', JSON.stringify(currentPuzzleIndex));
+    console.log("Puzzle: ", localStorage.getItem('savedPuzzle'));
   };
 
   const currentPuzzle = puzzles[currentPuzzleIndex];
@@ -32,11 +41,9 @@ const PuzzleSelection: React.FC = () => {
   return (
     <div className="container">
       <div className="header">
-        <button className="backButton" onClick={() => navigate("/home")}>
-          ←
-        </button>
-        <h4 className="title">Select Puzzle</h4>
-        <h6 className="subtitle">Word / Math</h6>
+        <BackButton />
+        <div className="title">Select Puzzle</div>
+        <div className="subtitle">Word / Math</div>
       </div>
       <div className="puzzle-carousel">
         <div className="arrow left" onClick={goToPreviousPuzzle}>

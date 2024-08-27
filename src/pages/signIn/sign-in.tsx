@@ -3,7 +3,7 @@ import { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { Navigate } from "react-router-dom";
 import { auth } from "../../firebase/firebase";
-import {FaUser,FaLock} from "react-icons/fa"
+import { FaUser, FaLock } from "react-icons/fa";
 import React from "react";
 
 function SignInPage() {
@@ -24,16 +24,16 @@ function SignInPage() {
 
   const onSignIn = async (event) => {
     event.preventDefault();
-    console.log("clicked")
+    console.log("clicked");
     if (!isSigningIn) {
       setIsSigningIn(true);
 
       try {
-        email = email + "@email.com"
+        email = email + "@email.com";
         await signInWithEmailAndPassword(auth, email, password);
         console.log("sign in successful");
         setIsSigningInSuccessful(true);
-        setErrorMessage("")
+        setErrorMessage("");
       } catch (error) {
         setErrorMessage(error.message);
         console.log(error.message);
@@ -44,45 +44,54 @@ function SignInPage() {
   };
 
   return (
+    <div className="wrapper">
+      {isSignInSuccessful && <Navigate to="/home" replace={true} />}
 
-   
+      <form action="" onSubmit={onSignIn}>
+        <h1>Sign In</h1>
 
-      <div className="wrapper">
+        <div className="error-message">
+          {errorMessage && <p>{errorMessage}</p>}
+        </div>
 
-          {isSignInSuccessful && <Navigate to="/home" replace={true} />}
+        <div className="input-box">
+          <input
+            type="text"
+            placeholder="Username"
+            value={email}
+            onChange={handleEmailChange}
+          />
+          <FaUser className="icon" />
+        </div>
+        <div className="input-box">
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={handlePasswordChange}
+          />
+          <FaLock className="icon" />
+        </div>
 
-          
-         <form action="" onSubmit={onSignIn}>
-           <h1>Sign In</h1>
+        <div className="forgot-password">
+          <a href="#">Forgot Password?</a>
+        </div>
 
-           <div className="error-message">
-                {errorMessage && <p>{errorMessage}</p>}
-            </div>
+        <button
+          type="submit"
+          disabled={isSigningIn || !(email !== "" && password !== "")}
+        >
+          Login
+        </button>
 
-           <div className="input-box">
-              <input type="text" placeholder="Username" value={email} onChange={handleEmailChange} />
-              <FaUser className="icon"/>
-           </div>
-           <div className="input-box">
-              <input type="password" placeholder="Password" value={password} onChange={handlePasswordChange}/>
-              <FaLock className="icon"/>
-           </div>
-
-           <div className="forgot-password">
-             <a href="#">Forgot Password?</a>
-           </div>
-
-           <button type="submit" disabled={isSigningIn || !(email !== "" && password !== "")} >Login</button>
-
-           <div className="register-link">
-              <p>Don't have an account? <a href="/signup">Register</a> or start as <a href="/home-guest">Guest</a></p>
-           </div>
-
-         </form>
-
-      </div>
-
-    
+        <div className="register-link">
+          <p>
+            Don't have an account? <a href="/signup">Register</a> or start as{" "}
+            <a href="/home-guest">Guest</a>
+          </p>
+        </div>
+      </form>
+    </div>
   );
 }
 

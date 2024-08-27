@@ -14,7 +14,7 @@ html, body {
   }
   
   
-  .profile-section {
+  .profile-section-leaderboard {
     display: flex;
     align-items: center;
     background-color:  rgb(167, 132, 103);
@@ -35,23 +35,23 @@ html, body {
     margin-right: 20px;
   }
   
-  .profile-info {
+  .profile-info-leaderboard {
     flex: 1;
   }
   
-  .profile-name {
+  .profile-name-leaderboard {
     font-size: 36px;
-    margin-bottom: 40px;
+    margin-bottom: 20px;
   
   }
   
-  .profile-ranks {
+  .profile-ranks-leaderboard {
     display: flex;
     gap: 40px;
   
   }
   
-  .profile-rank {
+  .profile-rank-leaderboard {
     text-align: center;
   }
   
@@ -80,16 +80,16 @@ html, body {
   
   
   
-  .score-list {
+  .score-list-leaderboard {
     display: flex;
     flex-direction: column;
     width: 80%;
     gap: 10px;
-    height: calc(100vh - [header-height]); /* Adjust [header-height] as needed */
+    height: 50%; /* Adjust [header-height] as needed */
     overflow-y: auto; /* Add vertical scrollbar if content overflows */
   }
   
-  .score-item {
+  .score-item-leaderboard {
     display: flex;
     align-items: center;
     background-color: #fff;
@@ -98,33 +98,33 @@ html, body {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
   
-  .rank {
+  .rank-leaderboard {
     font-size: 24px;
     font-weight: bold;
     margin-right: 20px;
     color : black;
   }
 
-  .name {
-    margin-right: 20px;
-    color : rgb(83, 80, 80);
-  }
-  
-  .score-info {
-    flex: 1;
-  }
-  
-  .score-info h3 {
-    margin-bottom: 5px;
-  }
-  
-  .score {
-    font-size: 20px;
-    font-weight: bold;
-    color: #d1a575;
-  }
-  
-  .rank-number {
-    font-size: 14px;
-    color: #999;
-  }
+.name-leaderboard {
+  margin-right: 20px;
+  color: rgb(83, 80, 80);
+}
+
+.score-info-leaderboard {
+  flex: 1;
+}
+
+.score-info-leaderboard h3 {
+  margin-bottom: 5px;
+}
+
+.score-info-leaderboard .score-leaderboard {
+  font-size: 20px;
+  font-weight: bold;
+  color: #d1a575;
+}
+
+.rank-number-leaderboard {
+  font-size: 14px;
+  color: #999;
+}

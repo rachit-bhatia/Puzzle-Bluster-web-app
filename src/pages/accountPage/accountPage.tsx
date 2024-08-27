@@ -2,24 +2,122 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth, db } from "../../firebase/firebase";
 import { doc, getDoc } from "firebase/firestore";
-import RewardManager from "../rewardManager/rewardManager";
 import "./accountPage.css";
 import "../rewardManager/rewardManager.css"; // Import the rewardManager CSS
 import BackButton from "../../components/backButton";
+import { UserAccount } from "../../models/shared";
+import { User } from "firebase/auth";
 
 const AccountPage = () => {
   const navigate = useNavigate();
-  const [username, setUsername] = useState("");
+
+  const [userRetrieved, setUserRetrieved] = useState<UserAccount | null>(null);
+
+  // Current user rank in each puzzle game
+  const [mathRank, setMathRank] = useState<number | null>(null);
+  const [wordRank, setWordRank] = useState<number | null>(null);
+  const [overallRank, setOverallRank] = useState<number | null>(null);
   const [achievements, setAchievements] = useState<string[]>([]);
   const [latestAchievement, setLatestAchievement] = useState<string | null>(
     null
   );
 
+  const[userAvatar,setUserAvatar] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isMaleSelected, setIsMaleSelected] = useState<Boolean | null >(null)
+  const [userAccount, setUserAccount] = useState<UserAccount | null>(null)
+   // Function to open the dialog
+   const openDialog = () => {
+    getUserAvatar()
+    setIsDialogOpen(true);
+  };
+
+  // Function to close the dialog
+  const closeDialog = () => {
+    setIsDialogOpen(false);
+  };
+
+  const changeToMaleSelected = () => {
+    setIsMaleSelected(true);
+  };
+
+  const changeToFemaleSelected = () => {
+    setIsMaleSelected(false);
+  };
+
+  
+  const saveAvatar = async () => {
+    if(userAccount){
+
+      let success = false;
+      if(userAvatar === "male" && !isMaleSelected){
+        success = await UserAccount.changeAvatar("female", userAccount);
+      }else if (userAvatar === "female" && isMaleSelected){
+        success = await UserAccount.changeAvatar("male", userAccount);
+      }
+
+
+      if (success) {
+        console.log('Avatar updated successfully.');
+        // Optionally update UI or state here to reflect the successful update
+        closeDialog()
+        getUserAvatar()
+      } else {
+        console.error('Failed to update avatar.');
+        // Optionally handle the failure case, e.g., show an error message
+      }
+    }
+  
+  };
+
+
+
+  const getUserAvatar = async () => {
+    if(auth.currentUser){
+      const userAccount = await UserAccount.getUserByUuid(auth.currentUser.uid)
+      setUserAccount(userAccount)
+      setUserAvatar(userAccount.userAvatar? userAccount.userAvatar : "")  
+      if(userAvatar === "male"){
+        setIsMaleSelected(true)
+      } else if (userAvatar === "female"){
+        setIsMaleSelected(false)
+      } else {
+        null
+      }
+    }
+  }
+
   useEffect(() => {
+ 
     const user = auth.currentUser;
+
+    const fetchUserData = async () => {
+      if (user) {
+        try {
+          // Fetch data for math, word, and overall concurrently
+          const [userAccount, mathData, wordData, overallData] =
+            await Promise.all([
+              UserAccount.getUserByUuid(user.uid),
+              UserAccount.getUserRank(user.uid, "math"),
+              UserAccount.getUserRank(user.uid, "word"),
+              UserAccount.getUserRank(user.uid, "overall"),
+              UserAccount.getUserByUuid(user.uid)
+            ]);
+
+          // Update state with the fetched data
+          setUserRetrieved(userAccount);
+          setMathRank(mathData?.rank ?? null);
+          setWordRank(wordData?.rank ?? null);
+          setOverallRank(overallData?.rank ?? null);
+          setUserAvatar(userAccount.userAvatar? userAccount.userAvatar : "")  
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      }
+    };
+    fetchUserData();
+
     if (user && user.email) {
-      const usernameFromEmail = user.email.split("@")[0];
-      setUsername(usernameFromEmail);
 
       const fetchAchievements = async () => {
         const userRef = doc(db, "users", user.email);
@@ -34,20 +132,35 @@ const AccountPage = () => {
           }
         }
       };
-
+    
       fetchAchievements();
+      getUserAvatar()
     }
   }, []);
 
+
+  // Function to determine the image source
+  const getAvatarSrc = () => {
+    if (userAvatar === "") {
+      return ""; // No image source
+    } else if (userAvatar === "male") {
+      return "./public/img/maleAvatar.jpg";
+    } else if (userAvatar === "female") {
+      return "./public/img/femaleAvatar.jpg";
+    }
+    return ""; // Default case if no match
+  };
+
   return (
+
     <div className="account-page">
       <div className="header">
-        <BackButton></BackButton>
-        <h4 className="title">Account</h4>
-        <h6 className="subtitle">Profile</h6>
+        <BackButton />
+        <div className="title">Account</div>
+        <div className="subtitle">Profile</div>
       </div>
-      <main className="main-content">
-        <section className="user-id">
+      <main className="content">
+        {/* <section className="user-id">
           <div className="id-picture">
             <img src="./public/img/images.jpg" alt="ID" />
           </div>
@@ -55,12 +168,15 @@ const AccountPage = () => {
             <span className="id-label">ID</span>
             <span className="id-number">123456789</span>
           </div>
-        </section>
+        </section> */}
         <section className="account-info">
-          <div className="profile-card">
+          {/* <div className="profile-card">
             <div className="profile-info">
               <div className="profile-info-1">
-                <div className="avatar">Avatar</div>
+                <div className="profile-avatar">
+                  <img src={getAvatarSrc()} className="profile-image" />
+                  <button onClick={openDialog}>Change Avatar</button>
+                </div>
                 <div className="profile-info-2">
                   <div className="profile-info-2-1">
                     <span className="rank">
@@ -76,9 +192,9 @@ const AccountPage = () => {
                     </button>
                   </div>
                   <div className="profile-info-2-2">
-                    <div className="stat-buttons">
-                      <button className="stat-button">Stat 1</button>
-                      <button className="stat-button">Stat 2</button>
+                    <div className="stat-labels">
+                      <label className="stat-label">Stat 1</label>
+                      <label className="stat-label">Stat 2</label>
                     </div>
                   </div>
 
@@ -91,18 +207,46 @@ const AccountPage = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
+
+            <div className="profile-section-account-page">
+                  <div className="profile-avatar">
+                        <img src={getAvatarSrc()} className="profile-image" />
+                        <button className="change-avatar-button" onClick={openDialog}>Change Avatar</button>
+                      </div>
+                    <div className="profile-info-account-page">
+                      <div className="profile-name-account-page">
+                        {userRetrieved?.username?.split("@")[0]}
+                        <button className="settings-button" onClick={() => navigate("/account-details")}> Settings</button>
+                      </div>
+
+                      <div className="profile-ranks-account-page">
+                        <div className="profile-rank-account-page">
+                          <span>Math Rank</span>
+                          <h2>{mathRank ?? "N/A"}</h2>
+                        </div>
+                        <div className="profile-rank-account-page">
+                          <span>Word Rank</span>
+                          <h2>{wordRank ?? "N/A"}</h2>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="profile-rank-account-page">
+                      <span>Overall Rank</span>
+                      <h2>{overallRank ?? "N/A"}</h2>
+                    </div>
+                  </div>
 
           <section className="stats-card">
-            <div className="high-score">
-              <h3>High Score</h3>
-              <div className="score-bar">
-                <div className="scores">
-                  <span className="score">Score 1</span>
-                  <span className="score">Score 2</span>
+              {/* <div className="high-score">
+                <h3>High Score</h3>
+                <div className="score-bar">
+                  <div className="scores">
+                    <span className="score">Score 1</span>
+                    <span className="score">Score 2</span>
+                  </div>
                 </div>
-              </div>
-            </div>
+              </div> */}
             <div className="achievement-status">
               <h3>Achievement Status</h3>
               <div className="status-bar">
@@ -133,6 +277,31 @@ const AccountPage = () => {
           </section>
         </section>
       </main>
+
+      {/* Dialog Box */}
+      {isDialogOpen && (
+        <div className="dialog-overlay">
+          <div className="dialog-box">
+            <h2>Change Avatar</h2>
+            <p>Please select an avatar.</p>
+            <div className="avatar-selection-display">
+              <div className="avatar-display">
+                <img src="./public/img/maleAvatar.jpg" alt="Profile" className="profile-image" />
+                <button disabled={isMaleSelected == true} className="select-button" onClick={changeToMaleSelected}>{isMaleSelected ? "Selected" : "Select"}</button>
+              </div>
+              <div className="avatar-display">
+                <img src="./public/img/femaleAvatar.jpg" alt="Profile" className="profile-image" />
+                <button disabled={isMaleSelected == false} className="select-button" onClick={changeToFemaleSelected}>{isMaleSelected ? "Select" : "Selected"}</button>
+              </div>
+            </div>
+            <div className="button-row">
+              <button className="close-button" onClick={closeDialog}>Close</button>
+              <button className="save-button" onClick={saveAvatar}>Save</button>
+            </div>
+          
+          </div>
+        </div>
+      )}
     </div>
   );
 };

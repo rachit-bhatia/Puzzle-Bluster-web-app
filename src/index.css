@@ -1,5 +1,7 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;900&display=swap");
+
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: "Poppins", sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
@@ -10,10 +12,10 @@
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale; 
+  -moz-osx-font-smoothing: grayscale;
+  --button-color : rgb(116, 91, 58);
+  --text-color : white
 }
-
-
 
 body {
   margin: 0;
@@ -22,24 +24,26 @@ body {
   justify-content: center;
   min-width: 320px;
   min-height: 100vh;
-  background: burlywood;
+  background: #595959;
 }
 
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
+  color: white;
 }
 
 .gameHeading {
   color: rgb(92, 76, 56);
   padding-bottom: 25px;
+  color: white;
 }
 
 .boardCell {
   display: inline-flex;
   background-color: #282941;
-  justify-content: center; 
-  align-items: center; 
+  justify-content: center;
+  align-items: center;
   margin: 1px;
   width: 50px;
   height: 40px;
@@ -61,22 +65,23 @@ h1 {
   margin: 10px 8px;
   font-size: 16px;
   border-radius: 5px;
-  border: 0.5px solid;
+  background-color: #595959;
+  color: #ffffff;
 }
-
 
 button {
   border-radius: 20px;
-  border: 1px groove;
+  border: 1px groove ;
   padding: 0.6em 1.2em;
   margin-right: 10px;
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: rgb(121, 97, 63);
-  color: rgb(255, 235, 209);
+  background-color: var(--button-color);
+  color: var(--text-color);
   cursor: pointer;
   transition: all 0.25s;
+ 
 }
 
 button:hover {
@@ -94,7 +99,7 @@ button:disabled:hover {
   width: 100%;
   text-align: right;
   font-size: 22px;
-  color: rgb(92, 76, 56);
+  color: white;
   font-weight: bold;
   font-style: italic;
 }
@@ -125,86 +130,27 @@ button:disabled:hover {
   z-index: 10;
   border-radius: 16px;
   width: 500px;
-  box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.04);
 }
-
-.modalHeader {
-  height: 50px;
-}
-
-.heading {
-  margin: 0;
-  padding: 10px;
-  font-weight: 500;
-  font-size: 20px;
-  text-align: center;
-}
-
-.modalContent {
-  padding: 10px;
-  font-size: 18px;
-  text-align: center;
-}
-
-.modalActions {
-  position: absolute;
-  bottom: 2px;
-  margin-bottom: 10px;
-  width: 100%;
-}
-
-
-.inputButtons {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  max-width: 1000px; /* Adjust the max-width as needed */
-}
-
-.nerdle-board {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.board-row {
-  display: flex;
-}
-
-.inputButton {
-  width: 40px;
-  height: 40px;
-  font-size: 16px;
-  margin: 5px;
-  padding: 4px;
+.backButton {
+  margin-right: 10px;
+  color: #ffffff;
+  background: none;
+  border: none;
+  font-size: 24px;
   cursor: pointer;
-  border-radius: 8px;
-  color: black;
-  border-color:black;
-  border: 0.5px solid;
-  background-color: rgb(217, 152, 67) ;
+  transition: background-color 0.1s ease, transform 0.1s ease;
 }
 
-.inputButton:hover {
-  box-shadow: 0 10px 20px -10px #785540;
-  transform: translateY(0px);
-  background-color: rgb(230, 176, 107);
-  color: grey;
-  border-color: grey;
-  }
-
-.gameBoardAndTimer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 20px; /* Space between grid and input buttons */
+.backButton:hover {
+  background-color: rgb(
+    167,
+    132,
+    103
+  ); /* Change to your desired hover background color */
+  transform: scale(1.05); /* Slightly increase the size on hover */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add a shadow effect */
 }
 
-.input-buttons button {
-  margin: 2px;
-  padding: 10px;
-  font-size: 16px;
-}
 
 button:disabled {
   background-color: #b3a08e;
