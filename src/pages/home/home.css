@@ -2,8 +2,23 @@
   display: flex;
   justify-content: center;
   height: 100vh;
-  background-color: #595959;
+  background-color: #473122;
   color: white;
+}
+
+.home-decor {
+  position: absolute; 
+  background-color: burlywood;
+  width: 200px;
+  height: 400px;
+  border-radius: 100px;
+}
+
+.home-decor2 {
+  position: absolute; 
+  background-color: rgb(154, 115, 65);
+  width: 200px;
+  height: 400px;
 }
 
 .home-container .content {
