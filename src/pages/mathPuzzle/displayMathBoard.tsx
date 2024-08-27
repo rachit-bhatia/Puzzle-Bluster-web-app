@@ -141,6 +141,9 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions, levelIndicator }) => {
               difficulty === "easy" ? 1 : difficulty === "medium" ? 2 : 3;
             if (savedHints !== undefined && savedHints <= maxHints) {
               setRemainingHints(savedHints);
+              if (savedHints == 0) {
+                setHintDisabled(true);
+              }
             } else {
               setRemainingHints(maxHints);
             }
