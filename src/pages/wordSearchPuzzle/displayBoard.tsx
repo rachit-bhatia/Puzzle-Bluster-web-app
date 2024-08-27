@@ -37,8 +37,14 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
     Array<{ row: number; col: number }>
   >([]);
 
+  //TODO: need to save hintedLetters
+  
   //reset hints on entering new level
-  useEffect(() => {hintedLetters = [];}, []);
+  //TODO: will need to check if any saved hints are there
+  useEffect(() => {
+    hintedLetters = [];
+    setHintDisabled(false);
+  }, []);
 
   //set remaining number of hints
   if ((difficulty!="hard" && hintedLetters.length >= 2) || (difficulty=="hard" && hintedLetters.length >= 4)) {
@@ -46,10 +52,8 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
     setHintDisabled(true);
   } else if (difficulty=="hard") {
     setRemainingHints(2 - hintedLetters.length/2);
-    setHintDisabled(false);
   } else {
     setRemainingHints(2 - hintedLetters.length);
-    setHintDisabled(false);
   }
 
   useEffect(() => {
