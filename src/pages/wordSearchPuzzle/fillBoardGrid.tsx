@@ -113,7 +113,6 @@ function FillBoardGrid (iBoardSize: number,
         return false;
     }
 
-    //TODO: remove the 1st half of coordinates since only the 2nd half is the correct rendering of the board
     console.log("Word Positions: ", allWordsCoordinates);
 
     return boardGrid;

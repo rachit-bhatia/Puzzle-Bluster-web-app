@@ -530,11 +530,12 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions, levelIndicator }) => {
   };
 
   return (
-    <div className="mathPuzzleContainer">
+    <div className="puzzle-body">
+
       <div style={{position: 'absolute', display: 'flex', top: '10px', left: '10px'}}>
-        <BackButton returnPath={"/render-math/levelselection"}/>
+        <BackButton returnPath={"/render-math/levelselection"} color="rgb(92, 76, 56)"/>
       </div>
-      {isDialogOpen && completionPopup()}
+      <h1 className="gameHeading">Matrix Frenzy</h1>
       <div className="gameBoardAndTimer">
         <div className="timerDisplay" style={{ display: "flex" }}>
           <button
@@ -633,6 +634,7 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions, levelIndicator }) => {
 
         <LevelIndicator level={levelIndicator} />
       </div>
+      {isDialogOpen && completionPopup()}
     </div>
   );
 };

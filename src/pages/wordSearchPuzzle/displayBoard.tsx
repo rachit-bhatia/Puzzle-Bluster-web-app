@@ -736,9 +736,9 @@ const WordSearchBoard = ({newBoard, levelIndicator}): ReactElement => {
   const [remainingHints, setRemainingHints] = useState(0);
 
     return (
-        <div>
+        <div className="puzzle-body">
             <div style={{position: 'absolute', display: 'flex', top: '10px', left: '10px'}}>
-              <BackButton returnPath={"/render-word/levelselection"}/>
+              <BackButton returnPath={"/render-word/levelselection"} color="rgb(92, 76, 56)"/>
             </div>
             <h1 className="gameHeading">Word Search</h1>
             <div style={{position: 'absolute', display: 'flex', top: '10px', right: '10px'}}>

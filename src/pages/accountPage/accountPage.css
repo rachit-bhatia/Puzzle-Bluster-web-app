@@ -1,13 +1,19 @@
 /* accountPage.css */
 /* Global styling */
 .account-page {
-  background-color: #595959;
+  background-color: #473122;
   color: white;
   height: 100vh;
   width: 100vw;
   display: flex;
   flex-direction: column;
   padding: 20px;
+}
+
+.content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .account-page .title {
@@ -41,6 +47,8 @@
   font-size: 20px;
   border-radius: 10px;
   padding: 5px 40px;
+  border: 1px solid white;
+
 }
 
 .id-number {
@@ -221,7 +229,7 @@
   flex-direction: column;
   flex-wrap: wrap;
   gap: 20px;
-  margin-left: 30%;
+  margin: 0px 80px;
   flex: auto;
 }
 

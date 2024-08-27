@@ -116,9 +116,9 @@ const LevelSelection: React.FC = () => {
   }, []);
 
   return (
-    <div className="container">
-      <div className="header">
-        <BackButton returnPath={"/puzzleselection"}/>
+    <div className="container" style={{backgroundColor: "rgb(198, 169, 134)", color: "rgb(92, 76, 56)"}}>
+      <div className="header" style={{color: "rgb(92, 76, 56)"}}>
+        <BackButton returnPath={"/puzzleselection"} color="rgb(92, 76, 56)"/>
         <h4 className="title">
           {puzzleName}
         </h4>
