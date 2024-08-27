@@ -88,6 +88,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  padding-right: 25px;
 }
 
 .account-page .profile-info-2 {
@@ -286,7 +287,7 @@
 }
 
 .account-page .select-button {
-  background-color: #ba9366; /* Grey color for disabled state */
+  background-color: #6b553c; /* Grey color for disabled state */
   color: white
 }
 
@@ -318,4 +319,51 @@
 
 .button-row .save-button {
   background-color: rgb(67, 202, 67); /* Background color for Save button */
+}
+
+.profile-section-account-page {
+  display: flex;
+  align-items: center;
+  background-color:  rgb(167, 132, 103);
+  padding: 20px;
+  border-radius: 10px;
+  color: #fff;
+  height : 30%;
+  margin-bottom: 20px;
+}
+
+
+.profile-info-account-page {
+  flex: 1;
+}
+
+.profile-name-account-page {
+  font-size: 36px;
+  margin-bottom: 20px;
+  display : flex;
+  flex-direction: row;
+  align-items: center;
+  gap : 20px;
+  
+
+}
+
+.profile-ranks-account-page {
+  display: flex;
+  gap: 40px;
+
+}
+
+.profile-rank-account-page {
+  text-align: center;
+}
+
+.settings-button{
+  height : 10%;
+  font-size: 15px;
+  background-color: #6b553c;  
+}
+
+.change-avatar-button{
+  background-color: #6b553c;  
 }

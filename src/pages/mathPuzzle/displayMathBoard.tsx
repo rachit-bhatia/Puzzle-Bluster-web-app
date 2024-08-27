@@ -74,7 +74,7 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions, levelIndicator }) => {
     for (let rowIndex = 0; rowIndex < boardGrid.length; rowIndex++) {
       const row = boardGrid[rowIndex];
       if (
-        !["+","-","*","/"].includes(row[1]) || 
+        !["+", "-", "*", "/"].includes(row[1]) ||
         cellStatus[rowIndex][1] !== "correct" // Ensure hint is not for a correct column
       ) {
         hintableRows.push(rowIndex);
@@ -93,12 +93,11 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions, levelIndicator }) => {
       setRemainingHints((prevHints) => prevHints - 1);
       saveHintsToDB();
       checkSolution(updatedGrid, rowIndex);
-    } 
+    }
 
     if (remainingHints == 1) {
       setHintDisabled(true); // Disable hint button when hints have been used up
     }
-
   };
 
   const saveHintsToDB = async () => {
@@ -127,7 +126,9 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions, levelIndicator }) => {
             const data = docSnapshot.data();
             const puzzleSaveState = data.puzzleSaveState;
             const savedCellStatus = JSON.parse(puzzleSaveState.cellStatus);
-            const savedEditableCells = JSON.parse(puzzleSaveState.editableCells);
+            const savedEditableCells = JSON.parse(
+              puzzleSaveState.editableCells
+            );
             const elapsedTime = puzzleSaveState.gameTime;
 
             setCellStatus(savedCellStatus);
@@ -136,7 +137,8 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions, levelIndicator }) => {
             setHintUsed(puzzleSaveState.hintUsed || false);
 
             const savedHints = data[`${difficulty}${levelId}HintsRemaining`];
-            const maxHints = difficulty === "easy" ? 1 : difficulty === "medium" ? 2 : 3;
+            const maxHints =
+              difficulty === "easy" ? 1 : difficulty === "medium" ? 2 : 3;
             if (savedHints !== undefined && savedHints <= maxHints) {
               setRemainingHints(savedHints);
             } else {
@@ -420,12 +422,20 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions, levelIndicator }) => {
     return (
       <div>
         <div className="darkBG" onClick={() => setDialogOpen(false)} />
-        <div className="centered">
+        <div className="centered padding" style={{ textAlign: "center" }}>
           <div className="modal">
-            <div className="modalHeader">
-              <h5 className="heading">Save Game</h5>
+            <div className="modalHeader padding">
+              <h5
+                className="heading"
+                style={{ fontSize: "20px", paddingTop: "10px" }}
+              >
+                Save Game
+              </h5>
             </div>
-            <div className="modalContent" style={{fontStyle: "normal", fontWeight: "normal"}}>
+            <div
+              className="modalContent"
+              style={{ paddingBottom: "30px", paddingTop: "10px", fontWeight:"lighter", fontSize:"15px"}}
+            >
               Do you want to save your progress and leave?
             </div>
             <div className="modalActions">
@@ -434,7 +444,7 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions, levelIndicator }) => {
                 style={{ display: "flex", justifyContent: "space-between" }}
               >
                 <button
-                  style={{ width: "220px", margin: "0 20px", borderRadius: "250px", scale: "0.8" }}
+                  style={{ width: "220px", margin: "0 20px", height:"15%" , fontSize:"15px" }}
                   onClick={() => {
                     savetoDB();
                     navigate("/home");
@@ -446,8 +456,9 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions, levelIndicator }) => {
                 >
                   {"Save and Exit"}
                 </button>
+
                 <button
-                  style={{ width: "220px", margin: "0 20px", borderRadius: "250px", scale: "0.8" }}
+                  style={{ width: "220px", margin: "0 20px", height:"15%" , fontSize:"15px" }}
                   onClick={() => {
                     setTimerActive(true);
                     setSaveDialogOpen(false);
@@ -460,23 +471,36 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions, levelIndicator }) => {
           </div>
         </div>
       </div>
+
+
     );
   }
 
   const completionPopup = () => {
     return (
-      <div style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", zIndex: 1000 }}>
+      <div>
         <div className="darkBG" onClick={() => setDialogOpen(false)} />
-        <div className="centered">
+        <div className="centered padding" style={{ textAlign: "center" }}>
           <div className="modal">
-            <div className="modalHeader">
-              <h5 className="heading">Puzzle solved!</h5>
+            <div className="modalHeader padding">
+              <h5
+                className="heading"
+                style={{ fontSize: "20px", paddingTop: "10px" }}
+              >
+                Puzzle solved!
+              </h5>
             </div>
-            <div className="modalContent">
-              Yay! You have solved all the puzzles on this board
+            <div
+              className="modalContent"
+              style={{ paddingBottom: "30px", paddingTop: "10px" }}
+            >
+              Yay! You have found all the words on this board
             </div>
             <div className="modalActions">
-              <div className="actionsContainer" style={{ display: "flex", justifyContent: "center" }}>
+              <div
+                className="saveContainer"
+                style={{ display: "flex", justifyContent: "center" }}
+              >
                 <button
                   style={{ width: "250px" }}
                   onClick={() => {
@@ -506,22 +530,22 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions, levelIndicator }) => {
     <div className="mathPuzzleContainer">
       {isDialogOpen && completionPopup()}
       <div className="gameBoardAndTimer">
-        <div className="timerDisplay" style={{display: "flex"}}>
+        <div className="timerDisplay" style={{ display: "flex" }}>
           <button
-          style={{
-            scale: "0.8"
-          }}
-          onClick={() => {
-            setSaveDialogOpen(true);
-            setTimerActive(false);
-          }}
-        >
-          {"Save Game"}
-        </button>
-        {isSaveDialogOpen && savePopup()}
-        <div style={{flexGrow: 1}}>{formatTime(timeElapsed)}</div>
+            style={{
+              scale: "0.8",
+            }}
+            onClick={() => {
+              setSaveDialogOpen(true);
+              setTimerActive(false);
+            }}
+          >
+            {"Save Game"}
+          </button>
+          {isSaveDialogOpen && savePopup()}
+          <div style={{ flexGrow: 1 }}>{formatTime(timeElapsed)}</div>
         </div>
-        
+
         <div className="boardGrid">
           {boardGrid.map((boardRow, rowIndex) => (
             <div className="boardRow" key={rowIndex}>
@@ -586,12 +610,20 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions, levelIndicator }) => {
           </button>
         ))}
       </div>
-      <div style={{position: 'absolute', display: 'flex', top: '10px', right: '10px'}}>
+      <div
+        style={{
+          position: "absolute",
+          display: "flex",
+          top: "10px",
+          right: "10px",
+        }}
+      >
         <HintButton
           hintFunction={handleHintClick}
           setHintDisabled={setHintDisabled}
           isHintDisabled={isHintDisabled}
-          remainingHints={remainingHints} />
+          remainingHints={remainingHints}
+        />
         <LevelIndicator level={levelIndicator} />
       </div>
     </div>

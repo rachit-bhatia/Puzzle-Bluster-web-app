@@ -10,7 +10,13 @@ import { User } from "firebase/auth";
 
 const AccountPage = () => {
   const navigate = useNavigate();
-  const [username, setUsername] = useState("");
+
+  const [userRetrieved, setUserRetrieved] = useState<UserAccount | null>(null);
+
+  // Current user rank in each puzzle game
+  const [mathRank, setMathRank] = useState<number | null>(null);
+  const [wordRank, setWordRank] = useState<number | null>(null);
+  const [overallRank, setOverallRank] = useState<number | null>(null);
   const [achievements, setAchievements] = useState<string[]>([]);
   const [latestAchievement, setLatestAchievement] = useState<string | null>(
     null
@@ -82,13 +88,37 @@ const AccountPage = () => {
   }
 
   useEffect(() => {
-    const user = auth.currentUser
+ 
+    const user = auth.currentUser;
+
+    const fetchUserData = async () => {
+      if (user) {
+        try {
+          // Fetch data for math, word, and overall concurrently
+          const [userAccount, mathData, wordData, overallData] =
+            await Promise.all([
+              UserAccount.getUserByUuid(user.uid),
+              UserAccount.getUserRank(user.uid, "math"),
+              UserAccount.getUserRank(user.uid, "word"),
+              UserAccount.getUserRank(user.uid, "overall"),
+              UserAccount.getUserByUuid(user.uid)
+            ]);
+
+          // Update state with the fetched data
+          setUserRetrieved(userAccount);
+          setMathRank(mathData?.rank ?? null);
+          setWordRank(wordData?.rank ?? null);
+          setOverallRank(overallData?.rank ?? null);
+          setUserAvatar(userAccount.userAvatar? userAccount.userAvatar : "")  
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      }
+    };
+    fetchUserData();
 
     if (user && user.email) {
-      const usernameFromEmail = user.email.split("@")[0];
-      setUsername(usernameFromEmail);
-      
-    
+
       const fetchAchievements = async () => {
         const userRef = doc(db, "users", user.email);
         const docSnapshot = await getDoc(userRef);
@@ -102,7 +132,6 @@ const AccountPage = () => {
           }
         }
       };
-    
     
       fetchAchievements();
       getUserAvatar()
@@ -141,7 +170,7 @@ const AccountPage = () => {
           </div>
         </section> */}
         <section className="account-info">
-          <div className="profile-card">
+          {/* <div className="profile-card">
             <div className="profile-info">
               <div className="profile-info-1">
                 <div className="profile-avatar">
@@ -178,18 +207,46 @@ const AccountPage = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
+
+            <div className="profile-section-account-page">
+                  <div className="profile-avatar">
+                        <img src={getAvatarSrc()} className="profile-image" />
+                        <button className="change-avatar-button" onClick={openDialog}>Change Avatar</button>
+                      </div>
+                    <div className="profile-info-account-page">
+                      <div className="profile-name-account-page">
+                        {userRetrieved?.username?.split("@")[0]}
+                        <button className="settings-button" onClick={() => navigate("/account-details")}> Settings</button>
+                      </div>
+
+                      <div className="profile-ranks-account-page">
+                        <div className="profile-rank-account-page">
+                          <span>Math Rank</span>
+                          <h2>{mathRank ?? "N/A"}</h2>
+                        </div>
+                        <div className="profile-rank-account-page">
+                          <span>Word Rank</span>
+                          <h2>{wordRank ?? "N/A"}</h2>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="profile-rank-account-page">
+                      <span>Overall Rank</span>
+                      <h2>{overallRank ?? "N/A"}</h2>
+                    </div>
+                  </div>
 
           <section className="stats-card">
-            <div className="high-score">
-              <h3>High Score</h3>
-              <div className="score-bar">
-                <div className="scores">
-                  <span className="score">Score 1</span>
-                  <span className="score">Score 2</span>
+              {/* <div className="high-score">
+                <h3>High Score</h3>
+                <div className="score-bar">
+                  <div className="scores">
+                    <span className="score">Score 1</span>
+                    <span className="score">Score 2</span>
+                  </div>
                 </div>
-              </div>
-            </div>
+              </div> */}
             <div className="achievement-status">
               <h3>Achievement Status</h3>
               <div className="status-bar">

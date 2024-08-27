@@ -13,6 +13,8 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  --button-color : rgb(116, 91, 58);
+  --text-color : white
 }
 
 body {
@@ -69,7 +71,7 @@ h1 {
 
 button {
   border-radius: 20px;
-  border: 1px groove;
+  border: 1px groove ;
   padding: 0.6em 1.2em;
   margin-right: 10px;
   font-size: 1em;
@@ -79,6 +81,7 @@ button {
   color: var(--text-color);
   cursor: pointer;
   transition: all 0.25s;
+ 
 }
 
 button:hover {

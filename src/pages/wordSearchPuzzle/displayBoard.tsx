@@ -506,9 +506,9 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
         <div className="centered padding" style={{ textAlign: "center" }}>
           <div className="modal">
             <div className="modalHeader padding">
-              <h5 className="heading">Save Game</h5>
+              <h5 className="heading" style={{fontSize : "20px" , paddingTop : "10px"}} >Save Game</h5>
             </div>
-            <div className="modalContent">
+            <div className="modalContent" style={{ paddingBottom : "30px" ,paddingTop : "10px" }}>
               Do you want to save your progress and leave?
             </div>
             <div className="modalActions">
@@ -555,19 +555,20 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
   //popup message for level completion
   function completionPopup(): JSX.Element {
     return (
+
       <div>
         <div className="darkBG" onClick={() => setDialogOpen(false)} />
-        <div className="centered">
+        <div className="centered padding" style={{ textAlign: "center"}}>
           <div className="modal">
-            <div className="modalHeader">
-              <h5 className="heading">Puzzle solved!</h5>
+            <div className="modalHeader padding">
+              <h5 className="heading" style={{fontSize : "20px" , paddingTop : "10px"}}>Puzzle solved!</h5>
             </div>
-            <div className="modalContent">
+            <div className="modalContent"  style={{ paddingBottom : "30px" ,paddingTop : "10px" }}>
               Yay! You have found all the words on this board
             </div>
             <div className="modalActions">
               <div
-                className="actionsContainer"
+                className="saveContainer"
                 style={{ display: "flex", justifyContent: "center" }}
               >
                 <button
