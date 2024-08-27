@@ -420,12 +420,12 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions, levelIndicator }) => {
     return (
       <div>
         <div className="darkBG" onClick={() => setDialogOpen(false)} />
-        <div className="centered">
+        <div className="centered padding" style={{ textAlign: "center" }}>
           <div className="modal">
-            <div className="modalHeader">
+            <div className="modalHeader" style={{fontSize : "20px" , paddingTop : "10px"}}>
               <h5 className="heading">Save Game</h5>
             </div>
-            <div className="modalContent" style={{fontStyle: "normal", fontWeight: "normal"}}>
+            <div className="modalContent"  style={{ paddingBottom : "30px" ,paddingTop : "10px" }}>
               Do you want to save your progress and leave?
             </div>
             <div className="modalActions">
@@ -446,6 +446,7 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions, levelIndicator }) => {
                 >
                   {"Save and Exit"}
                 </button>
+
                 <button
                   style={{ width: "220px", margin: "0 20px", borderRadius: "250px", scale: "0.8" }}
                   onClick={() => {
@@ -454,12 +455,13 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions, levelIndicator }) => {
                   }}
                 >
                   {"Cancel"}
-                </button>
+                </button>      
               </div>
             </div>
           </div>
         </div>
       </div>
+      
     );
   }
 

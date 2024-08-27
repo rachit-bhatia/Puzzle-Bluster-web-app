@@ -71,9 +71,9 @@ function HomePage() {
         <div className="centered">
           <div className="modal">
             <div className="modalHeader">
-              <h5 className="heading">Load Game</h5>
+              <h5 className="heading" style={{fontSize : "20px" , paddingTop : "10px"}}>Load Game</h5>
             </div>
-            <div className="modalContent">
+            <div className="modalContent" style={{ paddingBottom : "30px" ,paddingTop : "10px" }}>
               Do you want to load a previous saved game?
             </div>
             <div className="modalActions">
