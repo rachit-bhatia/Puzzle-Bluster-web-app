@@ -628,14 +628,17 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
       <div className="timerDisplay" key={levelId}>
         {formatTime(timeElapsed)}
       </div>
-      <button
-        onClick={() => {
-          setSaveDialogOpen(true);
-          setTimerActive(false);
-        }}
-      >
-        {"Save Game"}
-      </button>
+      <div style={{position: 'absolute', display: 'flex', top: '10px', left: '10px'}}>
+        <BackButton returnPath={"/render-word/levelselection"} color="rgb(92, 76, 56)"/>
+        <button
+          onClick={() => {
+            setSaveDialogOpen(true);
+            setTimerActive(false);
+          }}
+        >
+          {"Save Game"}
+        </button>
+      </div>
       {isSaveDialogOpen && savePopup()}
       {boardGrid.map((boardRow, rowIndex) => (
         <div className="boardRow" key={rowIndex}>
@@ -737,9 +740,6 @@ const WordSearchBoard = ({newBoard, levelIndicator}): ReactElement => {
 
     return (
         <div className="puzzle-body">
-            <div style={{position: 'absolute', display: 'flex', top: '10px', left: '10px'}}>
-              <BackButton returnPath={"/render-word/levelselection"} color="rgb(92, 76, 56)"/>
-            </div>
             <h1 className="gameHeading">Word Search</h1>
             <div style={{position: 'absolute', display: 'flex', top: '10px', right: '10px'}}>
                 <HintButton 
