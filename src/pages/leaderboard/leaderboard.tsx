@@ -103,11 +103,11 @@ function Leaderboard() {
 
           <div className="profile-ranks-leaderboard">
             <div className="profile-rank-leaderboard">
-              <span>Math Rank</span>
+              <span>Matrix Frenzy</span>
               <h2>{mathRank ?? "N/A"}</h2>
             </div>
             <div className="profile-rank-leaderboard">
-              <span>Word Rank</span>
+              <span>Word Search</span>
               <h2>{wordRank ?? "N/A"}</h2>
             </div>
           </div>
@@ -127,13 +127,13 @@ function Leaderboard() {
           className={`tab ${activeTab === "Math" ? "active" : ""}`}
           onClick={() => handleTabClick("Math")}
         >
-          Math
+          Matrix Frenzy
         </button>
         <button
           className={`tab ${activeTab === "Word" ? "active" : ""}`}
           onClick={() => handleTabClick("Word")}
         >
-          Word
+          Word Search
         </button>
         <button
           className={`tab ${activeTab === "Overall" ? "active" : ""}`}

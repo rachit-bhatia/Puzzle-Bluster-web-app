@@ -49,7 +49,7 @@ function generatePuzzleRow(
 const MathPuzzleBoard = ({ newBoard, levelIndicator }): ReactElement => {
     return (
         <div>
-            <h1 className="gameHeading">Math Puzzle</h1>
+            <h1 className="gameHeading">Matrix Frenzy</h1>
             <DisplayMathBoard boardGrid={newBoard} puzzleSolutions={puzzleSolutions} levelIndicator={levelIndicator}/>
         </div>
     );

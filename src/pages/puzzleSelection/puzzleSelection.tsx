@@ -5,8 +5,8 @@ import { auth } from "../../firebase/firebase";
 import BackButton from "../../components/backButton";
 
 const puzzles = [
-  { id: 1, name: "Word Puzzles", type: "word" },
-  { id: 2, name: "Math Puzzles", type: "math" },
+  { id: 1, name: "Word Search", type: "word" },
+  { id: 2, name: "Matrix Frenzy", type: "math" },
 ];
 
 const PuzzleSelection: React.FC = () => {

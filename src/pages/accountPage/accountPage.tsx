@@ -156,8 +156,7 @@ const AccountPage = () => {
     <div className="account-page">
       <div className="header">
         <BackButton />
-        <div className="title">Account</div>
-        <div className="subtitle">Profile</div>
+        <div className="title">My Account</div>
       </div>
       <main className="content">
         {/* <section className="user-id">
@@ -222,11 +221,11 @@ const AccountPage = () => {
 
                       <div className="profile-ranks-account-page">
                         <div className="profile-rank-account-page">
-                          <span>Math Rank</span>
+                          <span>Matrix Frenzy</span>
                           <h2>{mathRank ?? "N/A"}</h2>
                         </div>
                         <div className="profile-rank-account-page">
-                          <span>Word Rank</span>
+                          <span>Word Search</span>
                           <h2>{wordRank ?? "N/A"}</h2>
                         </div>
                       </div>

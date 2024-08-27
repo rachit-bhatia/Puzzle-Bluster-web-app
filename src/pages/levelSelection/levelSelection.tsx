@@ -22,6 +22,7 @@ const LevelSelection: React.FC = () => {
   });
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const puzzleName = slicedPuzzleType=="word" ? "Word Search" : "Matrix Frenzy";
 
   async function initializeProgress() {
     const user = auth.currentUser;
@@ -119,9 +120,7 @@ const LevelSelection: React.FC = () => {
       <div className="header">
         <BackButton returnPath={"/puzzleselection"}/>
         <h4 className="title">
-          {slicedPuzzleType.charAt(0).toUpperCase() +
-            slicedPuzzleType.slice(1) +
-            " Puzzle"}
+          {puzzleName}
         </h4>
         <DiffcultyDropdown />
       </div>
