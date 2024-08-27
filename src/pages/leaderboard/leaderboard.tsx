@@ -164,7 +164,7 @@ function Leaderboard() {
         {sortedUsers.map((user, index) => {
           // Display the username or "N/A" if it's null
           const displayName = user.username ? user.username.split("@")[0] : "N/A";
-          
+          console.log(displayName)
           // Determine the score to display based on activeTab
           let score: number;
           if (activeTab === 'Word') {
@@ -176,7 +176,9 @@ function Leaderboard() {
           }
 
           let userOverallRank = overallSortedUsers?.findIndex(overallUser => overallUser.userUuid === user.userUuid);
-  
+          
+    
+          const overallRank = userOverallRank !== undefined ? userOverallRank + 1 : "N/A";
           return (
             <div key={index} className="score-item-leaderboard">
               <div className="rank-leaderboard">{index + 1}</div>
@@ -187,7 +189,7 @@ function Leaderboard() {
                 <div className="score-leaderboard">{score}</div>
                 {/* Display the score based on activeTab */}
                 <div className="rank-number-leaderboard">
-                  Overall Rank { userOverallRank? userOverallRank + 1 : "N/A"}
+                  Overall Rank { overallRank}
                 </div>
               </div>
             </div>
