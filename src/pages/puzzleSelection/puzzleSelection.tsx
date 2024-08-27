@@ -5,13 +5,17 @@ import { auth } from "../../firebase/firebase";
 import BackButton from "../../components/backButton";
 
 const puzzles = [
-  { id: 1, name: "Word Puzzles", type: "word" },
-  { id: 2, name: "Math Puzzles", type: "math" },
+  { id: 1, name: "Word Search", type: "word" },
+  { id: 2, name: "Matrix Frenzy", type: "math" },
 ];
 
 const PuzzleSelection: React.FC = () => {
   const navigate = useNavigate();
   const [currentPuzzleIndex, setCurrentPuzzleIndex] = useState(0);
+  // const [currentPuzzleIndex, setCurrentPuzzleIndex] = useState(() => {
+  //   const savedPuzzle = localStorage.getItem('savedPuzzle');
+  //   return savedPuzzle !== null ? JSON.parse(savedPuzzle) : 1;
+  // });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const userUuid = auth.currentUser?.uid;
@@ -20,12 +24,16 @@ const PuzzleSelection: React.FC = () => {
     setCurrentPuzzleIndex((prevIndex) =>
       prevIndex > 0 ? prevIndex - 1 : puzzles.length - 1
     );
+    localStorage.setItem('savedPuzzle', JSON.stringify(currentPuzzleIndex));
+    console.log("Puzzle: ", localStorage.getItem('savedPuzzle'));
   };
 
   const goToNextPuzzle = () => {
     setCurrentPuzzleIndex((prevIndex) =>
       prevIndex < puzzles.length - 1 ? prevIndex + 1 : 0
     );
+    localStorage.setItem('savedPuzzle', JSON.stringify(currentPuzzleIndex));
+    console.log("Puzzle: ", localStorage.getItem('savedPuzzle'));
   };
 
   const currentPuzzle = puzzles[currentPuzzleIndex];

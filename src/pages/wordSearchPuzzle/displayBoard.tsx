@@ -7,6 +7,7 @@ import { ReactElement, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import AchievementManager from "./achievementManager";
 import LevelIndicator from '../../components/levelIndicator';
+import BackButton from "../../components/backButton";
 import HintButton from '../../components/hintButton';
 import { wordsToFind, allWordsCoordinates } from "./fillBoardGrid";
 
@@ -36,7 +37,14 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
     Array<{ row: number; col: number }>
   >([]);
 
-  // hintedLetters = []; //reset hinted letters on new level
+  //TODO: need to save hintedLetters
+  
+  //reset hints on entering new level
+  //TODO: will need to check if any saved hints are there
+  useEffect(() => {
+    hintedLetters = [];
+    setHintDisabled(false);
+  }, []);
 
   //set remaining number of hints
   if ((difficulty!="hard" && hintedLetters.length >= 2) || (difficulty=="hard" && hintedLetters.length >= 4)) {
@@ -108,6 +116,7 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
               const foundWords = JSON.parse(puzzleSaveState.foundWords);
               const foundPositions = JSON.parse(puzzleSaveState.foundPositions);
               const elapsedTime = puzzleSaveState.gameTime;
+              const hintedLettersLoad = JSON.parse(puzzleSaveState.hintedLetters);
 
               // Now you can use these deserialized values in your application
               console.log("Game state loaded successfully", {
@@ -118,6 +127,8 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
               setFoundWords(foundWords);
               setTimeElapsed(elapsedTime);
               setFoundPositions(foundPositions);
+              hintedLetters = hintedLettersLoad;
+
             } else {
               console.log("No saved game state found");
             }
@@ -162,6 +173,11 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
     // Call markAsFound after the component has been rendered
     loadProgress();
     markAsFound(foundPositions);
+    if (hintedLetters.length > 0) {
+      for (let i = 0; i < hintedLetters.length; i++) {
+        document.getElementById(hintedLetters[i])!.style.backgroundColor = hintColor;
+      }
+    }
   }, [boardGrid]); // Dependency array to ensure it runs after boardGrid is initialized
 
   // async function storeInDB(gameTime) {
@@ -223,12 +239,14 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
       const boardGridString = JSON.stringify(boardGrid);
       const foundWordsString = JSON.stringify(foundWords);
       const foundPositionsString = JSON.stringify(foundPositions);
+      const hintedLettersString = JSON.stringify(hintedLetters);
 
       const puzzleSaveState = {
         gameTime: gameTime,
         board: boardGridString,
         foundWords: foundWordsString,
         foundPositions: foundPositionsString,
+        hintedLetters: hintedLettersString,
         difficulty: difficulty,
         levelId: levelId,
         puzzleType: "word"
@@ -530,6 +548,8 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
                     setTimeElapsed(0);
                     setTimerActive(false);
                     setFoundWords([]);
+                    hintedLetters = [];
+                    setHintDisabled(false);
                     setDialogOpen(false);
                   }}
                 >
@@ -717,15 +737,21 @@ const WordSearchBoard = ({newBoard, levelIndicator}): ReactElement => {
 
     return (
         <div>
+            <div style={{position: 'absolute', display: 'flex', top: '10px', left: '10px'}}>
+              <BackButton returnPath={"/render-word/levelselection"}/>
+            </div>
             <h1 className="gameHeading">Word Search</h1>
             <div style={{position: 'absolute', display: 'flex', top: '10px', right: '10px'}}>
                 <HintButton 
                   isHintDisabled={isHintDisabled} 
                   setHintDisabled={setHintDisabled} 
                   hintFunction={showLetterOnHint} 
-                  remainingHints={remainingHints}/>
+                  remainingHints={remainingHints}
+                  setRemainingHints={setRemainingHints}/>
+
                 <LevelIndicator level={levelIndicator} />
             </div>
+
             <DisplayBoard 
               boardGrid={newBoard} 
               wordsToFind={wordsToFind} 

@@ -125,10 +125,10 @@ function HomePage() {
       <div className="content">
         <img
           src="/img/homepageani.gif"
-          alt="Puzzle Game"
+          alt="Puzzle Bluster"
           className="game-image"
         />
-        <div className="PuzzleGame">Puzzle Game</div>
+        <div className="PuzzleGame">Puzzle Bluster</div>
         <div className="button-container" style={{ paddingTop: "20px" }}>
           <button
             onClick={() => {

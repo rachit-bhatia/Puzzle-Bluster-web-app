@@ -16,8 +16,13 @@ const LevelSelection: React.FC = () => {
     medium: 0,
     hard: 0,
   });
-  const [difficulty, setDifficulty] = useState("easy");
+  const [difficulty, setDifficulty] = useState(() => {
+    const savedDifficulty = localStorage.getItem('savedDifficulty');
+    return savedDifficulty !== null ? JSON.parse(savedDifficulty) : "easy";
+  });
+
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const puzzleName = slicedPuzzleType=="word" ? "Word Search" : "Matrix Frenzy";
 
   async function initializeProgress() {
     const user = auth.currentUser;
@@ -33,7 +38,7 @@ const LevelSelection: React.FC = () => {
             const completedLevels = JSON.parse(data.Progress[progressField]);
             const savedDifficulty = data.Progress?.savedDifficulty || "easy";
             setCompletedLevelsList(completedLevels);
-            setDifficulty(savedDifficulty);
+            // setDifficulty(savedDifficulty);
           } else {
             await updateDoc(userRef, {
               [`Progress.${progressField}`]: JSON.stringify(completedLevelsList),
@@ -82,6 +87,7 @@ const LevelSelection: React.FC = () => {
           label="Difficulty"
           onChange={async (event) => {
             setDifficulty(event.target.value);
+            localStorage.setItem('savedDifficulty', JSON.stringify(event.target.value));
             await updateProgress();
           }}
           style={{
@@ -112,11 +118,9 @@ const LevelSelection: React.FC = () => {
   return (
     <div className="container">
       <div className="header">
-        <BackButton />
+        <BackButton returnPath={"/puzzleselection"}/>
         <h4 className="title">
-          {slicedPuzzleType.charAt(0).toUpperCase() +
-            slicedPuzzleType.slice(1) +
-            " Puzzle"}
+          {puzzleName}
         </h4>
         <DiffcultyDropdown />
       </div>

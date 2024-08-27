@@ -5,6 +5,7 @@ import { doc, setDoc, updateDoc, getDoc } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
 import AchievementManagerMath from "./achievementManagerMath";
 import HintButton from "../../components/hintButton";
+import BackButton from "../../components/backButton";
 import LevelIndicator from "../../components/levelIndicator";
 
 const DisplayMathBoard = ({ boardGrid, puzzleSolutions, levelIndicator }) => {
@@ -90,7 +91,6 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions, levelIndicator }) => {
       updatedGrid[rowIndex][1] = puzzleSolutions[rowIndex][1]; // Provide hint by revealing the operator
 
       setHintUsed(true);
-      setRemainingHints((prevHints) => prevHints - 1);
       saveHintsToDB();
       checkSolution(updatedGrid, rowIndex);
     }
@@ -141,6 +141,9 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions, levelIndicator }) => {
               difficulty === "easy" ? 1 : difficulty === "medium" ? 2 : 3;
             if (savedHints !== undefined && savedHints <= maxHints) {
               setRemainingHints(savedHints);
+              if (savedHints == 0) {
+                setHintDisabled(true);
+              }
             } else {
               setRemainingHints(maxHints);
             }
@@ -528,6 +531,9 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions, levelIndicator }) => {
 
   return (
     <div className="mathPuzzleContainer">
+      <div style={{position: 'absolute', display: 'flex', top: '10px', left: '10px'}}>
+        <BackButton returnPath={"/render-math/levelselection"}/>
+      </div>
       {isDialogOpen && completionPopup()}
       <div className="gameBoardAndTimer">
         <div className="timerDisplay" style={{ display: "flex" }}>
@@ -622,8 +628,9 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions, levelIndicator }) => {
           hintFunction={handleHintClick}
           setHintDisabled={setHintDisabled}
           isHintDisabled={isHintDisabled}
-          remainingHints={remainingHints}
-        />
+          remainingHints={remainingHints} 
+          setRemainingHints={setRemainingHints}/>
+
         <LevelIndicator level={levelIndicator} />
       </div>
     </div>
