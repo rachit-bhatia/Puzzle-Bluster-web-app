@@ -121,6 +121,10 @@ function HomePage() {
   };
   return (
     <div className="home-container">
+      <div className="home-decor" style={{top: "-150px", left: "-20px", transform: "rotate(120deg)"}}></div>
+      <div className="home-decor" style={{bottom: "-120px", right: "-20px", transform: "rotate(70deg)"}}></div>
+      <div className="home-decor2" style={{top: "50vh", left: "-100px", transform: "rotate(10deg)"}}></div>
+      <div className="home-decor2" style={{top: "100px", right: "-100px", transform: "rotate(-25deg)"}}></div>
       {isSignOutSuccessful && <Navigate to="/signin" replace={true} />}
       <div className="content">
         <img

@@ -530,17 +530,11 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions, levelIndicator }) => {
   };
 
   return (
-    <div className="mathPuzzleContainer">
+    <div className="puzzle-body">
+
       <div style={{position: 'absolute', display: 'flex', top: '10px', left: '10px'}}>
-        <BackButton returnPath={"/render-math/levelselection"}/>
-      </div>
-      {isDialogOpen && completionPopup()}
-      <div className="gameBoardAndTimer">
-        <div className="timerDisplay" style={{ display: "flex" }}>
-          <button
-            style={{
-              scale: "0.8",
-            }}
+        <BackButton returnPath={"/render-math/levelselection"} color="rgb(92, 76, 56)"/>
+        <button
             onClick={() => {
               setSaveDialogOpen(true);
               setTimerActive(false);
@@ -548,6 +542,11 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions, levelIndicator }) => {
           >
             {"Save Game"}
           </button>
+      </div>
+      <h1 className="gameHeading" style={{paddingBottom: "60px"}}>Matrix Frenzy</h1>
+      <div className="gameBoardAndTimer">
+        <div className="timerDisplay" style={{ display: "flex" }}>
+          
           {isSaveDialogOpen && savePopup()}
           <div style={{ flexGrow: 1 }}>{formatTime(timeElapsed)}</div>
         </div>
@@ -568,7 +567,7 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions, levelIndicator }) => {
                         ? "rgb(18, 119, 113)"
                         : cellStatus[rowIndex] &&
                           cellStatus[rowIndex][colIndex] === "incorrect"
-                        ? "lightcoral"
+                        ? "lightcoral" 
                         : "",
                     cursor:
                       editableCells[rowIndex] &&
@@ -590,7 +589,7 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions, levelIndicator }) => {
           ))}
         </div>
       </div>
-      <div className="inputButtons">
+      <div className="inputButtons" style={{paddingTop: "30px"}}>
         {[
           "1",
           "2",
@@ -633,6 +632,7 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions, levelIndicator }) => {
 
         <LevelIndicator level={levelIndicator} />
       </div>
+      {isDialogOpen && completionPopup()}
     </div>
   );
 };
