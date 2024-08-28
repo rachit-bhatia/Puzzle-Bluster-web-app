@@ -19,6 +19,8 @@ const PuzzleSelection: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const userUuid = auth.currentUser?.uid;
+  const user = auth.currentUser;
+  const homePath = user ? "/home" : "/home-guest";
 
   const goToPreviousPuzzle = () => {
     setCurrentPuzzleIndex((prevIndex) =>
@@ -41,10 +43,10 @@ const PuzzleSelection: React.FC = () => {
   return (
     <div className="container">
       <div className="home-decor" style={{bottom: "-120px", right: "-20px", transform: "rotate(20deg)"}}></div>
-      <div className="home-decor2" style={{top: "50vh", left: "-130px", transform: "rotate(100deg)"}}></div>
+      <div className="home-decor2" style={{top: "30vh", left: "-110px", transform: "rotate(10deg)"}}></div>
       <div className="home-decor2" style={{top: "-20px", right: "-100px", transform: "rotate(-10deg)"}}></div>
       <div className="header">
-        <BackButton />
+        <BackButton returnPath={homePath}/>
         <div className="title">Select Puzzle</div>
         <div className="subtitle">Word / Math</div>
       </div>
