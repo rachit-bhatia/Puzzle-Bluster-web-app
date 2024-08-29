@@ -30,7 +30,8 @@ https://www.figma.com/file/LseRwzN5XexTJXt9cRPgEn/PuzzleGame?type=design&node-id
 >>>>>>> ce8b434b756effc2b69a71b2de0368ea68bdf6c2
 
 
-**Project Handover Documentation**
+## **Project Handover Documentation**
+
 **Project Overview**
 This project is a puzzle game featuring two different types of games, namely, Word Search (word puzzle) and Matrix Frenzy (maths puzzle). Each puzzle has three levels of difficulty with multiple levels for each difficulty. It also includes a user authentication system with account login and guest login options, as well as a leaderboard to track high scores.
 
