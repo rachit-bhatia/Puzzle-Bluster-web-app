@@ -26,6 +26,7 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions, levelIndicator }) => {
   const [hintUsed, setHintUsed] = useState(false);
   const [remainingHints, setRemainingHints] = useState(0);
   const [isHintDisabled, setHintDisabled] = useState(false);
+  const [originalSolutions, setOriginalSolutions] = useState<string[][]>([]); // State for original solutions
 
   const levelMap = {
     level1: "level2",
@@ -38,8 +39,7 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions, levelIndicator }) => {
   useEffect(() => {
     resetBoard();
     loadProgress();
-
-    loadGameState();
+    loadGameState(); // Load game state including original solutions
   }, [boardGrid]);
 
   const resetBoard = () => {
@@ -54,6 +54,10 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions, levelIndicator }) => {
     const hintsBasedOnDifficulty =
       difficulty === "easy" ? 1 : difficulty === "medium" ? 2 : 2;
     setRemainingHints(hintsBasedOnDifficulty);
+
+    // Ensure that the original solutions are stored separately
+    setOriginalSolutions(puzzleSolutions); // Store the original solutions
+    console.log(`Ori Puzzle Solutions: `, puzzleSolutions);
   };
 
   useEffect(() => {
@@ -88,14 +92,14 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions, levelIndicator }) => {
       const rowIndex = hintableRows[randomIndex];
 
       const updatedGrid = [...boardGrid];
-      updatedGrid[rowIndex][1] = puzzleSolutions[rowIndex][1]; // Provide hint by revealing the operator
+      updatedGrid[rowIndex][1] = originalSolutions[rowIndex][1]; // Use original solutions for hint
 
       setHintUsed(true);
       saveHintsToDB();
       checkSolution(updatedGrid, rowIndex);
     }
 
-    if (remainingHints == 1) {
+    if (remainingHints === 1) {
       setHintDisabled(true); // Disable hint button when hints have been used up
     }
   };
@@ -141,12 +145,16 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions, levelIndicator }) => {
               difficulty === "easy" ? 1 : difficulty === "medium" ? 2 : 3;
             if (savedHints !== undefined && savedHints <= maxHints) {
               setRemainingHints(savedHints);
-              if (savedHints == 0) {
+              if (savedHints === 0) {
                 setHintDisabled(true);
               }
             } else {
               setRemainingHints(maxHints);
             }
+
+            // Load the original solutions from the database
+            const loadedOriginalSolutions = JSON.parse(puzzleSaveState.originalSolutions);
+            setOriginalSolutions(loadedOriginalSolutions); // Set the original solutions from saved data
 
             checkAllSolutions(boardGrid, savedCellStatus);
             setTimerActive(true);
@@ -171,6 +179,7 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions, levelIndicator }) => {
       const boardGridString = JSON.stringify(boardGrid);
       const cellStatusString = JSON.stringify(cellStatus);
       const editableCellsString = JSON.stringify(editableCells);
+      const originalSolutionsString = JSON.stringify(originalSolutions); // Save the original solutions
 
       const puzzleSaveState = {
         gameTime: timeElapsed,
@@ -182,6 +191,7 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions, levelIndicator }) => {
         puzzleType: "math",
         hintUsed: hintUsed,
         remainingHints: remainingHints, // Save remaining hints
+        originalSolutions: originalSolutionsString, // Save the original solutions
       };
       try {
         const docSnapshot = await getDoc(userRef);
@@ -211,7 +221,7 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions, levelIndicator }) => {
     grid.forEach((row, rowIndex) => {
       let rowIsCorrect = true;
       row.forEach((cellValue, colIndex) => {
-        const correctCellInput = puzzleSolutions[rowIndex][colIndex];
+        const correctCellInput = originalSolutions[rowIndex][colIndex]; // Check against original solutions
         if (cellValue === correctCellInput) {
           updatedCellStatus[rowIndex][colIndex] = "correct";
         } else {
@@ -257,7 +267,7 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions, levelIndicator }) => {
     let rowIsCorrect = true;
 
     grid[rowIndex].forEach((cellValue, colIndex) => {
-      const correctCellInput = puzzleSolutions[rowIndex][colIndex];
+      const correctCellInput = originalSolutions[rowIndex][colIndex]; // Use original solutions for checking
 
       if (cellValue === correctCellInput) {
         updatedCellStatus[rowIndex][colIndex] = "correct";

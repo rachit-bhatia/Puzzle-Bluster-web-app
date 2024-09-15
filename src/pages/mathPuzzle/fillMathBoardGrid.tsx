@@ -15,7 +15,6 @@ function FillMathBoardGrid(
     .map(() => new Array(5).fill(""));
 
   puzzleSolutions = levelSolutions;
-  console.log(`Filling Board Grid with Solutions: `, puzzleSolutions);
 
   for (let i = 0; i < gridHeight; i++) {
     let solution = puzzleSolutions[i];
