@@ -2,6 +2,7 @@ import { db } from "../firebase/firebase";
 import {
   addDoc,
   collection,
+  getDoc,
   getDocs,
   updateDoc,
   deleteDoc,
@@ -245,6 +246,32 @@ class UserAccount {
     }
   }
 
+  static async updateUserName(user: UserAccount, newUsername: string): Promise<void> {
+    if (user.docId) {
+      const oldUserRef = doc(UserAccount.collection, user.docId);
+      
+      const oldDocSnapshot = await getDoc(oldUserRef);
+  
+      if (!oldDocSnapshot.exists()) {
+        throw new Error("Document not found");
+      }
+  
+      const oldData = oldDocSnapshot.data();
+  
+      oldData.username = newUsername;
+  
+      const newUserRef = doc(UserAccount.collection, newUsername);
+      
+      await setDoc(newUserRef, oldData);
+  
+      await deleteDoc(oldUserRef);
+  
+      user.docId = newUsername;
+    } else {
+      throw new Error("Cannot update user without a userUuid");
+    }
+  }
+
   static async changeAvatar(avatar : String , user: UserAccount): Promise<boolean> {
     try {
       // Reference to the user document
@@ -264,9 +291,11 @@ class UserAccount {
   }
 
   // DELETE
-  static async deleteUser(docId: string): Promise<void> {
-    const userRef = doc(UserAccount.collection, docId);
+  static async deleteUser(user: UserAccount): Promise<void> {
+    if (user.docId) {
+    const userRef = doc(UserAccount.collection, user.docId);
     await deleteDoc(userRef);
+    }
   }
 
   // Store difficulty selection

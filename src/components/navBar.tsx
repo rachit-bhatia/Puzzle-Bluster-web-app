@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import "./navBar.css";
 
 const NavBar: React.FC = () => {
@@ -22,9 +22,9 @@ const NavBar: React.FC = () => {
         <a href="#" className="navbar-link">
           PROFESSIONAL SERVICES
         </a>
-        <a href="/signup" className="navbar-link">
+        <button className="navbar-button" onClick={() => navigate("/signup")}>
           Sign Up
-        </a>
+        </button>
         <button className="navbar-button" onClick={() => navigate("/signin")}>
           Login
         </button>

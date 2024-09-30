@@ -43,9 +43,9 @@ function Leaderboard() {
     if (userAvatar === "") {
       return ""; // No image source
     } else if (userAvatar === "male") {
-      return "./public/img/maleAvatar.jpg";
+      return "/img/maleAvatar.jpg";
     } else if (userAvatar === "female") {
-      return "./public/img/femaleAvatar.jpg";
+      return "/img/femaleAvatar.jpg";
     }
     return ""; // Default case if no match
   };

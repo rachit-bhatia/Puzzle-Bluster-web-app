@@ -144,9 +144,9 @@ const AccountPage = () => {
     if (userAvatar === "") {
       return ""; // No image source
     } else if (userAvatar === "male") {
-      return "./public/img/maleAvatar.jpg";
+      return "/img/maleAvatar.jpg";
     } else if (userAvatar === "female") {
-      return "./public/img/femaleAvatar.jpg";
+      return "/img/femaleAvatar.jpg";
     }
     return ""; // Default case if no match
   };
@@ -285,11 +285,11 @@ const AccountPage = () => {
             <p>Please select an avatar.</p>
             <div className="avatar-selection-display">
               <div className="avatar-display">
-                <img src="./public/img/maleAvatar.jpg" alt="Profile" className="profile-image" />
+                <img src="/img/maleAvatar.jpg" alt="Profile" className="profile-image" />
                 <button disabled={isMaleSelected == true} className="select-button" onClick={changeToMaleSelected}>{isMaleSelected ? "Selected" : "Select"}</button>
               </div>
               <div className="avatar-display">
-                <img src="./public/img/femaleAvatar.jpg" alt="Profile" className="profile-image" />
+                <img src="/img/femaleAvatar.jpg" alt="Profile" className="profile-image" />
                 <button disabled={isMaleSelected == false} className="select-button" onClick={changeToFemaleSelected}>{isMaleSelected ? "Select" : "Selected"}</button>
               </div>
             </div>

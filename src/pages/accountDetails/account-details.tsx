@@ -2,6 +2,7 @@ import "./account-details.css";
 import React, { useState, useEffect } from 'react';
 import { auth } from '../../firebase/firebase'; 
 import { updateEmail, updatePassword, reauthenticateWithCredential, EmailAuthProvider, deleteUser } from 'firebase/auth';
+import { UserAccount } from "../../models/shared";
 import { Link, useNavigate } from "react-router-dom";
 
 function AccountDetails() {
@@ -57,14 +58,25 @@ function AccountDetails() {
         }
 
         if (await reauthenticate(currentPassword)) {
-            const userEmail = newUsername.trim() + "@example.com"; // Replace 'example.com' with your domain
+            const userEmail = newUsername.trim() + "@email.com";
 
             try {
+                // 1. Retrieve the user account data from Firestore
+                const userAccount = await UserAccount.getUserByUuid(auth.currentUser.uid);
+    
+                // 2. Update username and Firestore document if username has changed
                 if (newUsername && newUsername !== currentUsername) {
+                    // Update the user's email in Firebase Auth
                     await updateEmail(auth.currentUser, userEmail);
-                    setCurrentUsername(newUsername); // Update the current username state
+                    
+                    // Update the Firestore document to change the docId
+                    await UserAccount.updateUserName(userAccount, userEmail); // Pass the new username to update
+    
+                    // Update the current username state
+                    setCurrentUsername(newUsername);
                 }
-
+    
+                // Update password if provided
                 if (password) {
                     await updatePassword(auth.currentUser, password);
                 }
@@ -87,6 +99,8 @@ function AccountDetails() {
         if (window.confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
             if (await reauthenticate(currentPassword)) {
                 try {
+                    const userAccount = await UserAccount.getUserByUuid(auth.currentUser.uid);
+                    await UserAccount.deleteUser(userAccount);
                     await deleteUser(auth.currentUser);
                     alert("Account has been successfully deleted.");
                     navigate("/signup"); // Redirect to the signup page or another appropriate page
