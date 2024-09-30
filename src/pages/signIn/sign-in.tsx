@@ -46,10 +46,22 @@ function SignInPage() {
   return (
     <div className="wrapper">
       {isSignInSuccessful && <Navigate to="/home" replace={true} />}
-      <div className="home-decor" style={{top: "-150px", left: "-20px", transform: "rotate(60deg)"}}></div>
-      <div className="home-decor" style={{bottom: "-120px", right: "-20px", transform: "rotate(20deg)"}}></div>
-      <div className="home-decor2" style={{top: "50vh", left: "-130px", transform: "rotate(100deg)"}}></div>
-      <div className="home-decor2" style={{top: "-20px", right: "-100px", transform: "rotate(-10deg)"}}></div>
+      <div
+        className="home-decor"
+        style={{ top: "-150px", left: "-20px", transform: "rotate(60deg)" }}
+      ></div>
+      <div
+        className="home-decor"
+        style={{ bottom: "-120px", right: "-20px", transform: "rotate(20deg)" }}
+      ></div>
+      <div
+        className="home-decor2"
+        style={{ top: "50vh", left: "-130px", transform: "rotate(100deg)" }}
+      ></div>
+      <div
+        className="home-decor2"
+        style={{ top: "-20px", right: "-100px", transform: "rotate(-10deg)" }}
+      ></div>
 
       <form action="" onSubmit={onSignIn}>
         <h1>Sign In</h1>
@@ -77,9 +89,9 @@ function SignInPage() {
           <FaLock className="icon" />
         </div>
 
-        <div className="forgot-password">
+        {/* <div className="forgot-password">
           <a href="#">Forgot Password?</a>
-        </div>
+        </div> */}
 
         <button
           type="submit"
