@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./leaderboard.css";
 import BackButton from "../../components/backButton";
-import { getAuth } from "firebase/auth";
+import { getAuth, User } from "firebase/auth";
 import { UserAccount } from "../../models/shared";
 import { act } from "react-dom/test-utils";
 import { auth } from "../../firebase/firebase";
@@ -11,6 +11,8 @@ function Leaderboard() {
 
   // State to keep track of the active tab
   const [activeTab, setActiveTab] = useState("Math");
+
+  const [firebaseUser, setFirebaseUser] = useState<User | null>(null);
 
   // Handler to change the active tab
   const handleTabClick = (tab: string) => {
@@ -49,47 +51,64 @@ function Leaderboard() {
     }
     return ""; // Default case if no match
   };
-  
 
+  
+  // Listen for auth state changes
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        // User is signed in, retrieve their info
+        setFirebaseUser(user);
+      } else {
+        // User is signed out or not logged in
+        console.log("User is not logged in");
+        setFirebaseUser(null); // Optional: Reset user state when logged out
+      }
+    });
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
-    const auth = getAuth();
-    const user = auth.currentUser;
 
-
+   
     const fetchUserData = async () => {
-      if (user) {
+      if (firebaseUser) {
         try {
           // Fetch data for math, word, and overall concurrently
           const [userAccount, mathData, wordData, overallData] =
             await Promise.all([
-              UserAccount.getUserByUuid(user.uid),
-              UserAccount.getUserRank(user.uid, "math"),
-              UserAccount.getUserRank(user.uid, "word"),
-              UserAccount.getUserRank(user.uid, "overall"),
-              UserAccount.getUserByUuid(user.uid)
+              UserAccount.getUserByUuid(firebaseUser.uid),
+              UserAccount.getUserRank(firebaseUser.uid, "math"),
+              UserAccount.getUserRank(firebaseUser.uid, "word"),
+              UserAccount.getUserRank(firebaseUser.uid, "overall"),
+              UserAccount.getUserByUuid(firebaseUser.uid)
             ]);
-
+  
           // Update state with the fetched data
           setUserRetrieved(userAccount);
-
+  
           setMathRank(mathData?.rank ?? null);
           setMathSortedUsers(mathData?.sortedUsers ?? null);
-
+  
           setWordRank(wordData?.rank ?? null);
           setWordSortedUsers(wordData?.sortedUsers ?? null);
-
+  
           setOverallRank(overallData?.rank ?? null);
           setOverallSortedUsers(overallData?.sortedUsers ?? null);
-
+  
           setUserAvatar(userAccount.userAvatar? userAccount.userAvatar : "")  
         } catch (error) {
           console.error("Error fetching user data:", error);
         }
       }
+    
+
+    
     };
     fetchUserData();
-  }, []); // Empty dependency array ensures this runs once when the component mounts
+  }, [firebaseUser]); // Empty dependency array ensures this runs once when the component mounts
 
   const ProfileSection: React.FC = () => {
     return (

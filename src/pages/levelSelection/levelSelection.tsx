@@ -6,6 +6,7 @@ import { db } from "../../firebase/firebase";
 import { doc, updateDoc, getDoc } from "firebase/firestore";
 import { Select, MenuItem, FormControl, InputLabel } from "@mui/material";
 import BackButton from "../../components/backButton";
+import { User } from "firebase/auth";
 
 const LevelSelection: React.FC = () => {
   const navigate = useNavigate();
@@ -23,6 +24,24 @@ const LevelSelection: React.FC = () => {
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const puzzleName = slicedPuzzleType=="word" ? "Word Search" : "Matrix Frenzy";
+  const [firebaseUser, setFirebaseUser] = useState<User | null>(null);
+  
+    // Listen for auth state changes
+    useEffect(() => {
+      const unsubscribe = auth.onAuthStateChanged((user) => {
+        if (user) {
+          // User is signed in, retrieve their info
+          setFirebaseUser(user);
+        } else {
+          // User is signed out or not logged in
+          console.log("User is not logged in");
+          setFirebaseUser(null); // Optional: Reset user state when logged out
+        }
+      });
+  
+      // Cleanup subscription on unmount
+      return () => unsubscribe();
+    }, []);
 
   async function initializeProgress() {
     const user = auth.currentUser;
@@ -113,7 +132,7 @@ const LevelSelection: React.FC = () => {
 
   useEffect(() => {
     initializeProgress();
-  }, []);
+  }, [firebaseUser]);
 
   return (
     <div className="container" style={{backgroundColor: "rgb(198, 169, 134)", color: "rgb(92, 76, 56)"}}>

@@ -26,6 +26,8 @@ const AccountPage = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isMaleSelected, setIsMaleSelected] = useState<Boolean | null >(null)
   const [userAccount, setUserAccount] = useState<UserAccount | null>(null)
+
+  const [firebaseUser, setFirebaseUser] = useState<User | null>(null);
    // Function to open the dialog
    const openDialog = () => {
     getUserAvatar()
@@ -70,6 +72,23 @@ const AccountPage = () => {
   
   };
 
+    // Listen for auth state changes
+    useEffect(() => {
+      const unsubscribe = auth.onAuthStateChanged((user) => {
+        if (user) {
+          // User is signed in, retrieve their info
+          setFirebaseUser(user);
+        } else {
+          // User is signed out or not logged in
+          console.log("User is not logged in");
+          setFirebaseUser(null); // Optional: Reset user state when logged out
+        }
+      });
+  
+      // Cleanup subscription on unmount
+      return () => unsubscribe();
+    }, []);
+  
 
 
   const getUserAvatar = async () => {
@@ -88,55 +107,55 @@ const AccountPage = () => {
   }
 
   useEffect(() => {
- 
-    const user = auth.currentUser;
 
-    const fetchUserData = async () => {
-      if (user) {
-        try {
-          // Fetch data for math, word, and overall concurrently
-          const [userAccount, mathData, wordData, overallData] =
-            await Promise.all([
-              UserAccount.getUserByUuid(user.uid),
-              UserAccount.getUserRank(user.uid, "math"),
-              UserAccount.getUserRank(user.uid, "word"),
-              UserAccount.getUserRank(user.uid, "overall"),
-              UserAccount.getUserByUuid(user.uid)
-            ]);
+    if(firebaseUser){
 
-          // Update state with the fetched data
-          setUserRetrieved(userAccount);
-          setMathRank(mathData?.rank ?? null);
-          setWordRank(wordData?.rank ?? null);
-          setOverallRank(overallData?.rank ?? null);
-          setUserAvatar(userAccount.userAvatar? userAccount.userAvatar : "")  
-        } catch (error) {
-          console.error("Error fetching user data:", error);
-        }
-      }
-    };
-    fetchUserData();
-
-    if (user && user.email) {
-
-      const fetchAchievements = async () => {
-        const userRef = doc(db, "users", user.email);
-        const docSnapshot = await getDoc(userRef);
-
-        if (docSnapshot.exists()) {
-          const userAchievements = docSnapshot.data()?.achievements || [];
-          setAchievements(userAchievements);
-
-          if (userAchievements.length > 0) {
-            setLatestAchievement(userAchievements[userAchievements.length - 1]);
+      const fetchUserData = async () => {
+          try {
+            // Fetch data for math, word, and overall concurrently
+            const [userAccount, mathData, wordData, overallData] =
+              await Promise.all([
+                UserAccount.getUserByUuid(firebaseUser.uid),
+                UserAccount.getUserRank(firebaseUser.uid, "math"),
+                UserAccount.getUserRank(firebaseUser.uid, "word"),
+                UserAccount.getUserRank(firebaseUser.uid, "overall"),
+                UserAccount.getUserByUuid(firebaseUser.uid)
+              ]);
+  
+            // Update state with the fetched data
+            setUserRetrieved(userAccount);
+            setMathRank(mathData?.rank ?? null);
+            setWordRank(wordData?.rank ?? null);
+            setOverallRank(overallData?.rank ?? null);
+            setUserAvatar(userAccount.userAvatar? userAccount.userAvatar : "")  
+          } catch (error) {
+            console.error("Error fetching user data:", error);
           }
-        }
-      };
-    
-      fetchAchievements();
-      getUserAvatar()
+      }
+
+      fetchUserData();
+  
+      if (firebaseUser && firebaseUser.email) {
+  
+        const fetchAchievements = async () => {
+          const userRef = doc(db, "users", firebaseUser.email);
+          const docSnapshot = await getDoc(userRef);
+  
+          if (docSnapshot.exists()) {
+            const userAchievements = docSnapshot.data()?.achievements || [];
+            setAchievements(userAchievements);
+  
+            if (userAchievements.length > 0) {
+              setLatestAchievement(userAchievements[userAchievements.length - 1]);
+            }
+          }
+        };
+      
+        fetchAchievements();
+        getUserAvatar();
+      }
     }
-  }, []);
+  }, [firebaseUser]);
 
 
   // Function to determine the image source
