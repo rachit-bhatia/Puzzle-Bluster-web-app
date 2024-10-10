@@ -24,7 +24,6 @@ const DesktopPage: React.FC = () => {
               >
                 Start Now
               </button>
-              <button className="action-button learn-button">Learn More</button>
             </div>
           </div>
           <div className="image-content">
