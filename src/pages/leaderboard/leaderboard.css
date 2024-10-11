@@ -1,10 +1,9 @@
 html, body {
-    height: 100%;
+    height: 50vh;
     margin: 0;
-    overflow: hidden; /* Prevent scrollbars on the entire page */
+    overflow: hidden;
   }
-  
-  
+
   .page-content{
     display: flex;
     width: 100%;
@@ -78,14 +77,22 @@ html, body {
     color : white
   }
   
-  
-  
-  .score-list-leaderboard {
+  .score-list-container{
     display: flex;
     flex-direction: column;
     width: 80%;
     gap: 10px;
     height: 50%; /* Adjust [header-height] as needed */
+    overflow-y: auto; /* Add vertical scrollbar if content overflows */
+  }
+  
+  
+  .score-list-leaderboard {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+    height: 100%; /* Adjust [header-height] as needed */
     overflow-y: auto; /* Add vertical scrollbar if content overflows */
   }
   
