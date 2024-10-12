@@ -452,14 +452,14 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions, levelIndicator }) => {
                 className="heading"
                 style={{ fontSize: "20px", paddingTop: "10px" }}
               >
-                Save Game
+                {auth.currentUser ? "Save Game" : "Leave Game"}
               </h5>
             </div>
             <div
               className="modalContent"
               style={{ paddingBottom: "30px", paddingTop: "10px", fontWeight:"lighter", fontSize:"15px"}}
             >
-              Do you want to save your progress and leave?
+              {auth.currentUser ? "Do you want to save your progress and leave?" : "Do you want to leave the game?"}
             </div>
             <div className="modalActions">
               <div
@@ -469,15 +469,19 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions, levelIndicator }) => {
                 <button
                   style={{ width: "220px", margin: "0 20px", height:"15%" , fontSize:"15px" }}
                   onClick={() => {
-                    savetoDB();
-                    navigate("/home");
-                    setTimeElapsed(0);
-                    setTimerActive(false);
-                    resetBoard();
-                    setDialogOpen(false);
-                  }}
-                >
-                  {"Save and Exit"}
+                    if (auth.currentUser){
+                      savetoDB();
+                      navigate("/home");
+                    } else {
+                      navigate("/home-guest")
+                    }
+                      setTimeElapsed(0);
+                      setTimerActive(false);
+                      resetBoard();
+                      setDialogOpen(false);
+                    }}
+                  >
+                    {auth.currentUser ? "Save and Exit" : "Exit"}
                 </button>
 
                 <button
@@ -560,7 +564,7 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions, levelIndicator }) => {
               setTimerActive(false);
             }}
           >
-            {"Save Game"}
+            {auth.currentUser ? "Save Game" : "Leave Game"}
           </button>
       </div>
       <h1 className="gameHeading" style={{paddingBottom: "60px"}}>Matrix Frenzy</h1>
