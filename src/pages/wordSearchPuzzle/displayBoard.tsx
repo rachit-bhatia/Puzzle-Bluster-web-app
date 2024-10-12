@@ -101,22 +101,25 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
     }
   }, [foundWords, timeElapsed]); // This effect listens to changes in foundWords
 
-  // Load game state from user account
-  useEffect(() => {
-    const loadGameState = async () => {
-      if (boolLoadFlag) {
-        const user = auth.currentUser;
-        if (user) {
-          const userRef = doc(db, "users", user.email);
-          try {
-            const docSnapshot = await getDoc(userRef);
-            if (docSnapshot.exists()) {
-              const data = docSnapshot.data();
-              const puzzleSaveState = data.puzzleSaveState;
-              const foundWords = JSON.parse(puzzleSaveState.foundWords);
-              const foundPositions = JSON.parse(puzzleSaveState.foundPositions);
-              const elapsedTime = puzzleSaveState.gameTime;
-              const hintedLettersLoad = JSON.parse(puzzleSaveState.hintedLetters);
+// Load game state from user account
+useEffect(() => {
+  const loadGameState = async () => {
+    if (boolLoadFlag) {
+      const user = auth.currentUser;
+      if (user) {
+        const userRef = doc(db, "users", user.email);
+        try {
+          const docSnapshot = await getDoc(userRef);
+          if (docSnapshot.exists()) {
+            const data = docSnapshot.data();
+            const puzzleSaveState = data.puzzleSaveState;
+            const wordPuzzleSaveState = puzzleSaveState.wordPuzzleSaveState;
+
+            if (wordPuzzleSaveState) {
+              const foundWords = JSON.parse(wordPuzzleSaveState.foundWords);
+              const foundPositions = JSON.parse(wordPuzzleSaveState.foundPositions);
+              const elapsedTime = wordPuzzleSaveState.gameTime;
+              const hintedLettersLoad = JSON.parse(wordPuzzleSaveState.hintedLetters);
 
               // Now you can use these deserialized values in your application
               console.log("Game state loaded successfully", {
@@ -128,20 +131,22 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
               setTimeElapsed(elapsedTime);
               setFoundPositions(foundPositions);
               hintedLetters = hintedLettersLoad;
-
             } else {
-              console.log("No saved game state found");
+              console.log("No saved game state found for word puzzle");
             }
-          } catch (error) {
-            console.error("Error loading game state: ", error);
+          } else {
+            console.log("No saved game state found");
           }
-        } else {
-          console.error("No authenticated user found");
+        } catch (error) {
+          console.error("Error loading game state: ", error);
         }
+      } else {
+        console.error("No authenticated user found");
       }
-    };
-    loadGameState();
-  }, [boolLoadFlag]);
+    }
+  };
+  loadGameState();
+}, [boolLoadFlag]);
 
   // Mark the words found in the board
   function markAsFound(foundPositions: Array<{ row: number; col: number }>) {
@@ -241,7 +246,7 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
       const foundPositionsString = JSON.stringify(foundPositions);
       const hintedLettersString = JSON.stringify(hintedLetters);
 
-      const puzzleSaveState = {
+      const wordPuzzleSaveState = {
         gameTime: gameTime,
         board: boardGridString,
         foundWords: foundWordsString,
@@ -251,18 +256,21 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
         levelId: levelId,
         puzzleType: "word"
       };
+
       try {
         const docSnapshot = await getDoc(userRef);
         if (docSnapshot.exists()) {
           // If the document exists, update it
           await updateDoc(userRef, {
-            puzzleSaveState: puzzleSaveState,
+            "puzzleSaveState.wordPuzzleSaveState": wordPuzzleSaveState,
           });
           console.log("Game state saved sucessfully");
         } else {
           // If the document does not exist, create it
           await setDoc(userRef, {
-            puzzleSaveState: puzzleSaveState,
+            puzzleSaveState: {
+              wordPuzzleSaveState: wordPuzzleSaveState,
+            }
           });
           console.log("Game state saved successfully");
         }
@@ -285,7 +293,9 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
         if (docSnapshot.exists()) {
           // If the document exists, update it
           await updateDoc(userRef, {
-            puzzleSaveState: {},
+            puzzleSaveState: {
+              wordPuzzleSaveState: {},
+            },
           });
           console.log("Game state removed successfully");
         } else {
