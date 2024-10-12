@@ -544,14 +544,14 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions, levelIndicator }) => {
 
       <div style={{position: 'absolute', display: 'flex', top: '10px', left: '10px'}}>
         <BackButton returnPath={"/render-math/levelselection"} color="rgb(92, 76, 56)"/>
-        <button
+        {auth.currentUser?<button
             onClick={() => {
               setSaveDialogOpen(true);
               setTimerActive(false);
             }}
           >
             {"Save Game"}
-          </button>
+          </button>: null}
       </div>
       <h1 className="gameHeading" style={{paddingBottom: "60px"}}>Matrix Frenzy</h1>
       <div className="gameBoardAndTimer">

@@ -35,8 +35,8 @@ function SignInPage() {
         setIsSigningInSuccessful(true);
         setErrorMessage("");
       } catch (error) {
-        setErrorMessage(error.message);
-        console.log(error.message);
+        setErrorMessage("Invalid username or password");
+        console.log("sign in failed");
       }
 
       setIsSigningIn(false);

@@ -630,14 +630,14 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
       </div>
       <div style={{position: 'absolute', display: 'flex', top: '10px', left: '10px'}}>
         <BackButton returnPath={"/render-word/levelselection"} color="rgb(92, 76, 56)"/>
-        <button
+        {auth.currentUser?<button
           onClick={() => {
             setSaveDialogOpen(true);
             setTimerActive(false);
           }}
         >
           {"Save Game"}
-        </button>
+        </button>: null}
       </div>
       {isSaveDialogOpen && savePopup()}
       {boardGrid.map((boardRow, rowIndex) => (
