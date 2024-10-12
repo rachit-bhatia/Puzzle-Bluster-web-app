@@ -754,7 +754,7 @@ const WordSearchBoard = ({newBoard, levelIndicator}): ReactElement => {
   const [remainingHints, setRemainingHints] = useState(0);
 
     return (
-        <div className="puzzle-body">
+        <div className="puzzle-body" style={{overflow: 'scroll'}}>
             <h1 className="gameHeading">Word Search</h1>
             <div style={{position: 'absolute', display: 'flex', top: '10px', right: '10px'}}>
                 <HintButton 
