@@ -643,7 +643,7 @@ useEffect(() => {
       <div className="timerDisplay" key={levelId}>
         {formatTime(timeElapsed)}
       </div>
-      <div style={{position: 'absolute', display: 'flex', top: '10px', left: '10px'}}>
+      <div style={{position: 'absolute', display: 'flex', top: '10px', left: '15px'}}>
         <BackButton returnPath={"/render-word/levelselection"} color="rgb(92, 76, 56)"/>
         <button
           onClick={() => {
@@ -754,9 +754,9 @@ const WordSearchBoard = ({newBoard, levelIndicator}): ReactElement => {
   const [remainingHints, setRemainingHints] = useState(0);
 
     return (
-        <div className="puzzle-body">
+        <div className="puzzle-body" style={{overflow: 'scroll'}}>
             <h1 className="gameHeading">Word Search</h1>
-            <div style={{position: 'absolute', display: 'flex', top: '10px', right: '10px'}}>
+            <div style={{position: 'absolute', display: 'flex', top: '10px', right: '20px'}}>
                 <HintButton 
                   isHintDisabled={isHintDisabled} 
                   setHintDisabled={setHintDisabled} 
