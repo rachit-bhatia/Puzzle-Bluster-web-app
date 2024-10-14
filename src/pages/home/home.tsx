@@ -9,11 +9,9 @@ import "./home.css";
 function HomePage() {
   const [errorMessage, setErrorMessage] = useState("");
   const [isSignOutSuccessful, setIsSignOutSuccessful] = useState(false);
+  const [isPuzzleTypeDialogOpen, setPuzzleTypeDialogOpen] = useState(false);
   const [isDialogOpen, setDialogOpen] = useState(false);
-  const [difficulty, setDifficulty] = useState("");
-  const [levelID, setLevelID] = useState("");
-  const [hasSavedGame, setHasSavedGame] = useState(false);
-  const [puzzleType, setPuzzleType] = useState("");
+  const [isErrorDialogOpen, setErrorDialogOpen] = useState(false);
   const navigate = useNavigate();
 
   const onSignOut = async (event) => {
@@ -28,41 +26,105 @@ function HomePage() {
     }
   };
 
-  useEffect(() => {
-    const checkSavedGame = async () => {
-      const user = auth.currentUser;
-      if (user) {
-        const userRef = doc(db, "users", user.email);
-        try {
-          const docSnapshot = await getDoc(userRef);
-          if (docSnapshot.exists()) {
-            const data = docSnapshot.data();
-            const puzzleSaveState = data.puzzleSaveState;
-            console.log(puzzleSaveState);
-            if (puzzleSaveState && Object.keys(puzzleSaveState).length > 0) {
-              setHasSavedGame(true);
-              const difficulty = puzzleSaveState.difficulty;
-              const levelId = puzzleSaveState.levelId;
-              const puzzleType = puzzleSaveState.puzzleType;
+  
 
-              setDifficulty(difficulty);
-              setLevelID(levelId);
-              setPuzzleType(puzzleType);
-            } else {
-              console.log("No saved game state found");
-            }
+  const checkSavedWordPuzzle = async () => {
+    const user = auth.currentUser;
+    if (user) {
+      const userRef = doc(db, "users", user.email);
+      try {
+        const docSnapshot = await getDoc(userRef);
+        if (docSnapshot.exists()) {
+          const data = docSnapshot.data();
+          const puzzleSaveState = data.puzzleSaveState;
+          const wordPuzzleSaveState = puzzleSaveState.wordPuzzleSaveState;
+          console.log(puzzleSaveState);
+          if (wordPuzzleSaveState && Object.keys(wordPuzzleSaveState).length > 0) {
+            const difficulty = wordPuzzleSaveState.difficulty;
+            const levelId = wordPuzzleSaveState.levelId;
+            const puzzleType = wordPuzzleSaveState.puzzleType;
+
+            navigate(`/render-${puzzleType}/${difficulty}/${levelId}/1`);
           } else {
+            setErrorDialogOpen(true);
+            console.log("No saved game state found");
+
+          }
+        } else {
+          setErrorDialogOpen(true);
+          console.log("No saved game state found");
+        }
+      } catch (error) {
+        console.error("Error loading game state: ", error);
+      }
+    } else {
+      console.error("No authenticated user found");
+    }
+  };
+
+  const checkSavedMathPuzzle = async () => {
+    const user = auth.currentUser;
+    if (user) {
+      const userRef = doc(db, "users", user.email);
+      try {
+        const docSnapshot = await getDoc(userRef);
+        if (docSnapshot.exists()) {
+          const data = docSnapshot.data();
+          const puzzleSaveState = data.puzzleSaveState;
+          const mathPuzzleSaveState = puzzleSaveState.mathPuzzleSaveState;
+          console.log(puzzleSaveState);
+          if (mathPuzzleSaveState && Object.keys(mathPuzzleSaveState).length > 0) {
+            const difficulty = mathPuzzleSaveState.difficulty;
+            const levelId = mathPuzzleSaveState.levelId;
+            const puzzleType = mathPuzzleSaveState.puzzleType;
+
+            navigate(`/render-${puzzleType}/${difficulty}/${levelId}/1`);
+          } else {
+            setErrorDialogOpen(true);
             console.log("No saved game state found");
           }
-        } catch (error) {
-          console.error("Error loading game state: ", error);
+        } else {
+          setErrorDialogOpen(true);
+          console.log("No saved game state found");
         }
-      } else {
-        console.error("No authenticated user found");
+      } catch (error) {
+        console.error("Error loading game state: ", error);
       }
-    };
-    checkSavedGame();
-  }, [isDialogOpen]);
+    } else {
+      console.error("No authenticated user found");
+    }
+  };
+
+  function errorPopup(): JSX.Element {
+    return (
+      <div>
+        <div className="darkBG" onClick={() => setErrorDialogOpen(false)} />
+        <div className="centered">
+          <div className="modal" style={{height: "100px", width: "400px"}}>
+            <div className="modalHeader">
+              <h5 className="heading" style={{fontSize : "20px" , paddingTop : "10px"}}>Error: No save found</h5>
+            </div>
+            <div className="modalActions">
+              <div
+                className="modalContainer"
+                style={{ display: "flex", alignItems: "center", justifyContent: "center" }}
+              >
+                <button
+                  style={{ width: "220px", margin: "0 20px", paddingTop: "10px" }}
+                  onClick={() => {
+                    setErrorDialogOpen(false);
+                  }}
+                >
+                  {"Okay"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
 
   function loadPopup(): JSX.Element {
     return (
@@ -84,14 +146,8 @@ function HomePage() {
                 <button
                   style={{ width: "220px", margin: "0 20px" }}
                   onClick={() => {
-                    if (hasSavedGame) {
-                      // Assuming the saved game is always a word puzzle. If not, you'll need to store and retrieve the puzzle type as well.
-                      navigate(`/render-${puzzleType}/${difficulty}/${levelID}/1`);
                       setDialogOpen(false);
-                    } else {
-                      setDialogOpen(false);
-                      setErrorMessage("No saved game found");
-                    }
+                      setPuzzleTypeDialogOpen(true);
                   }}
                 >
                   {"Load Game"}
@@ -111,6 +167,58 @@ function HomePage() {
       </div>
     );
   }
+
+  function selectPuzzleLoad(): JSX.Element {
+    return (
+      <div>
+        <div className="darkBG" onClick={() => setPuzzleTypeDialogOpen(false)} />
+        <div className="centered">
+          <div className="modal">
+            <div className="modalHeader">
+              <h5 className="heading" style={{fontSize : "20px" , paddingTop : "10px"}}>Select Puzzle to Load</h5>
+            </div>
+            <div className="modalContent" style={{ paddingBottom : "30px" ,paddingTop : "10px" }}>
+              Select saved game
+            </div>
+            <div className="modalActions">
+              <div
+                className="modalContainer"
+                style={{ display: "flex", justifyContent: "space-between" }}
+              >
+                <button
+                  style={{ width: "220px", margin: "0 10px" }}
+                  onClick={() => {
+                    setPuzzleTypeDialogOpen(false);
+                    checkSavedWordPuzzle();
+                  }}
+                >
+                  {"Word Puzzle"}
+                </button>
+                <button
+                  style={{ width: "220px", margin: "0 10px" }}
+                  onClick={() => {
+                    setPuzzleTypeDialogOpen(false);
+                    checkSavedMathPuzzle();
+                  }}
+                >
+                  {"Math Puzzle"}
+                </button>
+                <button
+                  style={{ width: "220px", margin: "0 10px" }}
+                  onClick={() => {
+                    setPuzzleTypeDialogOpen(false);
+                  }}
+                >
+                  {"Cancel"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
 
   // REMOVE THIS ( JUST FOR TESTING)
   const getUsers = async (event) => {
@@ -153,6 +261,8 @@ function HomePage() {
           <button onClick={onSignOut}>Sign Out</button>
         </div>
         {isDialogOpen && loadPopup()}
+        {isPuzzleTypeDialogOpen && selectPuzzleLoad()}
+        {isErrorDialogOpen && errorPopup()}
       </div>
     </div>
   );
