@@ -35,7 +35,14 @@ function SignInPage() {
         setIsSigningInSuccessful(true);
         setErrorMessage("");
       } catch (error) {
-        setErrorMessage(error.message);
+        if (error.message == "Firebase: Error (auth/user-not-found)."){
+          setErrorMessage("User does not exist");
+        } else if (error.message == "Firebase: Error (auth/wrong-password).") {
+          setErrorMessage("Incorrect password")
+        } 
+        else {
+          setErrorMessage(error.message)
+        }
         console.log(error.message);
       }
 
