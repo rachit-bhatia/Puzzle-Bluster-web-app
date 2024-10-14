@@ -20,7 +20,8 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
 
   const navigate = useNavigate();
   const [isLetterSelected, setIsLetterSelected] = useState(false);
-  let [selectedWord, setSelectedWord] = useState(""); //record the letters selected by the player
+  // let [selectedWord, setSelectedWord] = useState(""); //record the letters selected by the player
+  const [selectedWord, setSelectedWord] = useState(""); // Store the letters forming the word
   const [timeElapsed, setTimeElapsed] = useState(0); //milliseconds
   const [timerActive, setTimerActive] = useState(false);
   const [foundWords, setFoundWords] = useState<string[]>([]);
@@ -30,8 +31,7 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
   const [nextLevelID, setLevelID] = useState(""); //setting ID of next level
   const { difficulty, levelId, loadFlag } = useParams();
   const boolLoadFlag = Number(loadFlag) === 1;
-  const [selectedPositions, setSelectedPositions] = useState<
-    Array<{ row: number; col: number }>
+  const [selectedPositions, setSelectedPositions] = useState<Array<{ row: number; col: number }>
   >([]);
   const [foundPositions, setFoundPositions] = useState<
     Array<{ row: number; col: number }>
@@ -426,38 +426,65 @@ useEffect(() => {
   // };
 
   //event handler for when the mouse is held down on a letter
+  // function letterHeld(event, row, col): void {
+  //   // if (!timerActive && foundWords.length < wordsToFind.length) {
+  //   //   setTimerActive(true); // Start the timer when the first letter is held
+  //   // }
+  //   if (event.target.style.backgroundColor != wordFoundColor) {
+  //     setIsLetterSelected(true);
+  //     event.target.style.backgroundColor = "green";
+
+  //     //record user selections
+  //     selection += event.target.innerHTML;
+  //     setSelectedWord(selection);
+  //     setSelectedPositions([{ row, col }]);
+  //   }
+  // }
+
   function letterHeld(event, row, col): void {
-    // if (!timerActive && foundWords.length < wordsToFind.length) {
-    //   setTimerActive(true); // Start the timer when the first letter is held
-    // }
     if (event.target.style.backgroundColor != wordFoundColor) {
       setIsLetterSelected(true);
       event.target.style.backgroundColor = "green";
-
-      //record user selections
-      selection += event.target.innerHTML;
-      setSelectedWord(selection);
-      setSelectedPositions([{ row, col }]);
+      
+      // Start tracking the word and the positions
+      let letter = event.target.innerHTML;
+      setSelectedWord(letter);  // Initialize selected word with the current letter
+      setSelectedPositions([{ row, col }]);  // Initialize selected positions
     }
   }
+  
 
-  //event handler for when the mouse is held down on a letter and moved to another letter
+  // //event handler for when the mouse is held down on a letter and moved to another letter
+  // function letterContinueHeld(event, row, col): void {
+  //   if (event.target.style.backgroundColor == wordFoundColor) {
+  //     letterReleased(); //stop highlighting if the word is already found
+  //   } else if (isLetterSelected) {
+  //     event.target.style.backgroundColor = "green";
+
+  //     //record user selections
+  //     selection = selectedWord;
+  //     selection += event.target.innerHTML;
+  //     setSelectedWord(selection);
+  //     setSelectedPositions((prevSelectedPositions) => [
+  //       ...prevSelectedPositions,
+  //       { row, col },
+  //     ]);
+  //   }
+  // }
+
   function letterContinueHeld(event, row, col): void {
-    if (event.target.style.backgroundColor == wordFoundColor) {
-      letterReleased(); //stop highlighting if the word is already found
-    } else if (isLetterSelected) {
-      event.target.style.backgroundColor = "green";
-
-      //record user selections
-      selection = selectedWord;
-      selection += event.target.innerHTML;
-      setSelectedWord(selection);
-      setSelectedPositions((prevSelectedPositions) => [
-        ...prevSelectedPositions,
-        { row, col },
-      ]);
+    if (isLetterSelected) {
+      if (event.target.style.backgroundColor != wordFoundColor) {
+        event.target.style.backgroundColor = "green";
+        
+        // Add the letter to the selected word and update positions
+        let letter = event.target.innerHTML;
+        setSelectedWord((prevWord) => prevWord + letter);
+        setSelectedPositions((prevPositions) => [...prevPositions, { row, col }]);
+      }
     }
   }
+  
 
   //event handler for when the mouse is released from a letter
   function letterReleased(): void {
@@ -633,71 +660,160 @@ useEffect(() => {
     );
   }
 
-
   return (
     <div className="boardGrid" key={levelId} onMouseLeave={letterReleased} onMouseUp={letterReleased}>
       {isDialogOpen && completionPopup()}
-      <div style={{display: "flex"}}>
-        <h1 className="gameHeading">Word Search</h1>
-        <div className="timerDisplay" key={levelId}>
-          {formatTime(timeElapsed)}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '100vh' }}>
+
+      <div style={{ flex: 1 }}>
+        <div style={{ display: 'flex' }}>
+          <h1 className="gameHeading">Word Search</h1>
+
+          <div className="timerDisplay" key={levelId}>
+            {formatTime(timeElapsed)}
         </div>
       </div>
-      <div style={{position: 'absolute', display: 'flex', top: '10px', left: '15px'}}>
-        <BackButton returnPath={"/render-word/levelselection"} color="rgb(92, 76, 56)"/>
-        <button
-          onClick={() => {
-            setSaveDialogOpen(true);
-            setTimerActive(false);
-          }}
-        >
-          {auth.currentUser ? "Save Game" : "Leave game"}
-        </button>
-      </div>
+      <div style={{ position: 'absolute', display: 'flex', top: '10px', left: '15px' }}>
+          <BackButton returnPath={"/render-word/levelselection"} color="rgb(92, 76, 56)"/>
+          <button
+            onClick={() => {
+              setSaveDialogOpen(true);
+              setTimerActive(false);
+            }}
+          >
+            {auth.currentUser ? "Save Game" : "Leave game"}
+          </button>
+        </div>
+
       {isSaveDialogOpen && savePopup()}
+
       {boardGrid.map((boardRow, rowIndex) => (
-        <div className="boardRow" key={rowIndex}>
-          {boardRow.map((wordContent, colIndex) => (
-            <button
-              key={`${rowIndex}-${colIndex}`}
-              id={`${rowIndex}-${colIndex}`}
-              className="boardCell"
-              onMouseDown={(event) => letterHeld(event, rowIndex, colIndex)}
-              onMouseEnter={(event) =>
-                letterContinueHeld(event, rowIndex, colIndex)
-              }
-              // onMouseUp={letterReleased}
-            >
-              {wordContent}
-            </button>
-          ))}
-        </div>
-      ))}
+          <div className="boardRow" key={rowIndex}>
+            {boardRow.map((wordContent, colIndex) => (
+              <button
+                key={`${rowIndex}-${colIndex}`}
+                id={`${rowIndex}-${colIndex}`}
+                className="boardCell"
+                onMouseDown={(event) => letterHeld(event, rowIndex, colIndex)}
+                onMouseEnter={(event) =>
+                  letterContinueHeld(event, rowIndex, colIndex)
+                }
+              >
+                {wordContent}
+              </button>
+            ))}
+          </div>
+        ))}
+
       <div>
-        {/* <h3>Words to find:</h3> */}
-        <ul
-          style={{ display: "flex", padding: "10px", justifyContent: "center" }}
-        >
-          {wordsToFind.map((word, index) => (
-            <li
-              key={index}
-              className="wordList"
-              style={{
-                backgroundColor: foundWords.includes(word)
-                  ? "rgb(220, 152, 80)"
-                  : "rgb(215, 152, 70)",
-                color: foundWords.includes(word) ? "gray" : "black",
-                transition: "color 0.2s, background-color 0.2s",
-              }}
-            >
-              {word}
-            </li>
-          ))}
-        </ul>
+          <ul style={{ display: "flex", padding: "10px", justifyContent: "center" }}>
+            {wordsToFind.map((word, index) => (
+              <li
+                key={index}
+                className="wordList"
+                style={{
+                  backgroundColor: foundWords.includes(word)
+                    ? "rgb(220, 152, 80)"
+                    : "rgb(215, 152, 70)",
+                  color: foundWords.includes(word) ? "gray" : "black",
+                  transition: "color 0.2s, background-color 0.2s",
+                }}
+              >
+                {word}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      {/* Right side - Selected word display */}
+      <div style={{
+        width: '200px',
+        height: '100vh',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        fontSize: '48px',  // Bigger font size
+        color: 'black',    // Set text color to black
+      }}>
+        {selectedWord}
       </div>
     </div>
+  </div>
   );
 };
+
+
+
+//   return (
+//     <div className="boardGrid" key={levelId} onMouseLeave={letterReleased} onMouseUp={letterReleased}>
+//       {isDialogOpen && completionPopup()}
+//       <div style={{display: "flex"}}>
+//         <h1 className="gameHeading">Word Search</h1>
+
+//         <div className="forming-word-display">
+//         {selectedWord && <h2>{selectedWord}</h2>}
+//         </div>
+
+//         <div className="timerDisplay" key={levelId}>
+//           {formatTime(timeElapsed)}
+//         </div>
+//       </div>
+//       <div style={{position: 'absolute', display: 'flex', top: '10px', left: '15px'}}>
+//         <BackButton returnPath={"/render-word/levelselection"} color="rgb(92, 76, 56)"/>
+//         <button
+//           onClick={() => {
+//             setSaveDialogOpen(true);
+//             setTimerActive(false);
+//           }}
+//         >
+//           {auth.currentUser ? "Save Game" : "Leave game"}
+//         </button>
+//       </div>
+//       {isSaveDialogOpen && savePopup()}
+//       {boardGrid.map((boardRow, rowIndex) => (
+//         <div className="boardRow" key={rowIndex}>
+//           {boardRow.map((wordContent, colIndex) => (
+//             <button
+//               key={`${rowIndex}-${colIndex}`}
+//               id={`${rowIndex}-${colIndex}`}
+//               className="boardCell"
+//               onMouseDown={(event) => letterHeld(event, rowIndex, colIndex)}
+//               onMouseEnter={(event) =>
+//                 letterContinueHeld(event, rowIndex, colIndex)
+//               }
+//               // onMouseUp={letterReleased}
+//             >
+//               {wordContent}
+//             </button>
+//           ))}
+//         </div>
+//       ))}
+//       <div>
+//         {/* <h3>Words to find:</h3> */}
+//         <ul
+//           style={{ display: "flex", padding: "10px", justifyContent: "center" }}
+//         >
+//           {wordsToFind.map((word, index) => (
+//             <li
+//               key={index}
+//               className="wordList"
+//               style={{
+//                 backgroundColor: foundWords.includes(word)
+//                   ? "rgb(220, 152, 80)"
+//                   : "rgb(215, 152, 70)",
+//                 color: foundWords.includes(word) ? "gray" : "black",
+//                 transition: "color 0.2s, background-color 0.2s",
+//               }}
+//             >
+//               {word}
+//             </li>
+//           ))}
+//         </ul>
+//       </div>
+//     </div>
+//   );
+// };
 
 
 function getRandomHintLetter(): [number, string, HTMLElement] {
