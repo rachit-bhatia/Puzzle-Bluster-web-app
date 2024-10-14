@@ -43,6 +43,21 @@ function SignInPage() {
     }
   };
 
+  const showErrorMessage = () => {
+    if (errorMessage != ""){
+      return (
+        <div className="error-message" style={{width: "100%", 
+                                               display: "flex", 
+                                               justifyContent: "center",
+                                               alignItems: "center",
+                                               height: "30px"
+                                               }}>
+          {errorMessage && <p>{errorMessage}</p>}
+        </div>
+      )
+    }
+  }
+
   return (
     <div className="wrapper">
       {isSignInSuccessful && <Navigate to="/home" replace={true} />}
@@ -66,9 +81,6 @@ function SignInPage() {
       <form action="" onSubmit={onSignIn}>
         <h1>Sign In</h1>
 
-        <div className="error-message">
-          {errorMessage && <p>{errorMessage}</p>}
-        </div>
 
         <div className="input-box">
           <input
@@ -92,6 +104,8 @@ function SignInPage() {
         {/* <div className="forgot-password">
           <a href="#">Forgot Password?</a>
         </div> */}
+
+        {showErrorMessage()}
 
         <button
           type="submit"
