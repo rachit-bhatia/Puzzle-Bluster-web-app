@@ -129,38 +129,35 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions, levelIndicator }) => {
           if (docSnapshot.exists()) {
             const data = docSnapshot.data();
             const puzzleSaveState = data.puzzleSaveState;
-            const mathPuzzleSaveState = puzzleSaveState.mathPuzzleSaveState;
-  
-            if (mathPuzzleSaveState) {
-              const savedCellStatus = JSON.parse(mathPuzzleSaveState.cellStatus);
-              const savedEditableCells = JSON.parse(mathPuzzleSaveState.editableCells);
-              const elapsedTime = mathPuzzleSaveState.gameTime;
-  
-              setCellStatus(savedCellStatus);
-              setEditableCells(savedEditableCells);
-              setTimeElapsed(elapsedTime);
-              setHintUsed(mathPuzzleSaveState.hintUsed || false);
-  
-              const savedHints = data[`${difficulty}${levelId}HintsRemaining`];
-              const maxHints = difficulty === "easy" ? 1 : difficulty === "medium" ? 2 : 3;
-              if (savedHints !== undefined && savedHints <= maxHints) {
-                setRemainingHints(savedHints);
-                if (savedHints === 0) {
-                  setHintDisabled(true);
-                }
-              } else {
-                setRemainingHints(maxHints);
+            const savedCellStatus = JSON.parse(puzzleSaveState.cellStatus);
+            const savedEditableCells = JSON.parse(
+              puzzleSaveState.editableCells
+            );
+            const elapsedTime = puzzleSaveState.gameTime;
+
+            setCellStatus(savedCellStatus);
+            setEditableCells(savedEditableCells);
+            setTimeElapsed(elapsedTime);
+            setHintUsed(puzzleSaveState.hintUsed || false);
+
+            const savedHints = data[`${difficulty}${levelId}HintsRemaining`];
+            const maxHints =
+              difficulty === "easy" ? 1 : difficulty === "medium" ? 2 : 3;
+            if (savedHints !== undefined && savedHints <= maxHints) {
+              setRemainingHints(savedHints);
+              if (savedHints === 0) {
+                setHintDisabled(true);
               }
-  
-              // Load the original solutions from the database
-              const loadedOriginalSolutions = JSON.parse(mathPuzzleSaveState.originalSolutions);
-              setOriginalSolutions(loadedOriginalSolutions); // Set the original solutions from saved data
-  
-              checkAllSolutions(boardGrid, savedCellStatus);
-              setTimerActive(true);
             } else {
-              console.log("No saved game state found for math puzzle");
+              setRemainingHints(maxHints);
             }
+
+            // Load the original solutions from the database
+            const loadedOriginalSolutions = JSON.parse(puzzleSaveState.originalSolutions);
+            setOriginalSolutions(loadedOriginalSolutions); // Set the original solutions from saved data
+
+            checkAllSolutions(boardGrid, savedCellStatus);
+            setTimerActive(true);
           } else {
             console.log("No saved game state found");
           }
@@ -183,8 +180,8 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions, levelIndicator }) => {
       const cellStatusString = JSON.stringify(cellStatus);
       const editableCellsString = JSON.stringify(editableCells);
       const originalSolutionsString = JSON.stringify(originalSolutions); // Save the original solutions
-  
-      const mathPuzzleSaveState = {
+
+      const puzzleSaveState = {
         gameTime: timeElapsed,
         board: boardGridString,
         cellStatus: cellStatusString,
@@ -196,22 +193,17 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions, levelIndicator }) => {
         remainingHints: remainingHints, // Save remaining hints
         originalSolutions: originalSolutionsString, // Save the original solutions
       };
-  
       try {
         const docSnapshot = await getDoc(userRef);
         if (docSnapshot.exists()) {
-          // If the document exists, update only the mathPuzzleSaveState field
           await updateDoc(userRef, {
-            "puzzleSaveState.mathPuzzleSaveState": mathPuzzleSaveState,
+            puzzleSaveState: puzzleSaveState,
             [`${difficulty}${levelId}HintsRemaining`]: remainingHints,
           });
           console.log("Game state saved successfully");
         } else {
-          // If the document does not exist, create it with the initial puzzleSaveState structure
           await setDoc(userRef, {
-            puzzleSaveState: {
-              mathPuzzleSaveState: mathPuzzleSaveState,
-            },
+            puzzleSaveState: puzzleSaveState,
             [`${difficulty}${levelId}HintsRemaining`]: remainingHints,
           });
           console.log("Game state saved successfully");
@@ -327,9 +319,7 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions, levelIndicator }) => {
         const docSnapshot = await getDoc(userRef);
         if (docSnapshot.exists()) {
           await updateDoc(userRef, {
-            puzzleSaveState: {
-              mathPuzzleSaveState: {},
-            },
+            puzzleSaveState: {},
           });
           console.log("Game state removed successfully");
         } else {
@@ -452,14 +442,14 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions, levelIndicator }) => {
                 className="heading"
                 style={{ fontSize: "20px", paddingTop: "10px" }}
               >
-                {auth.currentUser ? "Save Game" : "Leave Game"}
+                Save Game
               </h5>
             </div>
             <div
               className="modalContent"
               style={{ paddingBottom: "30px", paddingTop: "10px", fontWeight:"lighter", fontSize:"15px"}}
             >
-              {auth.currentUser ? "Do you want to save your progress and leave?" : "Do you want to leave the game?"}
+              Do you want to save your progress and leave?
             </div>
             <div className="modalActions">
               <div
@@ -469,19 +459,15 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions, levelIndicator }) => {
                 <button
                   style={{ width: "220px", margin: "0 20px", height:"15%" , fontSize:"15px" }}
                   onClick={() => {
-                    if (auth.currentUser){
-                      savetoDB();
-                      navigate("/home");
-                    } else {
-                      navigate("/home-guest")
-                    }
-                      setTimeElapsed(0);
-                      setTimerActive(false);
-                      resetBoard();
-                      setDialogOpen(false);
-                    }}
-                  >
-                    {auth.currentUser ? "Save and Exit" : "Exit"}
+                    savetoDB();
+                    navigate("/home");
+                    setTimeElapsed(0);
+                    setTimerActive(false);
+                    resetBoard();
+                    setDialogOpen(false);
+                  }}
+                >
+                  {"Save and Exit"}
                 </button>
 
                 <button
@@ -564,8 +550,8 @@ const DisplayMathBoard = ({ boardGrid, puzzleSolutions, levelIndicator }) => {
               setTimerActive(false);
             }}
           >
-            {auth.currentUser ? "Save Game" : "Leave Game"}
-          </button>
+            {"Save Game"}
+          </button>: null}
       </div>
       <h1 className="gameHeading" style={{paddingBottom: "60px"}}>Matrix Frenzy</h1>
       <div className="gameBoardAndTimer">

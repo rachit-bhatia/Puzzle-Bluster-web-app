@@ -25,43 +25,37 @@ function RenderMathPuzzle() {
 
     useEffect(() => {
         const loadGameState = async () => {
-          if (boolLoadFlag) {
-            const user = auth.currentUser;
-            if (user) {
-              const userRef = doc(db, "users", user.email);
-              try {
-                const docSnapshot = await getDoc(userRef);
-                if (docSnapshot.exists()) {
-                  const data = docSnapshot.data();
-                  const puzzleSaveState = data.puzzleSaveState;
-                  const mathPuzzleSaveState = puzzleSaveState.mathPuzzleSaveState;
-      
-                  if (mathPuzzleSaveState) {
-                    const boardGrid = JSON.parse(mathPuzzleSaveState.board);
-      
-                    console.log("Game state loaded successfully", {
-                      boardGrid,
-                      difficulty: mathPuzzleSaveState.difficulty,
-                      levelId: mathPuzzleSaveState.levelId,
-                    });
-      
-                    setBoardGrid(boardGrid);
-                  } else {
-                    console.log("No saved game state found for math puzzle");
-                  }
+            if (boolLoadFlag) {
+                const user = auth.currentUser;
+                if (user) {
+                    const userRef = doc(db, "users", user.email);
+                    try {
+                        const docSnapshot = await getDoc(userRef);
+                        if (docSnapshot.exists()) {
+                            const data = docSnapshot.data();
+                            const puzzleSaveState = data.puzzleSaveState;
+                            const boardGrid = JSON.parse(puzzleSaveState.board);
+
+                            console.log("Game state loaded successfully", {
+                                boardGrid,
+                                difficulty,
+                                levelId,
+                            });
+
+                            setBoardGrid(boardGrid);
+                        } else {
+                            console.log("No saved game state found");
+                        }
+                    } catch (error) {
+                        console.error("Error loading game state: ", error);
+                    }
                 } else {
-                  console.log("No saved game state found");
+                    console.error("No authenticated user found");
                 }
-              } catch (error) {
-                console.error("Error loading game state: ", error);
-              }
-            } else {
-              console.error("No authenticated user found");
             }
-          }
         };
         loadGameState();
-      }, [boolLoadFlag]);
+    }, [boolLoadFlag]);
 
     if (difficulty === 'easy') {
       gridHeight = 3; // Adjust based on your game settings
