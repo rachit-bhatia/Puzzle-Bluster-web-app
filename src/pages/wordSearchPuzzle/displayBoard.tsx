@@ -99,22 +99,25 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
     }
   }, [foundWords, timeElapsed]); // This effect listens to changes in foundWords
 
-  // Load game state from user account
-  useEffect(() => {
-    const loadGameState = async () => {
-      if (boolLoadFlag) {
-        const user = auth.currentUser;
-        if (user) {
-          const userRef = doc(db, "users", user.email);
-          try {
-            const docSnapshot = await getDoc(userRef);
-            if (docSnapshot.exists()) {
-              const data = docSnapshot.data();
-              const puzzleSaveState = data.puzzleSaveState;
-              const foundWords = JSON.parse(puzzleSaveState.foundWords);
-              const foundPositions = JSON.parse(puzzleSaveState.foundPositions);
-              const elapsedTime = puzzleSaveState.gameTime;
-              const hintedLettersLoad = JSON.parse(puzzleSaveState.hintedLetters);
+// Load game state from user account
+useEffect(() => {
+  const loadGameState = async () => {
+    if (boolLoadFlag) {
+      const user = auth.currentUser;
+      if (user) {
+        const userRef = doc(db, "users", user.email);
+        try {
+          const docSnapshot = await getDoc(userRef);
+          if (docSnapshot.exists()) {
+            const data = docSnapshot.data();
+            const puzzleSaveState = data.puzzleSaveState;
+            const wordPuzzleSaveState = puzzleSaveState.wordPuzzleSaveState;
+
+            if (wordPuzzleSaveState) {
+              const foundWords = JSON.parse(wordPuzzleSaveState.foundWords);
+              const foundPositions = JSON.parse(wordPuzzleSaveState.foundPositions);
+              const elapsedTime = wordPuzzleSaveState.gameTime;
+              const hintedLettersLoad = JSON.parse(wordPuzzleSaveState.hintedLetters);
 
               // Now you can use these deserialized values in your application
               console.log("Game state loaded successfully", {
@@ -126,20 +129,22 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
               setTimeElapsed(elapsedTime);
               setFoundPositions(foundPositions);
               hintedLetters = hintedLettersLoad;
-
             } else {
-              console.log("No saved game state found");
+              console.log("No saved game state found for word puzzle");
             }
-          } catch (error) {
-            console.error("Error loading game state: ", error);
+          } else {
+            console.log("No saved game state found");
           }
-        } else {
-          console.error("No authenticated user found");
+        } catch (error) {
+          console.error("Error loading game state: ", error);
         }
+      } else {
+        console.error("No authenticated user found");
       }
-    };
-    loadGameState();
-  }, [boolLoadFlag]);
+    }
+  };
+  loadGameState();
+}, [boolLoadFlag]);
 
   // Mark the words found in the board
   function markAsFound(foundPositions: Array<{ row: number; col: number }>) {
@@ -239,7 +244,7 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
       const foundPositionsString = JSON.stringify(foundPositions);
       const hintedLettersString = JSON.stringify(hintedLetters);
 
-      const puzzleSaveState = {
+      const wordPuzzleSaveState = {
         gameTime: gameTime,
         board: boardGridString,
         foundWords: foundWordsString,
@@ -249,18 +254,21 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
         levelId: levelId,
         puzzleType: "word"
       };
+
       try {
         const docSnapshot = await getDoc(userRef);
         if (docSnapshot.exists()) {
           // If the document exists, update it
           await updateDoc(userRef, {
-            puzzleSaveState: puzzleSaveState,
+            "puzzleSaveState.wordPuzzleSaveState": wordPuzzleSaveState,
           });
           console.log("Game state saved sucessfully");
         } else {
           // If the document does not exist, create it
           await setDoc(userRef, {
-            puzzleSaveState: puzzleSaveState,
+            puzzleSaveState: {
+              wordPuzzleSaveState: wordPuzzleSaveState,
+            }
           });
           console.log("Game state saved successfully");
         }
@@ -283,7 +291,9 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
         if (docSnapshot.exists()) {
           // If the document exists, update it
           await updateDoc(userRef, {
-            puzzleSaveState: {},
+            puzzleSaveState: {
+              wordPuzzleSaveState: {},
+            },
           });
           console.log("Game state removed successfully");
         } else {
@@ -523,10 +533,10 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
         <div className="centered padding" style={{ textAlign: "center" }}>
           <div className="modal">
             <div className="modalHeader padding">
-              <h5 className="heading" style={{fontSize : "20px" , paddingTop : "10px"}} >Save Game</h5>
+              <h5 className="heading" style={{fontSize : "20px" , paddingTop : "10px"}} >{auth.currentUser ? "Save Game" : "Leave Game"}</h5>
             </div>
             <div className="modalContent" style={{ paddingBottom : "30px" ,paddingTop : "10px" }}>
-              Do you want to save your progress and leave?
+              {auth.currentUser ? "Do you want to save your progress and leave?" : "Do you want to leave the game?"}
             </div>
             <div className="modalActions">
               <div
@@ -536,23 +546,28 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
                 <button
                   style={{ width: "220px", margin: "0 20px" }}
                   onClick={() => {
-                    savetoDB(
-                      timeElapsed,
-                      boardGrid,
-                      foundWords,
-                      difficulty,
-                      levelId
-                    );
-                    navigate("/home");
-                    setTimeElapsed(0);
-                    setTimerActive(false);
-                    setFoundWords([]);
-                    hintedLetters = [];
-                    setHintDisabled(false);
-                    setDialogOpen(false);
+                    if (auth.currentUser) {
+                      savetoDB(
+                        timeElapsed,
+                        boardGrid,
+                        foundWords,
+                        difficulty,
+                        levelId
+                      );
+                      navigate("/home");
+                      
+                    } else {
+                      navigate("/home-guest");
+                    }
+                      setTimeElapsed(0);
+                      setTimerActive(false);
+                      setFoundWords([]);
+                      hintedLetters = [];
+                      setHintDisabled(false);
+                      setDialogOpen(false);
                   }}
                 >
-                  {"Save and Exit"}
+                  {auth.currentUser ? "Save and Exit" : "Exit"}
                 </button>
                 <button
                   style={{ width: "220px", margin: "0 20px" }}
@@ -630,7 +645,7 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
           {formatTime(timeElapsed)}
         </div>
       </div>
-      <div style={{position: 'absolute', display: 'flex', top: '10px', left: '10px'}}>
+      <div style={{position: 'absolute', display: 'flex', top: '10px', left: '15px'}}>
         <BackButton returnPath={"/render-word/levelselection"} color="rgb(92, 76, 56)"/>
         {auth.currentUser?<button
           onClick={() => {
@@ -638,8 +653,8 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
             setTimerActive(false);
           }}
         >
-          {"Save Game"}
-        </button>: null}
+          {auth.currentUser ? "Save Game" : "Leave game"}
+        </button>
       </div>
       {isSaveDialogOpen && savePopup()}
       {boardGrid.map((boardRow, rowIndex) => (
@@ -741,8 +756,9 @@ const WordSearchBoard = ({newBoard, levelIndicator}): ReactElement => {
   const [remainingHints, setRemainingHints] = useState(0);
 
     return (
-        <div className="puzzle-body">
-            <div style={{position: 'absolute', display: 'flex', top: '10px', right: '10px'}}>
+        <div className="puzzle-body" style={{overflow: 'scroll'}}>
+            <h1 className="gameHeading">Word Search</h1>
+            <div style={{position: 'absolute', display: 'flex', top: '10px', right: '20px'}}>
                 <HintButton 
                   isHintDisabled={isHintDisabled} 
                   setHintDisabled={setHintDisabled} 
