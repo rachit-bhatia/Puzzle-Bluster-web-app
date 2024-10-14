@@ -38,7 +38,7 @@ function Leaderboard() {
     UserAccount[] | null
   >(null);
 
-  const[userAvatar,setUserAvatar] = useState("");
+  const [userAvatar, setUserAvatar] = useState("");
 
   // Function to determine the image source
   const getAvatarSrc = () => {
@@ -52,7 +52,6 @@ function Leaderboard() {
     return ""; // Default case if no match
   };
 
-  
   // Listen for auth state changes
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -71,8 +70,6 @@ function Leaderboard() {
   }, []);
 
   useEffect(() => {
-
-   
     const fetchUserData = async () => {
       if (firebaseUser) {
         try {
@@ -83,29 +80,26 @@ function Leaderboard() {
               UserAccount.getUserRank(firebaseUser.uid, "math"),
               UserAccount.getUserRank(firebaseUser.uid, "word"),
               UserAccount.getUserRank(firebaseUser.uid, "overall"),
-              UserAccount.getUserByUuid(firebaseUser.uid)
+              UserAccount.getUserByUuid(firebaseUser.uid),
             ]);
-  
+
           // Update state with the fetched data
           setUserRetrieved(userAccount);
-  
+
           setMathRank(mathData?.rank ?? null);
           setMathSortedUsers(mathData?.sortedUsers ?? null);
-  
+
           setWordRank(wordData?.rank ?? null);
           setWordSortedUsers(wordData?.sortedUsers ?? null);
-  
+
           setOverallRank(overallData?.rank ?? null);
           setOverallSortedUsers(overallData?.sortedUsers ?? null);
-  
-          setUserAvatar(userAccount.userAvatar? userAccount.userAvatar : "")  
+
+          setUserAvatar(userAccount.userAvatar ? userAccount.userAvatar : "");
         } catch (error) {
           console.error("Error fetching user data:", error);
         }
       }
-    
-
-    
     };
     fetchUserData();
   }, [firebaseUser]); // Empty dependency array ensures this runs once when the component mounts
@@ -165,57 +159,85 @@ function Leaderboard() {
   };
 
   const ScoreList: React.FC = () => {
+    const [searchTerm, setSearchTerm] = useState<string>(""); // State for the search input
+  
     // Define default values or handle empty case
-
-
-    const sortedUsers = activeTab === "Word"
-    ? wordSortedUsers
-    : activeTab === "Math"
-    ? mathSortedUsers
-    : overallSortedUsers;
-
+    const sortedUsers =
+      activeTab === "Word"
+        ? wordSortedUsers
+        : activeTab === "Math"
+        ? mathSortedUsers
+        : overallSortedUsers;
+  
+    // Filter sortedUsers based on searchTerm
+    const filteredUsers = (sortedUsers ?? []).filter((user) => {
+      const displayName = user.username ? user.username.split("@")[0] : "N/A";
+      return displayName.toLowerCase().includes(searchTerm.toLowerCase());
+    });
+  
     if (!sortedUsers || sortedUsers.length === 0) {
-        return <p>No data available</p>;
-      }
-    
+      return <p>No data available</p>;
+    }
+  
     return (
+      <div className="score-list-container">
+        {/* Search bar */}
+        <input
+          type="text"
+          placeholder="Search player"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)} // Update search term on input change
+          className="search-bar-leaderboard"
+        />
+  
         <div className="score-list-leaderboard">
-        {sortedUsers.map((user, index) => {
-          // Display the username or "N/A" if it's null
-          const displayName = user.username ? user.username.split("@")[0] : "N/A";
-          console.log(displayName)
-          // Determine the score to display based on activeTab
-          let score: number;
-          if (activeTab === 'Word') {
-            score = user.wordScore ?? 0;
-          } else if (activeTab === 'Math') {
-            score = user.mathScore ?? 0;
-          } else { // activeTab === 'overall'
-            score = (user.wordScore ?? 0) + (user.mathScore ?? 0);
-          }
-
-          let userOverallRank = overallSortedUsers?.findIndex(overallUser => overallUser.userUuid === user.userUuid);
-          
-    
-          const overallRank = userOverallRank !== undefined ? userOverallRank + 1 : "N/A";
-          return (
-            <div key={index} className="score-item-leaderboard">
-              <div className="rank-leaderboard">{index + 1}</div>
-              {/* Assuming index as rank */}
-              <div className="score-info-leaderboard">
-                <div className="name-leaderboard">{displayName}</div>
-                {/* Use displayName */}
-                <div className="score-leaderboard">{score}</div>
-                {/* Display the score based on activeTab */}
-                <div className="rank-number-leaderboard">
-                  Overall Rank { overallRank}
+          {filteredUsers.length === 0 ? (
+            <p>No players found</p>
+          ) : (
+            filteredUsers.map((user) => {
+              const displayName = user.username
+                ? user.username.split("@")[0]
+                : "N/A";
+              
+              // Find the original rank from the sortedUsers array
+              const originalRank =
+                sortedUsers.findIndex(
+                  (sortedUser) => sortedUser.userUuid === user.userUuid
+                ) + 1; // Add 1 to adjust for 0-based index
+  
+              let score: number;
+              if (activeTab === "Word") {
+                score = user.wordScore ?? 0;
+              } else if (activeTab === "Math") {
+                score = user.mathScore ?? 0;
+              } else {
+                // activeTab === 'overall'
+                score = (user.wordScore ?? 0) + (user.mathScore ?? 0);
+              }
+  
+              let userOverallRank = overallSortedUsers?.findIndex(
+                (overallUser) => overallUser.userUuid === user.userUuid
+              );
+              const overallRank =
+                userOverallRank !== undefined ? userOverallRank + 1 : "N/A";
+  
+              return (
+                <div key={user.userUuid} className="score-item-leaderboard">
+                  <div className="rank-leaderboard">{originalRank}</div>
+                  <div className="score-info-leaderboard">
+                    <div className="name-leaderboard">{displayName}</div>
+                    <div className="score-leaderboard">{score}</div>
+                    <div className="rank-number-leaderboard">
+                      Overall Rank {overallRank}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          );
-        })}
+              );
+            })
+          )}
+        </div>
       </div>
-      );
+    );
   };
 
   // Front End Section
