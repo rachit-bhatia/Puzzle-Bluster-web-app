@@ -37,10 +37,8 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
     Array<{ row: number; col: number }>
   >([]);
 
-  //TODO: need to save hintedLetters
   
   //reset hints on entering new level
-  //TODO: will need to check if any saved hints are there
   useEffect(() => {
     hintedLetters = [];
     setHintDisabled(false);
@@ -479,7 +477,7 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
       });
 
       //save the level ID upon completion of level to unlock next level
-      if (foundWords.length >= 2*(wordsToFind.length - 1)) {
+      if (foundWords.length >= wordsToFind.length - 1) {
         const levelStr = levelId?.match(/\d+/);
         let levelNum: number;
         if (levelStr) {
@@ -595,7 +593,7 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
                 <button
                   style={{ width: "250px" }}
                   onClick={() => {
-                    //TODO: call save to db here
+
                     //navigate back to level selection if last level
                     setFoundPositions([]);
                     hintedLetters = [];
@@ -655,7 +653,7 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
               onMouseEnter={(event) =>
                 letterContinueHeld(event, rowIndex, colIndex)
               }
-              onMouseUp={letterReleased}
+              // onMouseUp={letterReleased}
             >
               {wordContent}
             </button>
