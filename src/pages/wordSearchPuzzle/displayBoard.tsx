@@ -479,7 +479,7 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
       });
 
       //save the level ID upon completion of level to unlock next level
-      if (foundWords.length >= wordsToFind.length - 1) {
+      if (foundWords.length >= 2*(wordsToFind.length - 1)) {
         const levelStr = levelId?.match(/\d+/);
         let levelNum: number;
         if (levelStr) {
@@ -512,6 +512,7 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
 
     //reset selection
     console.log(selectedWord);
+    console.log(foundWords);
     selection = "";
     setSelectedWord(selection);
   }
@@ -623,10 +624,13 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
 
 
   return (
-    <div className="boardGrid" key={levelId} onMouseLeave={letterReleased}>
+    <div className="boardGrid" key={levelId} onMouseLeave={letterReleased} onMouseUp={letterReleased}>
       {isDialogOpen && completionPopup()}
-      <div className="timerDisplay" key={levelId}>
-        {formatTime(timeElapsed)}
+      <div style={{display: "flex"}}>
+        <h1 className="gameHeading">Word Search</h1>
+        <div className="timerDisplay" key={levelId}>
+          {formatTime(timeElapsed)}
+        </div>
       </div>
       <div style={{position: 'absolute', display: 'flex', top: '10px', left: '10px'}}>
         <BackButton returnPath={"/render-word/levelselection"} color="rgb(92, 76, 56)"/>
@@ -740,7 +744,6 @@ const WordSearchBoard = ({newBoard, levelIndicator}): ReactElement => {
 
     return (
         <div className="puzzle-body">
-            <h1 className="gameHeading">Word Search</h1>
             <div style={{position: 'absolute', display: 'flex', top: '10px', right: '10px'}}>
                 <HintButton 
                   isHintDisabled={isHintDisabled} 
