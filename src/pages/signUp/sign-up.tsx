@@ -52,13 +52,35 @@ function SignUpPage() {
           UserAccount.addUser(newUser)
           
         } catch (error) {
-          setErrorMessage(error.message);
+          if (error.message == "Firebase: Password should be at least 6 characters (auth/weak-password).") {
+            setErrorMessage("Password should be at least 6 characters");
+          }  else if (error.message == "Firebase: Error (auth/email-already-in-use).") {
+            setErrorMessage("Username already exists")
+          }
+          else {
+            setErrorMessage(error.message)
+          }
           console.log(error.message);
         }
         setIsSigningUp(false);
       } 
     }
   };
+
+  const showErrorMessage = () => {
+    if (errorMessage != ""){
+      return (
+        <div className="error-message" style={{width: "100%", 
+                                               display: "flex", 
+                                               justifyContent: "center",
+                                               alignItems: "center",
+                                               height: "30px"
+                                               }}>
+          {errorMessage && <p>{errorMessage}</p>}
+        </div>
+      )
+    }
+  }
 
   return (
     <div className="wrapper">
@@ -70,10 +92,6 @@ function SignUpPage() {
 
       <form action="" onSubmit={onSignUp}>
         <h1>Sign Up</h1>
-
-        <div className="error-message">
-          {errorMessage && <p>{errorMessage}</p>}
-        </div>
 
         <div className="input-box">
           <input
@@ -105,6 +123,8 @@ function SignUpPage() {
             {!(password == confirmPassword) && <p>Password does not match</p>}
           </div>
         </div>
+
+        {showErrorMessage()}
 
         <button type="submit" disabled={isSigningUp || !(email !== "" && password !== "" && confirmPassword !== "") || !(password == confirmPassword)}>Register</button>
 

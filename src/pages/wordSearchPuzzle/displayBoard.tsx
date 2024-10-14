@@ -37,10 +37,8 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
     Array<{ row: number; col: number }>
   >([]);
 
-  //TODO: need to save hintedLetters
   
   //reset hints on entering new level
-  //TODO: will need to check if any saved hints are there
   useEffect(() => {
     hintedLetters = [];
     setHintDisabled(false);
@@ -512,6 +510,7 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
 
     //reset selection
     console.log(selectedWord);
+    console.log(foundWords);
     selection = "";
     setSelectedWord(selection);
   }
@@ -594,7 +593,7 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
                 <button
                   style={{ width: "250px" }}
                   onClick={() => {
-                    //TODO: call save to db here
+
                     //navigate back to level selection if last level
                     setFoundPositions([]);
                     hintedLetters = [];
@@ -623,10 +622,13 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
 
 
   return (
-    <div className="boardGrid" key={levelId} onMouseLeave={letterReleased}>
+    <div className="boardGrid" key={levelId} onMouseLeave={letterReleased} onMouseUp={letterReleased}>
       {isDialogOpen && completionPopup()}
-      <div className="timerDisplay" key={levelId}>
-        {formatTime(timeElapsed)}
+      <div style={{display: "flex"}}>
+        <h1 className="gameHeading">Word Search</h1>
+        <div className="timerDisplay" key={levelId}>
+          {formatTime(timeElapsed)}
+        </div>
       </div>
       <div style={{position: 'absolute', display: 'flex', top: '10px', left: '10px'}}>
         <BackButton returnPath={"/render-word/levelselection"} color="rgb(92, 76, 56)"/>
@@ -651,7 +653,7 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
               onMouseEnter={(event) =>
                 letterContinueHeld(event, rowIndex, colIndex)
               }
-              onMouseUp={letterReleased}
+              // onMouseUp={letterReleased}
             >
               {wordContent}
             </button>
@@ -740,7 +742,6 @@ const WordSearchBoard = ({newBoard, levelIndicator}): ReactElement => {
 
     return (
         <div className="puzzle-body">
-            <h1 className="gameHeading">Word Search</h1>
             <div style={{position: 'absolute', display: 'flex', top: '10px', right: '10px'}}>
                 <HintButton 
                   isHintDisabled={isHintDisabled} 

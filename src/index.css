@@ -35,7 +35,7 @@ h1 {
 
 .gameHeading {
   color: rgb(92, 76, 56);
-  padding-bottom: 25px;
+  white-space: nowrap;
 }
 
 .boardCell {
@@ -43,7 +43,7 @@ h1 {
   background-color: #282941;
   justify-content: center;
   align-items: center;
-  margin: 1px;
+  margin: 3.5px;
   width: 50px;
   height: 40px;
   transition: background-color 0.1s;
@@ -102,6 +102,7 @@ button:disabled:hover {
   color: rgb(92, 76, 56);
   font-weight: bold;
   font-style: italic;
+  align-self: flex-end;
 }
 
 .darkBG {

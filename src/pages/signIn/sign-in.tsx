@@ -35,13 +35,35 @@ function SignInPage() {
         setIsSigningInSuccessful(true);
         setErrorMessage("");
       } catch (error) {
-        setErrorMessage("Invalid username or password");
-        console.log("sign in failed");
+        if (error.message == "Firebase: Error (auth/user-not-found)."){
+          setErrorMessage("User does not exist");
+        } else if (error.message == "Firebase: Error (auth/wrong-password).") {
+          setErrorMessage("Incorrect password")
+        } 
+        else {
+          setErrorMessage(error.message)
+        }
+        console.log(error.message);
       }
 
       setIsSigningIn(false);
     }
   };
+
+  const showErrorMessage = () => {
+    if (errorMessage != ""){
+      return (
+        <div className="error-message" style={{width: "100%", 
+                                               display: "flex", 
+                                               justifyContent: "center",
+                                               alignItems: "center",
+                                               height: "30px"
+                                               }}>
+          {errorMessage && <p>{errorMessage}</p>}
+        </div>
+      )
+    }
+  }
 
   return (
     <div className="wrapper">
@@ -66,9 +88,6 @@ function SignInPage() {
       <form action="" onSubmit={onSignIn}>
         <h1>Sign In</h1>
 
-        <div className="error-message">
-          {errorMessage && <p>{errorMessage}</p>}
-        </div>
 
         <div className="input-box">
           <input
@@ -92,6 +111,8 @@ function SignInPage() {
         {/* <div className="forgot-password">
           <a href="#">Forgot Password?</a>
         </div> */}
+
+        {showErrorMessage()}
 
         <button
           type="submit"
