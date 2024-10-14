@@ -99,25 +99,22 @@ const DisplayBoard = ({ boardGrid, wordsToFind, setHintDisabled, setRemainingHin
     }
   }, [foundWords, timeElapsed]); // This effect listens to changes in foundWords
 
-// Load game state from user account
-useEffect(() => {
-  const loadGameState = async () => {
-    if (boolLoadFlag) {
-      const user = auth.currentUser;
-      if (user) {
-        const userRef = doc(db, "users", user.email);
-        try {
-          const docSnapshot = await getDoc(userRef);
-          if (docSnapshot.exists()) {
-            const data = docSnapshot.data();
-            const puzzleSaveState = data.puzzleSaveState;
-            const wordPuzzleSaveState = puzzleSaveState.wordPuzzleSaveState;
-
-            if (wordPuzzleSaveState) {
-              const foundWords = JSON.parse(wordPuzzleSaveState.foundWords);
-              const foundPositions = JSON.parse(wordPuzzleSaveState.foundPositions);
-              const elapsedTime = wordPuzzleSaveState.gameTime;
-              const hintedLettersLoad = JSON.parse(wordPuzzleSaveState.hintedLetters);
+  // Load game state from user account
+  useEffect(() => {
+    const loadGameState = async () => {
+      if (boolLoadFlag) {
+        const user = auth.currentUser;
+        if (user) {
+          const userRef = doc(db, "users", user.email);
+          try {
+            const docSnapshot = await getDoc(userRef);
+            if (docSnapshot.exists()) {
+              const data = docSnapshot.data();
+              const puzzleSaveState = data.puzzleSaveState;
+              const foundWords = JSON.parse(puzzleSaveState.foundWords);
+              const foundPositions = JSON.parse(puzzleSaveState.foundPositions);
+              const elapsedTime = puzzleSaveState.gameTime;
+              const hintedLettersLoad = JSON.parse(puzzleSaveState.hintedLetters);
 
               // Now you can use these deserialized values in your application
               console.log("Game state loaded successfully", {
@@ -129,22 +126,20 @@ useEffect(() => {
               setTimeElapsed(elapsedTime);
               setFoundPositions(foundPositions);
               hintedLetters = hintedLettersLoad;
+
             } else {
-              console.log("No saved game state found for word puzzle");
+              console.log("No saved game state found");
             }
-          } else {
-            console.log("No saved game state found");
+          } catch (error) {
+            console.error("Error loading game state: ", error);
           }
-        } catch (error) {
-          console.error("Error loading game state: ", error);
+        } else {
+          console.error("No authenticated user found");
         }
-      } else {
-        console.error("No authenticated user found");
       }
-    }
-  };
-  loadGameState();
-}, [boolLoadFlag]);
+    };
+    loadGameState();
+  }, [boolLoadFlag]);
 
   // Mark the words found in the board
   function markAsFound(foundPositions: Array<{ row: number; col: number }>) {
@@ -244,7 +239,7 @@ useEffect(() => {
       const foundPositionsString = JSON.stringify(foundPositions);
       const hintedLettersString = JSON.stringify(hintedLetters);
 
-      const wordPuzzleSaveState = {
+      const puzzleSaveState = {
         gameTime: gameTime,
         board: boardGridString,
         foundWords: foundWordsString,
@@ -254,21 +249,18 @@ useEffect(() => {
         levelId: levelId,
         puzzleType: "word"
       };
-
       try {
         const docSnapshot = await getDoc(userRef);
         if (docSnapshot.exists()) {
           // If the document exists, update it
           await updateDoc(userRef, {
-            "puzzleSaveState.wordPuzzleSaveState": wordPuzzleSaveState,
+            puzzleSaveState: puzzleSaveState,
           });
           console.log("Game state saved sucessfully");
         } else {
           // If the document does not exist, create it
           await setDoc(userRef, {
-            puzzleSaveState: {
-              wordPuzzleSaveState: wordPuzzleSaveState,
-            }
+            puzzleSaveState: puzzleSaveState,
           });
           console.log("Game state saved successfully");
         }
@@ -291,9 +283,7 @@ useEffect(() => {
         if (docSnapshot.exists()) {
           // If the document exists, update it
           await updateDoc(userRef, {
-            puzzleSaveState: {
-              wordPuzzleSaveState: {},
-            },
+            puzzleSaveState: {},
           });
           console.log("Game state removed successfully");
         } else {
@@ -533,10 +523,10 @@ useEffect(() => {
         <div className="centered padding" style={{ textAlign: "center" }}>
           <div className="modal">
             <div className="modalHeader padding">
-              <h5 className="heading" style={{fontSize : "20px" , paddingTop : "10px"}} >{auth.currentUser ? "Save Game" : "Leave Game"}</h5>
+              <h5 className="heading" style={{fontSize : "20px" , paddingTop : "10px"}} >Save Game</h5>
             </div>
             <div className="modalContent" style={{ paddingBottom : "30px" ,paddingTop : "10px" }}>
-              {auth.currentUser ? "Do you want to save your progress and leave?" : "Do you want to leave the game?"}
+              Do you want to save your progress and leave?
             </div>
             <div className="modalActions">
               <div
@@ -546,28 +536,23 @@ useEffect(() => {
                 <button
                   style={{ width: "220px", margin: "0 20px" }}
                   onClick={() => {
-                    if (auth.currentUser) {
-                      savetoDB(
-                        timeElapsed,
-                        boardGrid,
-                        foundWords,
-                        difficulty,
-                        levelId
-                      );
-                      navigate("/home");
-                      
-                    } else {
-                      navigate("/home-guest");
-                    }
-                      setTimeElapsed(0);
-                      setTimerActive(false);
-                      setFoundWords([]);
-                      hintedLetters = [];
-                      setHintDisabled(false);
-                      setDialogOpen(false);
+                    savetoDB(
+                      timeElapsed,
+                      boardGrid,
+                      foundWords,
+                      difficulty,
+                      levelId
+                    );
+                    navigate("/home");
+                    setTimeElapsed(0);
+                    setTimerActive(false);
+                    setFoundWords([]);
+                    hintedLetters = [];
+                    setHintDisabled(false);
+                    setDialogOpen(false);
                   }}
                 >
-                  {auth.currentUser ? "Save and Exit" : "Exit"}
+                  {"Save and Exit"}
                 </button>
                 <button
                   style={{ width: "220px", margin: "0 20px" }}
@@ -645,7 +630,7 @@ useEffect(() => {
           {formatTime(timeElapsed)}
         </div>
       </div>
-      <div style={{position: 'absolute', display: 'flex', top: '10px', left: '15px'}}>
+      <div style={{position: 'absolute', display: 'flex', top: '10px', left: '10px'}}>
         <BackButton returnPath={"/render-word/levelselection"} color="rgb(92, 76, 56)"/>
         {auth.currentUser?<button
           onClick={() => {
@@ -653,8 +638,8 @@ useEffect(() => {
             setTimerActive(false);
           }}
         >
-          {auth.currentUser ? "Save Game" : "Leave game"}
-        </button>
+          {"Save Game"}
+        </button>: null}
       </div>
       {isSaveDialogOpen && savePopup()}
       {boardGrid.map((boardRow, rowIndex) => (
@@ -756,9 +741,8 @@ const WordSearchBoard = ({newBoard, levelIndicator}): ReactElement => {
   const [remainingHints, setRemainingHints] = useState(0);
 
     return (
-        <div className="puzzle-body" style={{overflow: 'scroll'}}>
-            <h1 className="gameHeading">Word Search</h1>
-            <div style={{position: 'absolute', display: 'flex', top: '10px', right: '20px'}}>
+        <div className="puzzle-body">
+            <div style={{position: 'absolute', display: 'flex', top: '10px', right: '10px'}}>
                 <HintButton 
                   isHintDisabled={isHintDisabled} 
                   setHintDisabled={setHintDisabled} 

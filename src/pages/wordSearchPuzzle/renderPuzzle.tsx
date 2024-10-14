@@ -28,47 +28,41 @@ function RenderPuzzle() {
   let levelIndicator: string;
   let isHardLevel: boolean = false;
 
-// Checks if the game state is to be loaded
-useEffect(() => {
-  const loadGameState = async () => {
-    if (boolLoadFlag) {
-      const user = auth.currentUser;
-      if (user) {
-        const userRef = doc(db, "users", user.email);
-        try {
-          const docSnapshot = await getDoc(userRef);
-          if (docSnapshot.exists()) {
-            const data = docSnapshot.data();
-            const puzzleSaveState = data.puzzleSaveState;
-            const wordPuzzleSaveState = puzzleSaveState.wordPuzzleSaveState;
-
-            if (wordPuzzleSaveState) {
-              const boardGrid = JSON.parse(wordPuzzleSaveState.board);
+  // Checks if the game state is to be loaded
+  useEffect(() => {
+    const loadGameState = async () => {
+      if (boolLoadFlag) {
+        const user = auth.currentUser;
+        if (user) {
+          const userRef = doc(db, "users", user.email);
+          try {
+            const docSnapshot = await getDoc(userRef);
+            if (docSnapshot.exists()) {
+              const data = docSnapshot.data();
+              const puzzleSaveState = data.puzzleSaveState;
+              const boardGrid = JSON.parse(puzzleSaveState.board);
 
               // Now you can use these deserialized values in your application
               console.log("Game state loaded successfully", {
                 boardGrid,
-                difficulty: wordPuzzleSaveState.difficulty,
-                levelId: wordPuzzleSaveState.levelId,
+                difficulty,
+                levelId,
               });
 
               setBoardGrid(boardGrid);
             } else {
-              console.log("No saved game state found for word puzzle");
+              console.log("No saved game state found");
             }
-          } else {
-            console.log("No saved game state found");
+          } catch (error) {
+            console.error("Error loading game state: ", error);
           }
-        } catch (error) {
-          console.error("Error loading game state: ", error);
+        } else {
+          console.error("No authenticated user found");
         }
-      } else {
-        console.error("No authenticated user found");
       }
-    }
-  };
-  loadGameState();
-}, [boolLoadFlag]);
+    };
+    loadGameState();
+  }, [boolLoadFlag]);
 
   // useEffect(() => {
   //     sessionStorage.setItem('grid', JSON.stringify(board));
