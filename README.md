@@ -1,5 +1,5 @@
 # Puzzle Bluster Game Web App
-This project is a dynamic puzzle-solving application built using React, designed to provide an engaging user experience with two different types of games - Word Search (Word Puzzle) and Matrix Frenzy (Math Puzzle). The app features grid layouts and interactive UI elements styled with Material-UI and custom CSS, and custom game logic to validate puzzle solutions. User progress is tracked and stored using Firebase Firestore, and a hint system is incorporated to enhance gameplay. The app also includes features like difficulty selection, level progression, leaderboard rankings, and a responsive design for a seamless experience across devices.
+This project is a dynamic puzzle-solving application built using React.js, designed to provide an engaging user experience with two different types of games - Word Search (Word Puzzle) and Matrix Frenzy (Math Puzzle). The app features grid layouts and interactive UI elements styled with Material-UI and custom CSS, and custom game logic to validate puzzle solutions. User progress is tracked and stored using Firebase Firestore, and a hint system is incorporated to enhance gameplay. The app also includes features like difficulty selection, level progression, leaderboard rankings, and a responsive design for a seamless experience across devices.
 
 ### Features
 - Dynamic Grid Layouts: Puzzle grids adjust based on difficulty and game type
@@ -12,7 +12,7 @@ This project is a dynamic puzzle-solving application built using React, designed
 - Responsive Design: Works seamlessly across desktop and mobile devices
 
 ### Technologies Used
-- **Frontend:** React.js, JavaScript, CSS, MaterialUI
+- **Frontend:** React.js, TypeScript, CSS, MaterialUI
 - **Backend:** Firebase Firestore for user data storage and progress tracking
 
 ### Pre-requisites
